@@ -7,7 +7,6 @@ import helpers.objectstorage as objectstorage
 def initialize_new_count(event):
     """_summary_"""
     objectstorage.active_countings.append(current_count())
-    print(objectstorage.active_countings)
 
 
 class current_count:
@@ -48,25 +47,5 @@ class current_count:
             "Exit_Coordinate": self.Exit_Coordinate,
         }
 
-
-def assign_vehicle_class(event, active_count_index=None):
-    if event.keysym == "c" and objectstorage.active_countings:
-        print(
-            "assigning Class Car to count: " + str(objectstorage.active_countings[0].ID)
-        )
-
-        # change 0 to active_count_index
-        objectstorage.active_countings[0].Vhc_class = "Car"
-        # print(vars(active_countings[0]))
-
-
-def fill_ground_truth(event, active_count_index=None):
-
-    # change 0 to active_count_index
-
-    objectstorage.ground_truth = objectstorage.ground_truth.append(
-        objectstorage.active_countings[0].counted_vehicle_information(),
-        ignore_index=True,
-    )
-
-    print(objectstorage.ground_truth)
+    def __del__(self):
+        print("Object with " + str(self.ID) + " deleted")

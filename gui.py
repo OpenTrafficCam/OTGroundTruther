@@ -4,7 +4,9 @@ from helpers.video import load_video_and_frame
 import helpers.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
 from helpers.view_activecount import FrameActiveCounts
-from helpers.count import assign_vehicle_class, initialize_new_count, fill_ground_truth
+from helpers.count import initialize_new_count
+from helpers.count_manipulation import assign_vehicle_class
+from helpers.datamanagement import fill_background_dic, fill_ground_truth
 from helpers.view_section import FrameSection
 import keyboard
 
@@ -26,7 +28,8 @@ class gui(tk.Tk):
         self.bind("-", self.change_scroll_down)
         self.bind("n", initialize_new_count)
         self.bind("c", assign_vehicle_class)
-        self.bind("<Return>", fill_ground_truth)
+        self.bind("<Return>", fill_ground_truth, add="+")
+        self.bind("<Return>", fill_background_dic, add="+")
 
     def change_scroll_up(self, event):
         print("scrollspeed:" + str(objectstorage.videoobject.scroll_speed))

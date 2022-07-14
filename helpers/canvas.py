@@ -87,7 +87,6 @@ class OtcCanvas(tk.Canvas):
             active_countings[0].Exit_Frame = objectstorage.videoobject.current_frame
             active_countings[0].first_coordinate = False
         active_countings[0].line_drawn = not active_countings[0].first_coordinate
-        print(vars(active_countings[0]))
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def delete_points(self):

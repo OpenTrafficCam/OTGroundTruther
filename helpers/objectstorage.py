@@ -20,6 +20,7 @@ ground_truth = pd.DataFrame(
         "Exit_Coordinate",
     ]
 )
+background_dic = {}
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 
