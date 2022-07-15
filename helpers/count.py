@@ -48,4 +48,4 @@ class current_count:
         }
 
     def __del__(self):
-        print("Object with " + str(self.ID) + " deleted")
+        print("Object with ID " + str(self.ID) + " deleted")

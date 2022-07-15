@@ -26,10 +26,25 @@ class gui(tk.Tk):
         self.bind("<MouseWheel>", self.mouse_scroll)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
-        self.bind("n", initialize_new_count)
-        self.bind("c", assign_vehicle_class)
+        self.bind("n", initialize_new_count, add="+")
+        self.bind(
+            "n", self.frame_active_counts.insert_active_count_to_treeview, add="+"
+        )
+        self.bind("c", assign_vehicle_class, add="+")
+        self.bind("c", self.frame_active_counts.update_treeview, add="+")
+        self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", fill_background_dic, add="+")
+
+        # bind functions to canvas // prevent circular import
+        objectstorage.maincanvas.bind(
+            "<ButtonPress-1>",
+            lambda event: [
+                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
+                objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
+                self.frame_active_counts.update_treeview(event),
+            ],
+        )
 
     def change_scroll_up(self, event):
         print("scrollspeed:" + str(objectstorage.videoobject.scroll_speed))
@@ -71,8 +86,8 @@ class gui(tk.Tk):
         canvas.pack()
 
         # Frame for creating GT file
-        controlpanel = FrameActiveCounts(master=frame_controlpanel)
-        controlpanel.pack(side="left", fill="both")
+        self.frame_active_counts = FrameActiveCounts(master=frame_controlpanel)
+        self.frame_active_counts.pack(side="left", fill="both")
 
         # Frame for section creation
         self.frame_sections = FrameSection(master=frame_controlpanel)

@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import helpers.objectstorage as objectstorage
 from helpers.objectstorage import active_countings, button_bool
 from helpers.count import current_count
@@ -17,14 +18,6 @@ class OtcCanvas(tk.Canvas):
 
         self.points = [(0, 0), (0, 0)]
         self.polygon_points = []
-
-        self.bind(
-            "<ButtonPress-1>",
-            lambda event: [
-                self.click_receive_vehicle_coordinates(event),
-                self.click_receive_section_coordinates(event, 0),
-            ],
-        )
 
         self.bind(
             "<B1-Motion>",
@@ -68,8 +61,16 @@ class OtcCanvas(tk.Canvas):
         self.coordinateY = int(self.canvasy(event.y))
 
         if not active_countings:
-            # create instance if no counting object is active
-            active_countings.append(current_count())
+            # create instance if no active coutn exist
+            # active_countings.append(current_count())
+
+            # or
+
+            messagebox.showinfo(
+                title="Info",
+                message="First create empty count with hotkey n",
+            )
+            return
 
         if not active_countings[0].first_coordinate:
 
@@ -87,6 +88,7 @@ class OtcCanvas(tk.Canvas):
             active_countings[0].Exit_Frame = objectstorage.videoobject.current_frame
             active_countings[0].first_coordinate = False
         active_countings[0].line_drawn = not active_countings[0].first_coordinate
+
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def delete_points(self):
