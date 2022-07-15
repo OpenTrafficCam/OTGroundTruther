@@ -21,6 +21,8 @@ def manipulate_image(np_image=None):
 
     np_image = draw_detectors_from_dict(np_image)
 
+    np_image = draw_finished_counts(np_image)
+
     image = Image.fromarray(np_image)  # to PIL format
 
     objectstorage.videoobject.ph_image = ImageTk.PhotoImage(image)
@@ -32,6 +34,29 @@ def manipulate_image(np_image=None):
     objectstorage.maincanvas.update()
 
     # print(objectstorage.flow_dict)
+
+
+def draw_finished_counts(np_image):
+    # subset background dic when frames match
+    current_frame = objectstorage.videoobject.current_frame
+    d = objectstorage.background_dic
+
+    background_dic_subset = {
+        k: v
+        for k, v in d.items()
+        if v["Entry_Frame"] <= current_frame and v["Exit_Frame"] >= current_frame
+    }
+
+    for object_id in background_dic_subset:
+
+        np_image = cv2.line(
+            np_image,
+            background_dic_subset[object_id]["Entry_Coordinate"],
+            background_dic_subset[object_id]["Exit_Coordinate"],
+            (200, 125, 125, 255),
+            3,
+        )
+    return np_image
 
 
 def draw_active_count(np_image, active_count=None):
