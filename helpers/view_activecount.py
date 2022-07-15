@@ -75,10 +75,9 @@ class FrameActiveCounts(tk.LabelFrame):
         children = self.tree_active_countings.get_children("")
         for child in children:
             values = self.tree_active_countings.item(child, "text")
-            print(values)
+
             if count_ID == values:
-                print("true")
-                print(child)
+
                 self.tree_active_countings.item(
                     child,
                     values=(
@@ -90,13 +89,14 @@ class FrameActiveCounts(tk.LabelFrame):
 
     def delete_from_treeview(self, event, active_count_index=None):
         # make selectable
-        count_ID = objectstorage.active_countings[0].ID
+        if objectstorage.active_countings[0].all_values_set():
+            count_ID = objectstorage.active_countings[0].ID
 
-        children = self.tree_active_countings.get_children("")
-        for child in children:
-            values = self.tree_active_countings.item(child, "text")
-            if count_ID == values:
-                self.tree_active_countings.delete(child)
+            children = self.tree_active_countings.get_children("")
+            for child in children:
+                values = self.tree_active_countings.item(child, "text")
+                if count_ID == values:
+                    self.tree_active_countings.delete(child)
 
         # item = objectstorage.active_countings[0].ID
         # print(item)

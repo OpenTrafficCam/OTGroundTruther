@@ -4,6 +4,7 @@ from helpers.video import load_video_and_frame
 import helpers.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
 from helpers.view_activecount import FrameActiveCounts
+from helpers.view_gt import FrameGT
 from helpers.count import initialize_new_count
 from helpers.count_manipulation import assign_vehicle_class
 from helpers.datamanagement import fill_background_dic, fill_ground_truth
@@ -33,8 +34,9 @@ class gui(tk.Tk):
         self.bind("c", assign_vehicle_class, add="+")
         self.bind("c", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
-        self.bind("<Return>", fill_ground_truth, add="+")
+        self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_background_dic, add="+")
+        self.bind("<Return>", fill_ground_truth, add="+")
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -88,6 +90,9 @@ class gui(tk.Tk):
         # Frame for creating GT file
         self.frame_active_counts = FrameActiveCounts(master=frame_controlpanel)
         self.frame_active_counts.pack(side="left", fill="both")
+
+        self.frame_gt = FrameGT(master=frame_controlpanel)
+        self.frame_gt.pack(side="left", fill="both")
 
         # Frame for section creation
         self.frame_sections = FrameSection(master=frame_controlpanel)

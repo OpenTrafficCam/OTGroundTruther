@@ -24,10 +24,10 @@ class current_count:
         # Attributes
         self.ID = type(self).counter
         self.Vhc_class = None
-        self.Entry_Gate = None
+        self.Entry_Gate = "Placeholder"
         self.Entry_Frame = None
         self.Entry_Coordinate = None
-        self.Exit_Gate = None
+        self.Exit_Gate = "Placeholder"
         self.Exit_Frame = None
         self.Exit_Coordinate = None
         print("Anzahl der Instanzen: " + str(current_count.counter))
@@ -46,6 +46,18 @@ class current_count:
             "Exit_Frame": self.Exit_Frame,
             "Exit_Coordinate": self.Exit_Coordinate,
         }
+
+    def all_values_set(self):
+
+        for key in self.counted_vehicle_information().keys():
+
+            if (
+                objectstorage.active_countings[0].counted_vehicle_information()[key]
+                is None
+            ):
+                print(key + " is None")
+                return False
+        return True
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
