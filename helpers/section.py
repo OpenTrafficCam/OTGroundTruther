@@ -2,7 +2,8 @@ import tkinter.ttk as ttk
 import tkinter as tk
 import helpers.objectstorage as objectstorage
 import cv2
-from math import atan2, degrees, radians, dist
+from math import atan2, degrees, radians, dist, pi
+import numpy as np
 
 
 def button_line_switch():
@@ -31,6 +32,8 @@ def draw_section_line(np_image):
 
 
 def draw_ellipse_around_section(np_image):
+    p0 = (objectstorage.maincanvas.points[0][0], objectstorage.maincanvas.points[0][1])
+    p1 = (objectstorage.maincanvas.points[1][0], objectstorage.maincanvas.points[1][1])
     middle_point_x = (
         objectstorage.maincanvas.points[0][0] + objectstorage.maincanvas.points[1][0]
     ) / 2
@@ -38,47 +41,31 @@ def draw_ellipse_around_section(np_image):
         objectstorage.maincanvas.points[0][1] + objectstorage.maincanvas.points[1][1]
     ) / 2
 
-    angle = atan2(
-        objectstorage.maincanvas.points[0][1] - objectstorage.maincanvas.points[1][1],
+    major_axis_length = dist(p0, p1) / 2
+    # ang1 = np.arctan2(*p0[::-1])
+    # ang2 = np.arctan2(*p1[::-1])
+    # angle = int(np.rad2deg((ang2 - ang1) % (2 * np.pi)))
+
+    radian = atan2(
+        objectstorage.maincanvas.points[1][1] - objectstorage.maincanvas.points[0][1],
         objectstorage.maincanvas.points[0][0] - objectstorage.maincanvas.points[1][0],
     )
-    rotation = degrees(angle)
 
-    print(rotation)
+    angle = -radian * (180 / pi)
 
-    axis_length_x = dist(
-        [objectstorage.maincanvas.points[0][0]], [objectstorage.maincanvas.points[1][0]]
-    )
-    axis_length_y = dist(
-        [objectstorage.maincanvas.points[0][1]], [objectstorage.maincanvas.points[1][1]]
-    )
+    print(angle)
 
-    center_coordinates = (int(middle_point_x), int(middle_point_y))
-
-    axesLength = (int(axis_length_x), int(axis_length_y))
-
-    startAngle = 0
-
-    endAngle = 360
-
-    # Red color in BGR
-    color = (0, 0, 255)
-
-    # Line thickness of 5 px
-    thickness = 2
-
-    # Using cv2.ellipse() method
-    # Draw a ellipse with red line borders of thickness of 5 px
-    return cv2.ellipse(
+    np_image = cv2.ellipse(
         np_image,
-        center_coordinates,
-        axesLength,
-        rotation,
-        startAngle,
-        endAngle,
-        color,
-        thickness,
+        (int(middle_point_x), int(middle_point_y)),
+        (int(major_axis_length), 50),
+        angle,
+        0,
+        360,
+        (255, 0, 0),
+        thickness=1,
     )
+    return np_image
 
 
 def dump_to_flowdictionary(detector_name):
