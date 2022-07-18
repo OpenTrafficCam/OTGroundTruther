@@ -37,6 +37,15 @@ def manipulate_image(np_image=None):
 
 
 def draw_finished_counts(np_image):
+    """Subsets dictionary with finished counts. Dictionary contains all counts
+    that that occur in current frame.
+
+    Args:
+        np_image (_type_): numpy array as image to draw lines on
+
+    Returns:
+        _type_: altered numpy array as image
+    """
     # subset background dic when frames match
     current_frame = objectstorage.videoobject.current_frame
     d = objectstorage.background_dic
