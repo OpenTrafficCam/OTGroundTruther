@@ -53,8 +53,6 @@ def draw_ellipse_around_section(np_image):
 
     angle = -radian * (180 / pi)
 
-    print(angle)
-
     np_image = cv2.ellipse(
         np_image,
         (int(middle_point_x), int(middle_point_y)),
