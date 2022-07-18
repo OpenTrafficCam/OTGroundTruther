@@ -11,9 +11,6 @@ def fill_ground_truth(event, active_count_index=None):
             ignore_index=True,
         )
 
-        print("Number of active counts" + str(len(objectstorage.active_countings)))
-        print(objectstorage.ground_truth)
-
         # delete finished object from active-list
         del objectstorage.active_countings[0]
 
@@ -23,5 +20,3 @@ def fill_background_dic(event, active_count_index=None):
     objectstorage.background_dic[
         objectstorage.active_countings[0].ID
     ] = objectstorage.active_countings[0].counted_vehicle_information()
-
-    print(objectstorage.background_dic)
