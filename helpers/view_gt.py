@@ -37,7 +37,10 @@ class FrameGT(tk.LabelFrame):
         self.tree_gt.heading("Class", text=tree_files_cols["Class"], anchor="center")
 
     def insert_to_gt_treeview(self, event):
-        if objectstorage.active_countings[0].all_values_set():
+        if (
+            objectstorage.active_countings
+            and objectstorage.active_countings[0].all_values_set()
+        ):
             # insert latest item from activecount list
             latest_count = objectstorage.active_countings[-1]
 

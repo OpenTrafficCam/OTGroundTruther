@@ -1,9 +1,7 @@
-import tkinter.ttk as ttk
-import tkinter as tk
 import helpers.objectstorage as objectstorage
 import cv2
-from math import atan2, degrees, radians, dist, pi
-import numpy as np
+from math import atan2, dist, pi
+from shapely.geometry import LineString, Polygon
 
 
 def button_line_switch():
@@ -31,24 +29,17 @@ def draw_section_line(np_image):
     )
 
 
-def draw_ellipse_around_section(np_image):
-    p0 = (objectstorage.maincanvas.points[0][0], objectstorage.maincanvas.points[0][1])
-    p1 = (objectstorage.maincanvas.points[1][0], objectstorage.maincanvas.points[1][1])
-    middle_point_x = (
-        objectstorage.maincanvas.points[0][0] + objectstorage.maincanvas.points[1][0]
-    ) / 2
-    middle_point_y = (
-        objectstorage.maincanvas.points[0][1] + objectstorage.maincanvas.points[1][1]
-    ) / 2
+def draw_ellipse_around_section(np_image, p0, p1):
+    # p0 = (objectstorage.maincanvas.points[0][0], objectstorage.maincanvas.points[0][1])
+    # p1 = (objectstorage.maincanvas.points[1][0], objectstorage.maincanvas.points[1][1])
+    middle_point_x = (p0[0] + p1[0]) / 2
+    middle_point_y = (p0[1] + p1[1]) / 2
 
     major_axis_length = dist(p0, p1) / 2
-    # ang1 = np.arctan2(*p0[::-1])
-    # ang2 = np.arctan2(*p1[::-1])
-    # angle = int(np.rad2deg((ang2 - ang1) % (2 * np.pi)))
 
     radian = atan2(
-        objectstorage.maincanvas.points[1][1] - objectstorage.maincanvas.points[0][1],
-        objectstorage.maincanvas.points[0][0] - objectstorage.maincanvas.points[1][0],
+        p1[1] - p0[1],
+        p0[0] - p1[0],
     )
 
     angle = -radian * (180 / pi)
@@ -60,9 +51,10 @@ def draw_ellipse_around_section(np_image):
         angle,
         0,
         360,
-        (255, 0, 0),
-        thickness=1,
+        color=(127, 255, 0, 255),
+        thickness=2,
     )
+
     return np_image
 
 
@@ -84,4 +76,37 @@ def dump_to_flowdictionary(detector_name):
             "end_x": objectstorage.maincanvas.points[1][0],
             "end_y": objectstorage.maincanvas.points[1][1],
             "color": (200, 125, 125, 255),
+            "Geometry_line": LineString(
+                [
+                    (
+                        objectstorage.maincanvas.points[0][0],
+                        objectstorage.maincanvas.points[0][1],
+                    ),
+                    (
+                        objectstorage.maincanvas.points[1][0],
+                        objectstorage.maincanvas.points[1][1],
+                    ),
+                ]
+            ),
+            # USE REAL CALCULATION FOR POLYGON
+            "Geometry_polygon": Polygon(
+                [
+                    (
+                        objectstorage.maincanvas.points[0][0] + 25,
+                        objectstorage.maincanvas.points[0][1] + 25,
+                    ),
+                    (
+                        objectstorage.maincanvas.points[0][0] - 25,
+                        objectstorage.maincanvas.points[0][1] - 25,
+                    ),
+                    (
+                        objectstorage.maincanvas.points[1][0] + 25,
+                        objectstorage.maincanvas.points[1][1] + 25,
+                    ),
+                    (
+                        objectstorage.maincanvas.points[1][0] - 25,
+                        objectstorage.maincanvas.points[1][1] - 25,
+                    ),
+                ],
+            ),
         }

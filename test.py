@@ -48,3 +48,7 @@ df = df.append(vehicle1.get_vehicle_information(), ignore_index=True)
 
 print(df)
 # %%
+
+print(bool([]))
+
+# %%

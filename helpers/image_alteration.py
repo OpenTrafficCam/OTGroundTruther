@@ -17,7 +17,17 @@ def manipulate_image(np_image=None):
     if objectstorage.button_bool["linedetector_toggle"]:
 
         np_image = draw_section_line(np_image)
-        np_image = draw_ellipse_around_section(np_image)
+        np_image = draw_ellipse_around_section(
+            np_image,
+            p0=(
+                objectstorage.maincanvas.points[0][0],
+                objectstorage.maincanvas.points[0][1],
+            ),
+            p1=(
+                objectstorage.maincanvas.points[1][0],
+                objectstorage.maincanvas.points[1][1],
+            ),
+        )
 
     np_image = draw_detectors_from_dict(np_image)
 
@@ -34,6 +44,10 @@ def manipulate_image(np_image=None):
     objectstorage.maincanvas.update()
 
     # print(objectstorage.flow_dict)
+
+
+def create_shapeply_geometry():
+    pass
 
 
 def draw_finished_counts(np_image):
@@ -104,5 +118,9 @@ def draw_detectors_from_dict(np_image):
             color = objectstorage.flow_dict["Detectors"][detector]["color"]
 
             np_image = cv2.line(np_image, (start_x, start_y), (end_x, end_y), color, 3)
+
+            np_image = draw_ellipse_around_section(
+                np_image, p0=(start_x, start_y), p1=(end_x, end_y)
+            )
 
     return np_image
