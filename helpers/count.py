@@ -33,6 +33,8 @@ class current_count:
         self.Exit_Gate = "Placeholder"
         self.Exit_Frame = None
         self.Exit_Coordinate = None
+        self.All_Coordinates = []
+        self.All_Coordinates_Frames = []
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
         self.first_coordinate = False
