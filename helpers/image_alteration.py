@@ -3,6 +3,7 @@ import helpers.objectstorage as objectstorage
 import tkinter
 import cv2
 from helpers.section import draw_section_line, draw_ellipse_around_section
+import numpy as np
 
 
 def manipulate_image(np_image=None):
@@ -72,20 +73,52 @@ def draw_finished_counts(np_image):
 
     for object_id in background_dic_subset:
 
-        np_image = cv2.line(
-            np_image,
-            background_dic_subset[object_id]["Entry_Coordinate"],
-            background_dic_subset[object_id]["Exit_Coordinate"],
-            (200, 125, 125, 255),
-            3,
-        )
+        if background_dic_subset[object_id]["GT_Type"] == "Line":
+
+            np_image = cv2.line(
+                np_image,
+                background_dic_subset[object_id]["Entry_Coordinate"],
+                background_dic_subset[object_id]["Exit_Coordinate"],
+                (200, 125, 125, 255),
+                3,
+            )
+        else:
+            pts = np.array(
+                background_dic_subset[object_id]["All_Coordinates"],
+                np.int32,
+            )
+
+            pts = pts.reshape((-1, 1, 2))
+            np_image = cv2.polylines(
+                np_image,
+                [pts],
+                isClosed=False,
+                color=(200, 125, 125, 255),
+                thickness=3,
+            )
+
     return np_image
 
 
 def draw_active_count(np_image, active_count=None):
+    print(active_count.Type)
+    if active_count.Type != "Line":
+        # Polygon corner points coordinates
+        print("draw polyline")
+        pts = np.array(
+            active_count.All_Coordinates,
+            np.int32,
+        )
 
+        pts = pts.reshape((-1, 1, 2))
+        return cv2.polylines(
+            np_image,
+            [pts],
+            isClosed=False,
+            color=(200, 125, 125, 255),
+            thickness=3,
+        )
     if active_count.Exit_Coordinate and not active_count.first_coordinate:
-
         return cv2.line(
             np_image,
             active_count.Entry_Coordinate,
@@ -93,9 +126,8 @@ def draw_active_count(np_image, active_count=None):
             (200, 125, 125, 255),
             3,
         )
-    else:
-        print("current count not drawn!")
-        return np_image
+    print("current count not drawn!")
+    return np_image
 
 
 def draw_detectors_from_dict(np_image):

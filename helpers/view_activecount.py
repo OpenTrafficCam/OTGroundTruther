@@ -57,6 +57,7 @@ class FrameActiveCounts(tk.LabelFrame):
             master=self.frame_control_active_counts,
             width=12,
             text="Polyline",
+            command=lambda: self.button_count_type_poly_switch(),
         )
         self.button_count_polyline.grid(row=0, column=0, padx=(10, 0))
 
@@ -64,6 +65,7 @@ class FrameActiveCounts(tk.LabelFrame):
             master=self.frame_control_active_counts,
             width=12,
             text="Line",
+            command=lambda: self.button_count_type_line_switch(),
         )
         self.button_count_line.grid(row=0, column=1, padx=(10, 0))
 
@@ -120,6 +122,20 @@ class FrameActiveCounts(tk.LabelFrame):
                 values = self.tree_active_countings.item(child, "text")
                 if count_ID == values:
                     self.tree_active_countings.delete(child)
+
+    def button_count_type_poly_switch(self):
+        if not objectstorage.button_bool["gt_line"]:
+            objectstorage.button_bool["gt_polyline"] = not objectstorage.button_bool[
+                "gt_polyline"
+            ]
+            print(objectstorage.button_bool["gt_polyline"])
+
+    def button_count_type_line_switch(self):
+        if not objectstorage.button_bool["gt_polyline"]:
+            objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
+                "gt_line"
+            ]
+            print(objectstorage.button_bool["gt_line"])
 
         # item = objectstorage.active_countings[0].ID
         # print(item)

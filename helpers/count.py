@@ -35,6 +35,7 @@ class current_count:
         self.Exit_Coordinate = None
         self.All_Coordinates = []
         self.All_Coordinates_Frames = []
+        self.Type = None
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
         self.first_coordinate = False
@@ -50,6 +51,9 @@ class current_count:
             "Exit_Gate": self.Exit_Gate,
             "Exit_Frame": self.Exit_Frame,
             "Exit_Coordinate": self.Exit_Coordinate,
+            "All_Coordinates": self.All_Coordinates,
+            "All_Coordinates_Frames": self.All_Coordinates_Frames,
+            "GT_Type": self.Type,
         }
 
     def all_values_set(self):
