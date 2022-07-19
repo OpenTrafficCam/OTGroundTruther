@@ -93,7 +93,7 @@ class current_count:
             lineobject = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
         else:
-            lineobject = LineString(self.All_Coordinates)
+            lineobject = LineString(self.All_Coordinates[-2:])
 
         dataframe["Intersects"] = s.intersects(lineobject)
 
@@ -102,12 +102,19 @@ class current_count:
         )
         for gate in list_of_crossed_gates:
             # if gate is already in tuple of crossed gates than break
-            if not (bool([item for item in self.Crossed_gates if item[0] == gate])):
+            if not (
+                bool(
+                    [
+                        item
+                        for item in self.Crossed_gates
+                        if item[0] == gate
+                        and item[1] == objectstorage.videoobject.current_frame
+                    ]
+                )
+            ):
                 self.Crossed_gates.append(
                     (gate, objectstorage.videoobject.current_frame)
                 )
-
-        print(self.Crossed_gates)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
