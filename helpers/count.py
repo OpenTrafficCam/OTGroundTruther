@@ -1,5 +1,8 @@
-import pandas as pd
 import helpers.objectstorage as objectstorage
+from shapely.geometry import Polygon, LineString, Point
+import geopandas
+import pandas as pd
+
 
 # import helpers.objectstorage as objectstorage
 
@@ -58,6 +61,28 @@ class current_count:
                 print(key + " is None")
                 return False
         return True
+
+    def intersection_list(self, event):
+        # only do when at least two points exist or at least the second point.
+        if (
+            not objectstorage.button_bool["linedetector_toggle"]
+            and self.Exit_Coordinate is not None
+        ):
+
+            geoobjects = [
+                objectstorage.flow_dict["Detectors"][k]["Geometry_polygon"]
+                for k, v in objectstorage.flow_dict["Detectors"].items()
+            ]
+
+            s = geopandas.GeoSeries(geoobjects)
+
+            dataframe = pd.DataFrame(data=s)
+            dataframe["Detector"] = objectstorage.flow_dict["Detectors"]
+            dataframe["Intersects"] = s.intersects(
+                LineString([self.Entry_Coordinate, self.Exit_Coordinate])
+            )
+            print(dataframe)
+            return list(dataframe["Detector"][dataframe["Intersects"] == True])
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")

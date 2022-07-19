@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import helpers.objectstorage as objectstorage
 from helpers.objectstorage import active_countings, button_bool
-from helpers.count import current_count
+
 from helpers.image_alteration import manipulate_image
 
 
