@@ -101,7 +101,6 @@ def draw_finished_counts(np_image):
 
 
 def draw_active_count(np_image, active_count=None):
-    print(active_count.Type)
     if active_count.Type != "Line":
         # Polygon corner points coordinates
         print("draw polyline")

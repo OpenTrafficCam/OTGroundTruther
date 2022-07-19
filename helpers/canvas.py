@@ -89,6 +89,7 @@ class OtcCanvas(tk.Canvas):
                     0
                 ].Entry_Frame = objectstorage.videoobject.current_frame
                 active_countings[0].first_coordinate = True
+
             else:
                 active_countings[0].Exit_Coordinate = (
                     self.coordinateX,
@@ -98,6 +99,7 @@ class OtcCanvas(tk.Canvas):
                 active_countings[0].first_coordinate = False
             active_countings[0].line_drawn = not active_countings[0].first_coordinate
 
+            #            active_countings[0].intersection_list()
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
         if button_bool["gt_polyline"]:
@@ -125,8 +127,6 @@ class OtcCanvas(tk.Canvas):
                     0
                 ].All_Coordinates_Frames[-1]
 
-            print(vars(active_countings[0]))
-
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def delete_points(self):
@@ -141,7 +141,6 @@ class OtcCanvas(tk.Canvas):
         if button_bool["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
             del active_countings[0].All_Coordinates[-1]
 
-            print(active_countings[0].All_Coordinates)
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
 

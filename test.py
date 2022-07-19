@@ -52,3 +52,9 @@ print(df)
 print(bool([]))
 
 # %%
+a = [(1, 2), (1, 4), (3, 5), (5, 7)]
+
+b = bool([item for item in a if item[0] == 18])
+
+print(b)
+# %%

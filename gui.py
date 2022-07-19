@@ -25,6 +25,8 @@ class gui(tk.Tk):
 
         self.add_canvas_frame()
         self.bind("<MouseWheel>", self.mouse_scroll)
+        self.bind("<Right>", self.arrow_key_scroll)
+        self.bind("<Left>", self.arrow_key_scroll)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
         self.bind("n", initialize_new_count, add="+")
@@ -72,6 +74,21 @@ class gui(tk.Tk):
 
         objectstorage.videoobject.set_frame()
 
+        manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    def arrow_key_scroll(self, event):
+
+        if event.keycode == 39:
+            objectstorage.videoobject.current_frame += (
+                1 * objectstorage.videoobject.scroll_speed
+            )
+
+        else:
+            objectstorage.videoobject.current_frame -= (
+                1 * objectstorage.videoobject.scroll_speed
+            )
+
+        objectstorage.videoobject.set_frame()
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def set_layout(
