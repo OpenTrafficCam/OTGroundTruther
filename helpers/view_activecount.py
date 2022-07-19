@@ -136,17 +136,3 @@ class FrameActiveCounts(tk.LabelFrame):
                 "gt_line"
             ]
             print(objectstorage.button_bool["gt_line"])
-
-        # item = objectstorage.active_countings[0].ID
-        # print(item)
-        # item_text = self.tree_active_countings.item(selected_item, "text")
-        # print(item_text)
-        # self.tree_active_countings.item(item, text="blub", values=("foo", "bar"))
-
-    # create file
-    # self.button_add_gt_file = tk.Button(
-    #     master=self.frame_controls,
-    #     width=12,
-    #     text="Create new file",
-    # )
-    # self.button_add_gt_file.grid(row=0, column=0, pady=(10, 0), sticky="ew")
