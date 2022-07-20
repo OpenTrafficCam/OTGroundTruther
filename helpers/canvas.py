@@ -60,6 +60,11 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
+        if not objectstorage.active_countings:
+            return
+        active_count = objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ]
         if button_bool["linedetector_toggle"]:
             return
         # uses mouseevents to get coordinates (left button)
@@ -78,68 +83,62 @@ class OtcCanvas(tk.Canvas):
             )
             return
         if button_bool["gt_line"]:
-            active_countings[0].Type = "Line"
-            if not active_countings[0].first_coordinate:
+            active_count.Type = "Line"
+            if not active_count.first_coordinate:
 
-                active_countings[0].Entry_Coordinate = (
+                active_count.Entry_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
                 active_countings[
                     0
                 ].Entry_Frame = objectstorage.videoobject.current_frame
-                active_countings[0].first_coordinate = True
+                active_count.first_coordinate = True
 
             else:
-                active_countings[0].Exit_Coordinate = (
+                active_count.Exit_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
-                active_countings[0].Exit_Frame = objectstorage.videoobject.current_frame
-                active_countings[0].first_coordinate = False
-            active_countings[0].line_drawn = not active_countings[0].first_coordinate
+                active_count.Exit_Frame = objectstorage.videoobject.current_frame
+                active_count.first_coordinate = False
+            active_count.line_drawn = not active_count.first_coordinate
 
             #            active_countings[0].intersection_list()
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
         if button_bool["gt_polyline"]:
-            active_countings[0].Type = "Polyline"
-            active_countings[0].All_Coordinates.append(
-                [self.coordinateX, self.coordinateY]
-            )
-            active_countings[0].All_Coordinates_Frames.append(
+            active_count.Type = "Polyline"
+            active_count.All_Coordinates.append([self.coordinateX, self.coordinateY])
+            active_count.All_Coordinates_Frames.append(
                 objectstorage.videoobject.current_frame
             )
-            active_countings[0].Entry_Frame = active_countings[
-                0
-            ].All_Coordinates_Frames[0]
+            active_count.Entry_Frame = active_count.All_Coordinates_Frames[0]
 
-            if len(active_countings[0].All_Coordinates) > 1:
-                active_countings[0].Entry_Coordinate = active_countings[
-                    0
-                ].All_Coordinates[0]
+            if len(active_count.All_Coordinates) > 1:
+                active_count.Entry_Coordinate = active_count.All_Coordinates[0]
 
-                active_countings[0].Exit_Coordinate = active_countings[
-                    0
-                ].All_Coordinates[-1]
+                active_count.Exit_Coordinate = active_count.All_Coordinates[-1]
 
-                active_countings[0].Exit_Frame = active_countings[
-                    0
-                ].All_Coordinates_Frames[-1]
+                active_count.Exit_Frame = active_count.All_Coordinates_Frames[-1]
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def delete_points(self):
         """delete list of polygon points after scrolling, sliding, playing, rewinding"""
+
         if self.polygon_points:
             self.polygon_points = []
         else:
             self.points = [(0, 0), (0, 0)]
 
     def undo_active_count_coords(self, event):
-        # only do for polygon points
         if button_bool["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
-            del active_countings[0].All_Coordinates[-1]
+            # only do for polygon points
+            active_count = objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ]
+            del active_count.All_Coordinates[-1]
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
 

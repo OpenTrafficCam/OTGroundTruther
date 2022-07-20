@@ -13,7 +13,9 @@ def manipulate_image(np_image=None):
 
     if objectstorage.active_countings:
 
-        np_image = draw_active_count(np_image, objectstorage.active_countings[0])
+        np_image = draw_active_count(
+            np_image,
+        )
 
     if objectstorage.button_bool["linedetector_toggle"]:
 
@@ -100,32 +102,33 @@ def draw_finished_counts(np_image):
     return np_image
 
 
-def draw_active_count(np_image, active_count=None):
-    if active_count.Type != "Line":
-        # Polygon corner points coordinates
-        print("draw polyline")
-        pts = np.array(
-            active_count.All_Coordinates,
-            np.int32,
-        )
+def draw_active_count(np_image):
+    for active_count in objectstorage.active_countings:
+        print(active_count)
+        # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
+        if active_count.Type != "Line":
+            # Polygon corner points coordinates
+            pts = np.array(
+                active_count.All_Coordinates,
+                np.int32,
+            )
 
-        pts = pts.reshape((-1, 1, 2))
-        return cv2.polylines(
-            np_image,
-            [pts],
-            isClosed=False,
-            color=(200, 125, 125, 255),
-            thickness=3,
-        )
-    if active_count.Exit_Coordinate and not active_count.first_coordinate:
-        return cv2.line(
-            np_image,
-            active_count.Entry_Coordinate,
-            active_count.Exit_Coordinate,
-            (200, 125, 125, 255),
-            3,
-        )
-    print("current count not drawn!")
+            pts = pts.reshape((-1, 1, 2))
+            np_image = cv2.polylines(
+                np_image,
+                [pts],
+                isClosed=False,
+                color=(200, 125, 125, 255),
+                thickness=3,
+            )
+        elif active_count.Exit_Coordinate and not active_count.first_coordinate:
+            np_image = cv2.line(
+                np_image,
+                active_count.Entry_Coordinate,
+                active_count.Exit_Coordinate,
+                (200, 125, 125, 255),
+                3,
+            )
     return np_image
 
 

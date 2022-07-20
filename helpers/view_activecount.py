@@ -142,8 +142,9 @@ class FrameActiveCounts(tk.LabelFrame):
             print(objectstorage.button_bool["gt_polyline"])
 
     def button_count_type_line_switch(self):
-        if not objectstorage.button_bool["gt_polyline"]:
-            objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
-                "gt_line"
-            ]
-            print(objectstorage.button_bool["gt_line"])
+        print("NOTHING HAPPENS CAUSE THIS BOTTON CAUSES PROBLEMS")
+        # if not objectstorage.button_bool["gt_polyline"]:
+        #     objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
+        #         "gt_line"
+        #     ]
+        #     print(objectstorage.button_bool["gt_line"])

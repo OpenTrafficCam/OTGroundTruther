@@ -117,8 +117,6 @@ class gui(tk.Tk):
         ):
             objectstorage.active_countings_index -= 1
 
-        print(objectstorage.active_countings_index)
-
     def set_layout(
         self,
     ):
