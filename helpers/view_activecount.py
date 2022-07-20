@@ -84,14 +84,16 @@ class FrameActiveCounts(tk.LabelFrame):
             ),
         )
 
-    def update_treeview(self, event, active_count_index=None):
+    def update_treeview(self, event):
         # selected_item = self.tree_active_countings.selection()[0]
         # print(selected_item)
         # make selectable
         if objectstorage.active_countings:
-            count_ID = objectstorage.active_countings[0].ID
+            count_ID = objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].ID
 
-            count = objectstorage.active_countings[0]
+            count = objectstorage.active_countings[objectstorage.active_countings_index]
 
             children = self.tree_active_countings.get_children("")
             for child in children:
@@ -107,7 +109,16 @@ class FrameActiveCounts(tk.LabelFrame):
                             count.Exit_Coordinate,
                         ),
                     )
-            objectstorage.active_countings[0].intersection_list(self)
+            objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].intersection_list(self)
+
+            # highlights and selectes treeview item
+            print(objectstorage.active_countings_index)
+            iid = self.tree_active_countings.get_children()[
+                objectstorage.active_countings_index
+            ]
+            self.tree_active_countings.selection_set(iid)
 
     def delete_from_treeview(self, event, active_count_index=None):
         # make selectable

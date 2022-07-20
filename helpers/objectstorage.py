@@ -6,6 +6,7 @@ sliderobject = None
 
 # list with active counts
 active_countings = []
+active_countings_index = 0
 
 # ground_truth = []
 ground_truth = pd.DataFrame(
