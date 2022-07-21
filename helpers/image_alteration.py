@@ -36,6 +36,8 @@ def manipulate_image(np_image=None):
 
     np_image = draw_finished_counts(np_image)
 
+    np_image = draw_tag_around_start_coordinate(np_image)
+
     image = Image.fromarray(np_image)  # to PIL format
 
     objectstorage.videoobject.ph_image = ImageTk.PhotoImage(image)
@@ -45,12 +47,6 @@ def manipulate_image(np_image=None):
     )
 
     objectstorage.maincanvas.update()
-
-    # print(objectstorage.flow_dict)
-
-
-def create_shapeply_geometry():
-    pass
 
 
 def draw_finished_counts(np_image):
@@ -68,10 +64,6 @@ def draw_finished_counts(np_image):
     #     return np_image
     current_frame = objectstorage.videoobject.current_frame
     d = objectstorage.background_dic
-
-    print(bool(d))
-    print(d)
-    print("background_dic drawn")
 
     background_dic_subset = {
         k: v
@@ -162,4 +154,35 @@ def draw_detectors_from_dict(np_image):
                 np_image, p0=(start_x, start_y), p1=(end_x, end_y)
             )
 
+    return np_image
+
+
+def draw_tag_around_start_coordinate(np_image):
+    for active_count in objectstorage.active_countings:
+        if (
+            active_count
+            != objectstorage.active_countings[objectstorage.active_countings_index]
+        ):
+            color = (0, 0, 255, 255)
+        else:
+            color = (124, 252, 0, 255)
+
+        if active_count.Entry_Coordinate is not None:
+            np_image = cv2.circle(
+                np_image,
+                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                5,
+                color,
+            )
+            np_image = cv2.putText(
+                np_image,
+                str(active_count.ID),
+                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                color,
+                1,
+                cv2.LINE_AA,
+                False,
+            )
     return np_image

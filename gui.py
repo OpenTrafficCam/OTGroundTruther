@@ -89,7 +89,7 @@ class gui(tk.Tk):
                 1 * objectstorage.videoobject.scroll_speed
             )
 
-        else:
+        elif objectstorage.videoobject.current_frame > 0:
             objectstorage.videoobject.current_frame -= (
                 1 * objectstorage.videoobject.scroll_speed
             )
@@ -117,6 +117,8 @@ class gui(tk.Tk):
             and objectstorage.active_countings_index > 0
         ):
             objectstorage.active_countings_index -= 1
+
+        manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def set_layout(
         self,
