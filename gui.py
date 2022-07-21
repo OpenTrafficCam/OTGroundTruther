@@ -7,7 +7,12 @@ from helpers.view_activecount import FrameActiveCounts
 from helpers.view_gt import FrameGT
 from helpers.count import initialize_new_count
 from helpers.count_manipulation import assign_vehicle_class
-from helpers.datamanagement import fill_background_dic, fill_ground_truth
+from helpers.datamanagement import (
+    fill_background_dic,
+    fill_ground_truth,
+    load_flowfile,
+    save_flowfile,
+)
 from helpers.view_section import FrameSection
 import keyboard
 
@@ -38,6 +43,8 @@ class gui(tk.Tk):
         self.bind("<Up>", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Down>", self.frame_active_counts.update_treeview, add="+")
 
+        self.bind("m", self.jump_to_frame)
+
         self.bind("c", assign_vehicle_class, add="+")
         self.bind("c", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
@@ -55,6 +62,19 @@ class gui(tk.Tk):
                 self.frame_active_counts.update_treeview(event),
             ],
         )
+
+    def jump_to_frame(self, event):
+        if not objectstorage.active_countings:
+            return
+        objectstorage.videoobject.current_frame = objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ].Entry_Frame
+
+        print("test")
+
+        objectstorage.videoobject.set_frame()
+
+        manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def change_scroll_up(self, event):
         print("scrollspeed:" + str(objectstorage.videoobject.scroll_speed))
@@ -166,10 +186,27 @@ class gui(tk.Tk):
             ]
             self.frame_active_counts.tree_active_countings.selection_set(iid)
 
+    def import_flowfile(self):
+        """Calls load_flowfile-function and inserts view.sections to listboxwidget."""
+        objectstorage.flow_dict = load_flowfile()
+
+        manipulate_image(objectstorage.videoobject.np_image.copy())
+
 
 def main():
     """Main function."""
     app = gui()
-    app.resizable(False, False)
+    # app.resizable(False, False)
 
+    menubar = tk.Menu(app)
+    file = tk.Menu(
+        menubar,
+        tearoff=1,
+    )
+    file.add_command(label="Import flowfile")  # command=app.import_flowfile)
+    file.add_command(label="Save configuration")
+    file.add_separator()
+    file.add_command(label="Exit", command=app.quit)
+    menubar.add_cascade(label="File", menu=file)
+    app.config(menu=menubar)
     app.mainloop()

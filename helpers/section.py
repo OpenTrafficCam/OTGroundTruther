@@ -111,5 +111,3 @@ def dump_to_flowdictionary(detector_name):
                 ],
             ),
         }
-
-    print(objectstorage.flow_dict["Detectors"][detector_name]["Geometry_polygon"])

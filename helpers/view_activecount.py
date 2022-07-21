@@ -21,10 +21,6 @@ class FrameActiveCounts(tk.LabelFrame):
             pady=10,
         )
 
-        self.tree_active_countings.bind(
-            "<<TreeviewSelect>>",  # self.tree_detector_selection
-        )
-
         tree_files_cols = {
             "#0": "ID",
             "Class": "Class",

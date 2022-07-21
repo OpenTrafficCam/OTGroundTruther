@@ -7,7 +7,6 @@ import numpy as np
 
 
 def manipulate_image(np_image=None):
-    # TODO create lines from coordinates and frame / current frame
     if np_image is None:
         np_image = objectstorage.videoobject.np_image.copy()
 
@@ -82,6 +81,7 @@ def draw_finished_counts(np_image):
                 (200, 125, 125, 255),
                 3,
             )
+
         else:
             pts = np.array(
                 background_dic_subset[object_id]["All_Coordinates"],
@@ -95,6 +95,30 @@ def draw_finished_counts(np_image):
                 isClosed=False,
                 color=(200, 125, 125, 255),
                 thickness=3,
+            )
+
+            np_image = cv2.circle(
+                np_image,
+                (
+                    background_dic_subset[object_id]["Entry_Coordinate"][0],
+                    background_dic_subset[object_id]["Entry_Coordinate"][1],
+                ),
+                5,
+                (0, 255, 255, 255),
+            )
+            np_image = cv2.putText(
+                np_image,
+                str(background_dic_subset[object_id]["ID"]),
+                (
+                    background_dic_subset[object_id]["Entry_Coordinate"][0],
+                    background_dic_subset[object_id]["Entry_Coordinate"][1],
+                ),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 255, 255),
+                1,
+                cv2.LINE_AA,
+                False,
             )
 
     return np_image
@@ -141,18 +165,20 @@ def draw_detectors_from_dict(np_image):
     if objectstorage.flow_dict["Detectors"]:
 
         for detector in objectstorage.flow_dict["Detectors"]:
-            # if objectstorage.flow_dict["Detectors"][detector]["type"] == Line:
-            start_x = objectstorage.flow_dict["Detectors"][detector]["start_x"]
-            start_y = objectstorage.flow_dict["Detectors"][detector]["start_y"]
-            end_x = objectstorage.flow_dict["Detectors"][detector]["end_x"]
-            end_y = objectstorage.flow_dict["Detectors"][detector]["end_y"]
-            color = objectstorage.flow_dict["Detectors"][detector]["color"]
+            if objectstorage.flow_dict["Detectors"][detector]["type"] == "line":
+                start_x = objectstorage.flow_dict["Detectors"][detector]["start_x"]
+                start_y = objectstorage.flow_dict["Detectors"][detector]["start_y"]
+                end_x = objectstorage.flow_dict["Detectors"][detector]["end_x"]
+                end_y = objectstorage.flow_dict["Detectors"][detector]["end_y"]
+                color = objectstorage.flow_dict["Detectors"][detector]["color"]
 
-            np_image = cv2.line(np_image, (start_x, start_y), (end_x, end_y), color, 3)
+                np_image = cv2.line(
+                    np_image, (start_x, start_y), (end_x, end_y), color, 3
+                )
 
-            np_image = draw_ellipse_around_section(
-                np_image, p0=(start_x, start_y), p1=(end_x, end_y)
-            )
+                np_image = draw_ellipse_around_section(
+                    np_image, p0=(start_x, start_y), p1=(end_x, end_y)
+                )
 
     return np_image
 
