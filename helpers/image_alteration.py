@@ -13,7 +13,9 @@ def manipulate_image(np_image=None):
 
     if objectstorage.active_countings:
 
-        np_image = draw_active_count(np_image, objectstorage.active_countings[0])
+        np_image = draw_active_count(
+            np_image,
+        )
 
     if objectstorage.button_bool["linedetector_toggle"]:
 
@@ -34,6 +36,8 @@ def manipulate_image(np_image=None):
 
     np_image = draw_finished_counts(np_image)
 
+    np_image = draw_tag_around_start_coordinate(np_image)
+
     image = Image.fromarray(np_image)  # to PIL format
 
     objectstorage.videoobject.ph_image = ImageTk.PhotoImage(image)
@@ -43,12 +47,6 @@ def manipulate_image(np_image=None):
     )
 
     objectstorage.maincanvas.update()
-
-    # print(objectstorage.flow_dict)
-
-
-def create_shapeply_geometry():
-    pass
 
 
 def draw_finished_counts(np_image):
@@ -62,6 +60,8 @@ def draw_finished_counts(np_image):
         _type_: altered numpy array as image
     """
     # subset background dic when frames match
+    # if not objectstorage.background_dic:
+    #     return np_image
     current_frame = objectstorage.videoobject.current_frame
     d = objectstorage.background_dic
 
@@ -100,32 +100,32 @@ def draw_finished_counts(np_image):
     return np_image
 
 
-def draw_active_count(np_image, active_count=None):
-    if active_count.Type != "Line":
-        # Polygon corner points coordinates
-        print("draw polyline")
-        pts = np.array(
-            active_count.All_Coordinates,
-            np.int32,
-        )
+def draw_active_count(np_image):
+    for active_count in objectstorage.active_countings:
+        # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
+        if active_count.Type != "Line" and len(active_count.All_Coordinates) >= 2:
+            # Polygon corner points coordinates
+            pts = np.array(
+                active_count.All_Coordinates,
+                np.int32,
+            )
 
-        pts = pts.reshape((-1, 1, 2))
-        return cv2.polylines(
-            np_image,
-            [pts],
-            isClosed=False,
-            color=(200, 125, 125, 255),
-            thickness=3,
-        )
-    if active_count.Exit_Coordinate and not active_count.first_coordinate:
-        return cv2.line(
-            np_image,
-            active_count.Entry_Coordinate,
-            active_count.Exit_Coordinate,
-            (200, 125, 125, 255),
-            3,
-        )
-    print("current count not drawn!")
+            pts = pts.reshape((-1, 1, 2))
+            np_image = cv2.polylines(
+                np_image,
+                [pts],
+                isClosed=False,
+                color=(200, 125, 125, 255),
+                thickness=3,
+            )
+        elif active_count.Exit_Coordinate and not active_count.first_coordinate:
+            np_image = cv2.line(
+                np_image,
+                active_count.Entry_Coordinate,
+                active_count.Exit_Coordinate,
+                (200, 125, 125, 255),
+                3,
+            )
     return np_image
 
 
@@ -154,4 +154,35 @@ def draw_detectors_from_dict(np_image):
                 np_image, p0=(start_x, start_y), p1=(end_x, end_y)
             )
 
+    return np_image
+
+
+def draw_tag_around_start_coordinate(np_image):
+    for active_count in objectstorage.active_countings:
+        if (
+            active_count
+            != objectstorage.active_countings[objectstorage.active_countings_index]
+        ):
+            color = (0, 0, 255, 255)
+        else:
+            color = (124, 252, 0, 255)
+
+        if active_count.Entry_Coordinate is not None:
+            np_image = cv2.circle(
+                np_image,
+                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                5,
+                color,
+            )
+            np_image = cv2.putText(
+                np_image,
+                str(active_count.ID),
+                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                color,
+                1,
+                cv2.LINE_AA,
+                False,
+            )
     return np_image

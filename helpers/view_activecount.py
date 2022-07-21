@@ -30,6 +30,7 @@ class FrameActiveCounts(tk.LabelFrame):
             "Class": "Class",
             "Start": "Start",
             "End": "End",
+            "Crossed Gates": "Crossed Gates",
         }
         self.tree_active_countings["columns"] = tuple(
             {k: v for k, v in tree_files_cols.items() if k != "#0"}.keys()
@@ -50,6 +51,11 @@ class FrameActiveCounts(tk.LabelFrame):
         self.tree_active_countings.heading(
             "End", text=tree_files_cols["End"], anchor="center"
         )
+        self.tree_active_countings.column("Crossed Gates", anchor="center", width=50)
+        self.tree_active_countings.heading(
+            "Crossed Gates", text=tree_files_cols["Crossed Gates"], anchor="center"
+        )
+
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
@@ -81,41 +87,67 @@ class FrameActiveCounts(tk.LabelFrame):
                 latest_count.Vhc_class,
                 latest_count.Entry_Coordinate,
                 latest_count.Exit_Coordinate,
+                [
+                    "None"
+                    if latest_count.Crossed_gates == []
+                    else list(zip(*latest_count.Crossed_gates))[0]
+                ],
             ),
         )
 
-    def update_treeview(self, event, active_count_index=None):
+    def update_treeview(self, event):
         # selected_item = self.tree_active_countings.selection()[0]
         # print(selected_item)
         # make selectable
-        if objectstorage.active_countings:
-            count_ID = objectstorage.active_countings[0].ID
+        if not objectstorage.active_countings:
+            return
+        count_ID = objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ].ID
 
-            count = objectstorage.active_countings[0]
+        count = objectstorage.active_countings[objectstorage.active_countings_index]
 
-            children = self.tree_active_countings.get_children("")
-            for child in children:
-                values = self.tree_active_countings.item(child, "text")
+        children = self.tree_active_countings.get_children("")
+        for child in children:
+            values = self.tree_active_countings.item(child, "text")
 
-                if count_ID == values:
+            if count_ID == values:
 
-                    self.tree_active_countings.item(
-                        child,
-                        values=(
-                            count.Vhc_class,
-                            count.Entry_Coordinate,
-                            count.Exit_Coordinate,
-                        ),
-                    )
-            objectstorage.active_countings[0].intersection_list(self)
+                self.tree_active_countings.item(
+                    child,
+                    values=(
+                        count.Vhc_class,
+                        count.Entry_Coordinate,
+                        count.Exit_Coordinate,
+                        [
+                            "None"
+                            if count.Crossed_gates == []
+                            else list(zip(*count.Crossed_gates))[0]
+                        ],
+                    ),
+                )
+        objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ].intersection_list(self)
 
-    def delete_from_treeview(self, event, active_count_index=None):
+        # highlights and selectes treeview item
+        print(objectstorage.active_countings_index)
+        iid = self.tree_active_countings.get_children()[
+            objectstorage.active_countings_index
+        ]
+        self.tree_active_countings.selection_set(iid)
+
+    def delete_from_treeview(self, event):
         # make selectable
         if (
             objectstorage.active_countings
-            and objectstorage.active_countings[0].all_values_set()
+            and objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].all_values_set()
         ):
-            count_ID = objectstorage.active_countings[0].ID
+            count_ID = objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].ID
 
             children = self.tree_active_countings.get_children("")
             for child in children:
@@ -131,8 +163,9 @@ class FrameActiveCounts(tk.LabelFrame):
             print(objectstorage.button_bool["gt_polyline"])
 
     def button_count_type_line_switch(self):
-        if not objectstorage.button_bool["gt_polyline"]:
-            objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
-                "gt_line"
-            ]
-            print(objectstorage.button_bool["gt_line"])
+        print("NOTHING HAPPENS CAUSE THIS BOTTON CAUSES PROBLEMS")
+        # if not objectstorage.button_bool["gt_polyline"]:
+        #     objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
+        #         "gt_line"
+        #     ]
+        #     print(objectstorage.button_bool["gt_line"])

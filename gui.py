@@ -33,12 +33,18 @@ class gui(tk.Tk):
         self.bind(
             "n", self.frame_active_counts.insert_active_count_to_treeview, add="+"
         )
+        self.bind("<Up>", self.change_active_countings_index, add="+")
+        self.bind("<Down>", self.change_active_countings_index, add="+")
+        self.bind("<Up>", self.frame_active_counts.update_treeview, add="+")
+        self.bind("<Down>", self.frame_active_counts.update_treeview, add="+")
+
         self.bind("c", assign_vehicle_class, add="+")
         self.bind("c", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_background_dic, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
+        self.bind("<Return>", self.reset_index, add="+")
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -83,12 +89,35 @@ class gui(tk.Tk):
                 1 * objectstorage.videoobject.scroll_speed
             )
 
-        else:
+        elif objectstorage.videoobject.current_frame > 0:
             objectstorage.videoobject.current_frame -= (
                 1 * objectstorage.videoobject.scroll_speed
             )
 
         objectstorage.videoobject.set_frame()
+        manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    def change_active_countings_index(self, event):
+
+        if event.keycode in [38, 40] and len(objectstorage.active_countings) == 0:
+            print("break")
+            return
+        elif (
+            event.keycode == 38
+            and len(objectstorage.active_countings) > 1
+            and (objectstorage.active_countings_index + 1)
+            < len(objectstorage.active_countings)
+        ):
+            objectstorage.active_countings_index += 1
+
+        elif (
+            event.keycode == 40
+            and (objectstorage.active_countings_index + 1)
+            <= len(objectstorage.active_countings)
+            and objectstorage.active_countings_index > 0
+        ):
+            objectstorage.active_countings_index -= 1
+
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def set_layout(
@@ -125,6 +154,17 @@ class gui(tk.Tk):
             height=objectstorage.videoobject.height,
         )
         manipulate_image(np_image)
+
+    def reset_index(self, event):
+
+        objectstorage.active_countings_index = 0
+
+        if objectstorage.active_countings:
+
+            iid = self.frame_active_counts.tree_active_countings.get_children()[
+                objectstorage.active_countings_index
+            ]
+            self.frame_active_counts.tree_active_countings.selection_set(iid)
 
 
 def main():
