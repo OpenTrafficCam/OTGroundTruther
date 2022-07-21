@@ -11,6 +11,11 @@ def initialize_new_count(event):
     """_summary_"""
     objectstorage.active_countings.append(current_count())
 
+    if len(objectstorage.active_countings) > 1:
+        objectstorage.active_countings_index = len(objectstorage.active_countings) - 1
+    else:
+        return
+
 
 class current_count:
     """_summary_

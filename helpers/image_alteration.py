@@ -94,7 +94,7 @@ def draw_finished_counts(np_image):
                 [pts],
                 isClosed=False,
                 color=(200, 125, 125, 255),
-                thickness=3,
+                thickness=2,
             )
 
             np_image = cv2.circle(
@@ -140,7 +140,7 @@ def draw_active_count(np_image):
                 [pts],
                 isClosed=False,
                 color=(200, 125, 125, 255),
-                thickness=3,
+                thickness=2,
             )
         elif active_count.Exit_Coordinate and not active_count.first_coordinate:
             np_image = cv2.line(
@@ -148,7 +148,7 @@ def draw_active_count(np_image):
                 active_count.Entry_Coordinate,
                 active_count.Exit_Coordinate,
                 (200, 125, 125, 255),
-                3,
+                2,
             )
     return np_image
 

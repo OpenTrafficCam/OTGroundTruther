@@ -90,6 +90,7 @@ class FrameActiveCounts(tk.LabelFrame):
                 ],
             ),
         )
+        self.update_treeview(self)
 
     def update_treeview(self, event):
         # selected_item = self.tree_active_countings.selection()[0]
