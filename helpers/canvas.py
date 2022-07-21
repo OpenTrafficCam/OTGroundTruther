@@ -60,28 +60,22 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
-        if not objectstorage.active_countings:
-            return
-        active_count = objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ]
         if button_bool["linedetector_toggle"]:
             return
-        # uses mouseevents to get coordinates (left button)
-        self.coordinateX = int(self.canvasx(event.x))
-        self.coordinateY = int(self.canvasy(event.y))
-
-        if not active_countings:
-            # create instance if no active coutn exist
-            # active_countings.append(current_count())
-
-            # or
-
+        if not objectstorage.active_countings:
             messagebox.showinfo(
                 title="Info",
                 message="First create empty count with hotkey n",
             )
             return
+        active_count = objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ]
+
+        # uses mouseevents to get coordinates (left button)
+        self.coordinateX = int(self.canvasx(event.x))
+        self.coordinateY = int(self.canvasy(event.y))
+
         if button_bool["gt_line"]:
             active_count.Type = "Line"
             if not active_count.first_coordinate:
@@ -114,9 +108,9 @@ class OtcCanvas(tk.Canvas):
                 objectstorage.videoobject.current_frame
             )
             active_count.Entry_Frame = active_count.All_Coordinates_Frames[0]
+            active_count.Entry_Coordinate = active_count.All_Coordinates[0]
 
             if len(active_count.All_Coordinates) > 1:
-                active_count.Entry_Coordinate = active_count.All_Coordinates[0]
 
                 active_count.Exit_Coordinate = active_count.All_Coordinates[-1]
 

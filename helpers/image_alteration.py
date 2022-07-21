@@ -64,8 +64,14 @@ def draw_finished_counts(np_image):
         _type_: altered numpy array as image
     """
     # subset background dic when frames match
+    # if not objectstorage.background_dic:
+    #     return np_image
     current_frame = objectstorage.videoobject.current_frame
     d = objectstorage.background_dic
+
+    print(bool(d))
+    print(d)
+    print("background_dic drawn")
 
     background_dic_subset = {
         k: v
@@ -104,9 +110,8 @@ def draw_finished_counts(np_image):
 
 def draw_active_count(np_image):
     for active_count in objectstorage.active_countings:
-        print(active_count)
         # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
-        if active_count.Type != "Line":
+        if active_count.Type != "Line" and len(active_count.All_Coordinates) >= 2:
             # Polygon corner points coordinates
             pts = np.array(
                 active_count.All_Coordinates,

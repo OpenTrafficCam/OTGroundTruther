@@ -63,7 +63,9 @@ class current_count:
         for key in self.counted_vehicle_information().keys():
 
             if (
-                objectstorage.active_countings[0].counted_vehicle_information()[key]
+                objectstorage.active_countings[
+                    objectstorage.active_countings_index
+                ].counted_vehicle_information()[key]
                 is None
             ):
                 print(key + " is None")
@@ -93,7 +95,13 @@ class current_count:
             lineobject = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
         else:
-            lineobject = LineString(self.All_Coordinates[-2:])
+            try:
+                lineobject = LineString(self.All_Coordinates[-2:])
+            except ValueError:
+                print(
+                    "Cant calculate intersection, LineStrings must have at least 2 coordinate tuples"
+                )
+                return
 
         dataframe["Intersects"] = s.intersects(lineobject)
 
@@ -102,6 +110,7 @@ class current_count:
         )
         for gate in list_of_crossed_gates:
             # if gate is already in tuple of crossed gates than break
+            # unless vehicle crosses gate in a different frame
             if not (
                 bool(
                     [

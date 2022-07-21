@@ -66,6 +66,7 @@ def dump_to_flowdictionary(detector_name):
         flow_dict (dictionary): Dictionary with sections and movements.
         detector_name (String): Entrywidgetinput, functions as key of dictionary.
     """
+    buffer_around_line = 50
 
     if objectstorage.button_bool["linedetector_toggle"] is True:
 
@@ -92,21 +93,23 @@ def dump_to_flowdictionary(detector_name):
             "Geometry_polygon": Polygon(
                 [
                     (
-                        objectstorage.maincanvas.points[0][0] + 25,
-                        objectstorage.maincanvas.points[0][1] + 25,
+                        objectstorage.maincanvas.points[0][0] + buffer_around_line,
+                        objectstorage.maincanvas.points[0][1] + buffer_around_line,
                     ),
                     (
-                        objectstorage.maincanvas.points[0][0] - 25,
-                        objectstorage.maincanvas.points[0][1] - 25,
+                        objectstorage.maincanvas.points[0][0] - buffer_around_line,
+                        objectstorage.maincanvas.points[0][1] - buffer_around_line,
                     ),
                     (
-                        objectstorage.maincanvas.points[1][0] + 25,
-                        objectstorage.maincanvas.points[1][1] + 25,
+                        objectstorage.maincanvas.points[1][0] + buffer_around_line,
+                        objectstorage.maincanvas.points[1][1] + buffer_around_line,
                     ),
                     (
-                        objectstorage.maincanvas.points[1][0] - 25,
-                        objectstorage.maincanvas.points[1][1] - 25,
+                        objectstorage.maincanvas.points[1][0] - buffer_around_line,
+                        objectstorage.maincanvas.points[1][1] - buffer_around_line,
                     ),
                 ],
             ),
         }
+
+    print(objectstorage.flow_dict["Detectors"][detector_name]["Geometry_polygon"])

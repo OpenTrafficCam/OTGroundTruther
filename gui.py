@@ -44,6 +44,7 @@ class gui(tk.Tk):
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_background_dic, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
+        self.bind("<Return>", self.reset_index, add="+")
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -151,6 +152,17 @@ class gui(tk.Tk):
             height=objectstorage.videoobject.height,
         )
         manipulate_image(np_image)
+
+    def reset_index(self, event):
+
+        objectstorage.active_countings_index = 0
+
+        if objectstorage.active_countings:
+
+            iid = self.frame_active_counts.tree_active_countings.get_children()[
+                objectstorage.active_countings_index
+            ]
+            self.frame_active_counts.tree_active_countings.selection_set(iid)
 
 
 def main():

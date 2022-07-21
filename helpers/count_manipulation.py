@@ -1,7 +1,7 @@
 import helpers.objectstorage as objectstorage
 
 
-def assign_vehicle_class(event, active_count_index=None):
+def assign_vehicle_class(event):
 
     active_count = objectstorage.active_countings[objectstorage.active_countings_index]
 
@@ -10,4 +10,6 @@ def assign_vehicle_class(event, active_count_index=None):
 
         # change 0 to active_count_index
         active_count.Vhc_class = "Car"
-        # print(vars(active_countings[0]))
+        print(
+            vars(objectstorage.active_countings[objectstorage.active_countings_index])
+        )
