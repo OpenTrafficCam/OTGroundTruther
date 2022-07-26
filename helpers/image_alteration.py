@@ -142,6 +142,20 @@ def draw_active_count(np_image):
                 color=(200, 125, 125, 255),
                 thickness=2,
             )
+            np_image = cv2.arrowedLine(
+                np_image,
+                (
+                    active_count.All_Coordinates[-2][0],
+                    active_count.All_Coordinates[-2][1],
+                ),
+                (
+                    active_count.All_Coordinates[-1][0],
+                    active_count.All_Coordinates[-1][1],
+                ),
+                color=(200, 125, 125, 255),
+                thickness=2,
+                tipLength=0.1,
+            )
         elif active_count.Exit_Coordinate and not active_count.first_coordinate:
             np_image = cv2.line(
                 np_image,
