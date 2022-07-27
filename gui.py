@@ -15,6 +15,7 @@ from helpers.datamanagement import (
 )
 from helpers.view_section import FrameSection
 import keyboard
+from helpers.section import shapely_object
 
 
 class gui(tk.Tk):
@@ -69,8 +70,6 @@ class gui(tk.Tk):
         objectstorage.videoobject.current_frame = objectstorage.active_countings[
             objectstorage.active_countings_index
         ].Entry_Frame
-
-        print("test")
 
         objectstorage.videoobject.set_frame()
 
@@ -190,6 +189,24 @@ class gui(tk.Tk):
         """Calls load_flowfile-function and inserts view.sections to listboxwidget."""
         objectstorage.flow_dict = load_flowfile()
 
+        for detector in objectstorage.flow_dict["Detectors"]:
+            x1 = objectstorage.flow_dict["Detectors"][detector]["start_x"]
+            y1 = objectstorage.flow_dict["Detectors"][detector]["start_y"]
+            x2 = objectstorage.flow_dict["Detectors"][detector]["end_x"]
+            y2 = objectstorage.flow_dict["Detectors"][detector]["end_y"]
+
+            # when imported calculates the shapelyobjects fron detector coords
+            objectstorage.flow_dict["Detectors"][detector][
+                "Geometry_line"
+            ] = shapely_object(x1, y1, x2, y2, linestring=True)
+            objectstorage.flow_dict["Detectors"][detector][
+                "Geometry_polygon"
+            ] = shapely_object(x1, y1, x2, y2)
+
+            self.frame_sections.tree_sections.insert(
+                parent="", index="end", text=detector
+            )
+
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
@@ -203,8 +220,8 @@ def main():
         menubar,
         tearoff=1,
     )
-    file.add_command(label="Import flowfile")  # command=app.import_flowfile)
-    file.add_command(label="Save configuration")
+    file.add_command(label="Import flowfile", command=app.import_flowfile)
+    file.add_command(label="Save configuration", command=save_flowfile)
     file.add_separator()
     file.add_command(label="Exit", command=app.quit)
     menubar.add_cascade(label="File", menu=file)

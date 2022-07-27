@@ -1,3 +1,4 @@
+from matplotlib.patches import Polygon
 import helpers.objectstorage as objectstorage
 from tkinter import filedialog, messagebox
 import json
@@ -69,10 +70,13 @@ def save_flowfile():
     if objectstorage.flow_dict["Detectors"]:
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
-        # with open(file.name, "w") as a_file:
-        #     flow_dict["Detectors"] = detectors
-        #     flow_dict["Movements"] = movement_dict
 
+        # delete shapeley objects because they cant be safed
+        for detector in objectstorage.flow_dict["Detectors"]:
+            del objectstorage.flow_dict["Detectors"][detector]["Geometry_line"]
+            del objectstorage.flow_dict["Detectors"][detector]["Geometry_polygon"]
+
+        print(objectstorage.flow_dict["Detectors"])
         json.dump(objectstorage.flow_dict, file, indent=4)
     else:
         info_message("Warning", "Create Sections and Movements first!")

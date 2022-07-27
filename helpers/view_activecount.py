@@ -123,12 +123,12 @@ class FrameActiveCounts(tk.LabelFrame):
                         ],
                     ),
                 )
+        # could be anywhere in code
         objectstorage.active_countings[
             objectstorage.active_countings_index
-        ].intersection_list(self)
+        ].get_intersect_and_frame(self)
 
         # highlights and selectes treeview item
-        print(objectstorage.active_countings_index)
         iid = self.tree_active_countings.get_children()[
             objectstorage.active_countings_index
         ]

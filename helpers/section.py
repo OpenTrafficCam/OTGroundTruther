@@ -66,48 +66,36 @@ def dump_to_flowdictionary(detector_name):
         flow_dict (dictionary): Dictionary with sections and movements.
         detector_name (String): Entrywidgetinput, functions as key of dictionary.
     """
-    buffer_around_line = 50
-
     if objectstorage.button_bool["linedetector_toggle"] is True:
+
+        x1 = objectstorage.maincanvas.points[0][0]
+        y1 = objectstorage.maincanvas.points[0][1]
+        x2 = objectstorage.maincanvas.points[1][0]
+        y2 = objectstorage.maincanvas.points[1][1]
 
         objectstorage.flow_dict["Detectors"][detector_name] = {
             "type": "line",
-            "start_x": objectstorage.maincanvas.points[0][0],
-            "start_y": objectstorage.maincanvas.points[0][1],
-            "end_x": objectstorage.maincanvas.points[1][0],
-            "end_y": objectstorage.maincanvas.points[1][1],
+            "start_x": x1,
+            "start_y": y1,
+            "end_x": x2,
+            "end_y": y2,
             "color": (200, 125, 125, 255),
-            "Geometry_line": LineString(
-                [
-                    (
-                        objectstorage.maincanvas.points[0][0],
-                        objectstorage.maincanvas.points[0][1],
-                    ),
-                    (
-                        objectstorage.maincanvas.points[1][0],
-                        objectstorage.maincanvas.points[1][1],
-                    ),
-                ]
-            ),
+            "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
             # USE REAL CALCULATION FOR POLYGON
-            "Geometry_polygon": Polygon(
-                [
-                    (
-                        objectstorage.maincanvas.points[0][0] + buffer_around_line,
-                        objectstorage.maincanvas.points[0][1] + buffer_around_line,
-                    ),
-                    (
-                        objectstorage.maincanvas.points[0][0] - buffer_around_line,
-                        objectstorage.maincanvas.points[0][1] - buffer_around_line,
-                    ),
-                    (
-                        objectstorage.maincanvas.points[1][0] + buffer_around_line,
-                        objectstorage.maincanvas.points[1][1] + buffer_around_line,
-                    ),
-                    (
-                        objectstorage.maincanvas.points[1][0] - buffer_around_line,
-                        objectstorage.maincanvas.points[1][1] - buffer_around_line,
-                    ),
-                ],
-            ),
+            "Geometry_polygon": shapely_object(x1, y1, x2, y2),
         }
+        print(objectstorage.flow_dict["Detectors"][detector_name])
+
+
+def shapely_object(x1, y1, x2, y2, linestring=False, buffer=50):
+    if linestring:
+        return LineString([(x1, y1), (x2, y2)])
+    else:
+        return Polygon(
+            [
+                (x1 + buffer, y1 + buffer),
+                (x1 - buffer, y1 - buffer),
+                (x2 + buffer, y2 + buffer),
+                (x2 - buffer, y2 - buffer),
+            ]
+        )

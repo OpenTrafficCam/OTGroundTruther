@@ -108,7 +108,6 @@ class FrameSection(tk.LabelFrame):
         """
 
         selectionlist_sections = []
-        print(selectionlist_sections)
 
         for item in self.tree_sections.selection():
             detector_name = self.tree_sections.item(item, "text")
