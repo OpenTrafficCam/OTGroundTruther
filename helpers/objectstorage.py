@@ -23,6 +23,8 @@ ground_truth = pd.DataFrame(
 )
 background_dic = {}
 
+use_test_version = "Test"
+
 flow_dict = {"Detectors": {}, "Movements": {}}
 
 button_bool = {

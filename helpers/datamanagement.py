@@ -76,7 +76,6 @@ def save_flowfile():
             del objectstorage.flow_dict["Detectors"][detector]["Geometry_line"]
             del objectstorage.flow_dict["Detectors"][detector]["Geometry_polygon"]
 
-        print(objectstorage.flow_dict["Detectors"])
         json.dump(objectstorage.flow_dict, file, indent=4)
     else:
         info_message("Warning", "Create Sections and Movements first!")

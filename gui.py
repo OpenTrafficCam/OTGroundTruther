@@ -16,6 +16,7 @@ from helpers.datamanagement import (
 from helpers.view_section import FrameSection
 import keyboard
 from helpers.section import shapely_object
+from time import sleep
 
 
 class gui(tk.Tk):
@@ -28,8 +29,8 @@ class gui(tk.Tk):
         keyboard.add_hotkey(
             "enter", lambda: self.frame_sections.create_section_entry_window()
         )
-
-        self.add_canvas_frame()
+        if objectstorage.use_test_version is not None:
+            self.add_canvas_frame()
         self.bind("<MouseWheel>", self.mouse_scroll)
         self.bind("<Right>", self.arrow_key_scroll)
         self.bind("<Left>", self.arrow_key_scroll)
@@ -115,6 +116,7 @@ class gui(tk.Tk):
 
         objectstorage.videoobject.set_frame()
         manipulate_image(objectstorage.videoobject.np_image.copy())
+        objectstorage.maincanvas.update()
 
     def change_active_countings_index(self, event):
 
@@ -163,7 +165,8 @@ class gui(tk.Tk):
         self.frame_sections = FrameSection(master=frame_controlpanel)
         self.frame_sections.pack(side="top", fill="x")
 
-        objectstorage.videoobject = load_video_and_frame()
+        if objectstorage.use_test_version is not None:
+            objectstorage.videoobject = load_video_and_frame()
 
     def add_canvas_frame(self):
         np_image = objectstorage.videoobject.get_frame(np_image=True)
@@ -210,8 +213,19 @@ class gui(tk.Tk):
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
-def main():
+def main():  # sourcery skip: remove-redundant-if
     """Main function."""
+    use_test_version = input("Type y to use testversion? \n")
+    print(type(use_test_version))
+    print(use_test_version)
+    if str(use_test_version) != "y":
+        use_test_version = None
+    # else:
+    #     use_test_version = None
+
+    objectstorage.use_test_version = use_test_version
+    print(objectstorage.use_test_version)
+
     app = gui()
     # app.resizable(False, False)
 
@@ -222,6 +236,10 @@ def main():
     )
     file.add_command(label="Import flowfile", command=app.import_flowfile)
     file.add_command(label="Save configuration", command=save_flowfile)
+    file.add_command(
+        label="Import videofile",
+        command=lambda: [load_video_and_frame(), app.add_canvas_frame()],
+    )
     file.add_separator()
     file.add_command(label="Exit", command=app.quit)
     menubar.add_cascade(label="File", menu=file)
