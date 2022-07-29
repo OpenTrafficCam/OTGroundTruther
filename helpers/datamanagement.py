@@ -3,6 +3,8 @@ import helpers.objectstorage as objectstorage
 from tkinter import filedialog, messagebox
 import json
 import pandas as pd
+import ast
+from helpers.count import current_count
 
 
 def fill_ground_truth(event, active_count_index=None):
@@ -39,14 +41,43 @@ def fill_background_dic(event):
             objectstorage.active_countings_index
         ].counted_vehicle_information()
 
+    print(objectstorage.background_dic)
+
+
+def set_new_vehicle_counter():
+
+    current_count.counter = objectstorage.background_dic[
+        list(objectstorage.background_dic.keys())[-1]
+    ]["ID"]
+
+    print(
+        "Nach import der GT startet die Zählung mit der ID: "
+        + str(current_count.counter + 1)
+    )
+
 
 def dataframe_to_dict():
 
-    objectstorage.background_dic = (
-        objectstorage.ground_truth.set_index("ID").transpose().to_dict()
-    )
+    objectstorage.background_dic = objectstorage.ground_truth.transpose().to_dict()
 
-    # objectstorage.background_dic = calc_dataframe.groupby("ID").to_dict()
+    for object_id in objectstorage.background_dic.keys():
+
+        objectstorage.background_dic[object_id]["Entry_Coordinate"] = ast.literal_eval(
+            objectstorage.background_dic[object_id]["Entry_Coordinate"]
+        )
+        objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
+            objectstorage.background_dic[object_id]["All_Coordinates"]
+        )
+        objectstorage.background_dic[object_id][
+            "All_Coordinates_Frames"
+        ] = ast.literal_eval(
+            objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
+        )
+        objectstorage.background_dic[object_id]["Crossed_gates"] = (
+            objectstorage.background_dic[object_id]["Crossed_gates"]
+            .strip("][")
+            .split(", ")
+        )
 
 
 def create_ground_truth_dataframe():
@@ -63,6 +94,7 @@ def load_gt_from_csv():
         file_path,
     )
     dataframe_to_dict()
+    set_new_vehicle_counter()
 
 
 def safe_gt_to_csv():
