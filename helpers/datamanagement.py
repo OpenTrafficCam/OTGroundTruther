@@ -2,6 +2,7 @@ from matplotlib.patches import Polygon
 import helpers.objectstorage as objectstorage
 from tkinter import filedialog, messagebox
 import json
+import pandas as pd
 
 
 def fill_ground_truth(event, active_count_index=None):
@@ -37,6 +38,51 @@ def fill_background_dic(event):
         ] = objectstorage.active_countings[
             objectstorage.active_countings_index
         ].counted_vehicle_information()
+
+
+def dataframe_to_dict():
+
+    objectstorage.background_dic = (
+        objectstorage.ground_truth.set_index("ID").transpose().to_dict()
+    )
+
+    # objectstorage.background_dic = calc_dataframe.groupby("ID").to_dict()
+
+
+def create_ground_truth_dataframe():
+    pass
+
+
+def load_gt_from_csv():
+
+    file_path = filedialog.askopenfilename()
+
+    # safe path for quick safe later
+    objectstorage.quicksafe_filepath = file_path
+    objectstorage.ground_truth = pd.read_csv(
+        file_path,
+    )
+    dataframe_to_dict()
+
+
+def safe_gt_to_csv():
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv", filetypes=[("CSV", "*.csv")]
+    )
+
+    # safe path for quick safe later
+    objectstorage.quicksafe_filepath = file_path
+    # index=False ==> prevent creating extra index col
+    objectstorage.ground_truth.to_csv(file_path, index=False)
+
+
+def quick_safe_to_csv(event):
+    if objectstorage.quicksafe_filepath:
+        objectstorage.ground_truth.to_csv(objectstorage.quicksafe_filepath)
+        info_message("Info", "qicksafed")
+
+    else:
+        info_message("Warning", "Safe groundtruth first!")
 
 
 def load_flowfile():
@@ -83,4 +129,4 @@ def save_flowfile():
 
 def info_message(title, text):
 
-    messagebox.showinfo(title=title, message=text)
+    return messagebox.showinfo(title=title, message=text)

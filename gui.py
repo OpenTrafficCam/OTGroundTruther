@@ -12,6 +12,9 @@ from helpers.datamanagement import (
     fill_ground_truth,
     load_flowfile,
     save_flowfile,
+    safe_gt_to_csv,
+    quick_safe_to_csv,
+    load_gt_from_csv,
 )
 from helpers.view_section import FrameSection
 import keyboard
@@ -54,6 +57,7 @@ class gui(tk.Tk):
         self.bind("<Return>", fill_background_dic, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.reset_index, add="+")
+        self.bind("<F5>", quick_safe_to_csv)
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -116,7 +120,6 @@ class gui(tk.Tk):
 
         objectstorage.videoobject.set_frame()
         manipulate_image(objectstorage.videoobject.np_image.copy())
-        objectstorage.maincanvas.update()
 
     def change_active_countings_index(self, event):
 
@@ -216,15 +219,13 @@ class gui(tk.Tk):
 def main():  # sourcery skip: remove-redundant-if
     """Main function."""
     use_test_version = input("Type y to use testversion? \n")
-    print(type(use_test_version))
-    print(use_test_version)
+
     if str(use_test_version) != "y":
         use_test_version = None
     # else:
     #     use_test_version = None
 
     objectstorage.use_test_version = use_test_version
-    print(objectstorage.use_test_version)
 
     app = gui()
     # app.resizable(False, False)
@@ -239,6 +240,12 @@ def main():  # sourcery skip: remove-redundant-if
     file.add_command(
         label="Import videofile",
         command=lambda: [load_video_and_frame(), app.add_canvas_frame()],
+    )
+    file.add_separator()
+    file.add_command(label="Save groundtruth", command=safe_gt_to_csv)
+    file.add_command(
+        label="Load groundtruth",
+        command=lambda: [load_gt_from_csv(), app.frame_gt.fill_treeview()],
     )
     file.add_separator()
     file.add_command(label="Exit", command=app.quit)

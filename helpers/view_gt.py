@@ -69,6 +69,16 @@ class FrameGT(tk.LabelFrame):
             # if count is finished ==> active count object gets deleted
             # maybe need index later
 
+    def fill_treeview(self):
+        for index, row in objectstorage.ground_truth.iterrows():
+            self.tree_gt.insert(
+                "",
+                index,
+                text=row["ID"],
+                values=objectstorage.ground_truth.iloc[index:, 1:],
+            )
+        print(objectstorage.ground_truth)
+
     def delete_from_gt_treeview(self):
 
         itemlist = list(self.tree_gt.selection())

@@ -4,6 +4,7 @@ maincanvas = None
 videoobject = None
 sliderobject = None
 
+
 # list with active counts
 active_countings = []
 active_countings_index = 0
@@ -24,6 +25,7 @@ ground_truth = pd.DataFrame(
 background_dic = {}
 
 use_test_version = "Test"
+quicksafe_filepath = None
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 
