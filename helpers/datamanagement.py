@@ -93,6 +93,11 @@ def load_gt_from_csv():
     objectstorage.ground_truth = pd.read_csv(
         file_path,
     )
+
+    objectstorage.ground_truth.reset_index(drop=False, inplace=True)
+
+    objectstorage.ground_truth["index"] = objectstorage.ground_truth["index"] + 1
+    objectstorage.ground_truth.set_index("index", inplace=True)
     dataframe_to_dict()
     set_new_vehicle_counter()
 

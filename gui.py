@@ -91,13 +91,16 @@ class gui(tk.Tk):
             objectstorage.videoobject.scroll_speed -= 1
 
     def mouse_scroll(self, event):
-
+        print(objectstorage.videoobject.current_frame)
         if event.delta > 1:
             objectstorage.videoobject.current_frame += (
                 1 * objectstorage.videoobject.scroll_speed
             )
 
-        else:
+        elif (
+            objectstorage.videoobject.current_frame
+            - 1 * objectstorage.videoobject.scroll_speed
+        ) >= 0:
             objectstorage.videoobject.current_frame -= (
                 1 * objectstorage.videoobject.scroll_speed
             )

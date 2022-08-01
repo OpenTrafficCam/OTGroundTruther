@@ -31,9 +31,7 @@ class FrameGT(tk.LabelFrame):
         )
         self.button_line.grid(row=0, column=0, padx=(10, 10))
 
-        self.tree_gt.bind(
-            "<<TreeviewSelect>>",  # self.tree_detector_selection
-        )
+        self.tree_gt.bind("<Button-1>", self.click_tree_jump_to_frame)
 
         tree_files_cols = {
             "#0": "ID",
@@ -68,6 +66,25 @@ class FrameGT(tk.LabelFrame):
             )
             # if count is finished ==> active count object gets deleted
             # maybe need index later
+
+    def click_tree_jump_to_frame(self, event):
+        curItem = self.tree_gt.focus()
+        selected_object_id = self.tree_gt.item(curItem)["text"]
+
+        for object, object_id in objectstorage.background_dic.items():
+
+            if object == selected_object_id:
+                print(object, object_id)
+                print(objectstorage.background_dic)
+                selected_frame = objectstorage.background_dic[selected_object_id][
+                    "Entry_Frame"
+                ]
+
+                objectstorage.videoobject.current_frame = selected_frame
+
+                objectstorage.videoobject.set_frame()
+
+                manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def fill_treeview(self):
         for index, row in objectstorage.ground_truth.iterrows():
