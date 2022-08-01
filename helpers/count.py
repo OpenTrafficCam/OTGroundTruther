@@ -11,6 +11,11 @@ def initialize_new_count(event):
     """_summary_"""
     objectstorage.active_countings.append(current_count())
 
+    if len(objectstorage.active_countings) > 1:
+        objectstorage.active_countings_index = len(objectstorage.active_countings) - 1
+    else:
+        return
+
 
 class current_count:
     """_summary_
@@ -72,7 +77,7 @@ class current_count:
                 return False
         return True
 
-    def intersection_list(self, event):
+    def get_intersect_and_frame(self, event):
         """Calculates if trajectorie of vehicle crosses any section. Returns crossed Gate and Frame when crossed as list of tuples.
             Problem cant detect if vehicle crosses gate a second time
         Args:

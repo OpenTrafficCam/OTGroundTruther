@@ -1,9 +1,11 @@
 import tkinter.ttk as ttk
 import tkinter as tk
+from tkinter import messagebox
 from helpers.image_alteration import manipulate_image
 import helpers.objectstorage as objectstorage
 import keyboard
 from helpers.section import button_line_switch, dump_to_flowdictionary
+from helpers.datamanagement import info_message
 
 
 class FrameSection(tk.LabelFrame):
@@ -19,10 +21,11 @@ class FrameSection(tk.LabelFrame):
             padx=10,
             pady=10,
         )
-
+        # TODO #11 cant prevent arrows from browsing through section treeview
         self.tree_sections.bind(
-            "<<TreeviewSelect>>",  # self.tree_detector_selection
+            "<<TreeviewSelect>>",
         )
+        # self.tree_detector_selection
 
         tree_files_cols = {
             "#0": "Section",
@@ -43,7 +46,16 @@ class FrameSection(tk.LabelFrame):
             text="Add Line",
             command=lambda: button_line_switch(),
         )
-        self.button_line.grid(row=0, column=0, padx=(10, 0))
+        self.button_line.grid(row=0, column=0, padx=(10, 10))
+
+        # Add delete-Section
+        self.button_line = tk.Button(
+            master=self.frame_control_section,
+            width=12,
+            text="Delete Line",
+            command=lambda: self.delete_section(),
+        )
+        self.button_line.grid(row=0, column=1, padx=(10, 10))
 
     def add_section(self, entrywidget):
         """Saves created section to flowfile.
@@ -63,12 +75,64 @@ class FrameSection(tk.LabelFrame):
 
         else:
 
-            # TODO: #67 Prevent duplicate section names
             dump_to_flowdictionary(detector_name)
 
             self.tree_sections.insert(parent="", index="end", text=detector_name)
 
             self.on_close(),
+
+    def delete_section(self):
+
+        itemlist = list(self.tree_sections.selection())
+
+        if not itemlist:
+            info_message("Warning", "Please select detector you wish to delete!")
+
+            return
+
+        for sectionitem in itemlist:
+
+            detector_name = self.tree_sections.item(sectionitem, "text")
+
+            self.tree_sections.delete(sectionitem)
+
+            del objectstorage.flow_dict["Detectors"][detector_name]
+
+            manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    def tree_section_selection(self, event):
+        """Re draws detectors, where the selected detectors has different color
+
+        Args:
+            event (tkinter.event): Section selection from  listbox.
+        """
+
+        selectionlist_sections = []
+
+        for item in self.tree_sections.selection():
+            detector_name = self.tree_sections.item(item, "text")
+            selectionlist_sections.append(detector_name)
+
+        for dict_key in objectstorage.flow_dict["Detectors"].keys():
+
+            if dict_key in selectionlist_sections:
+
+                objectstorage.flow_dict["Detectors"][dict_key]["color"] = (
+                    200,
+                    0,
+                    0,
+                    255,
+                )
+
+            else:
+                objectstorage.flow_dict["Detectors"][dict_key]["color"] = (
+                    200,
+                    125,
+                    125,
+                    255,
+                )
+
+        manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def create_section_entry_window(self):
         """Creates toplevel window to name view.sections."""

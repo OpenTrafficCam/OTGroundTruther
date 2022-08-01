@@ -21,10 +21,6 @@ class FrameActiveCounts(tk.LabelFrame):
             pady=10,
         )
 
-        self.tree_active_countings.bind(
-            "<<TreeviewSelect>>",  # self.tree_detector_selection
-        )
-
         tree_files_cols = {
             "#0": "ID",
             "Class": "Class",
@@ -94,6 +90,7 @@ class FrameActiveCounts(tk.LabelFrame):
                 ],
             ),
         )
+        self.update_treeview(self)
 
     def update_treeview(self, event):
         # selected_item = self.tree_active_countings.selection()[0]
@@ -126,12 +123,12 @@ class FrameActiveCounts(tk.LabelFrame):
                         ],
                     ),
                 )
+        # could be anywhere in code
         objectstorage.active_countings[
             objectstorage.active_countings_index
-        ].intersection_list(self)
+        ].get_intersect_and_frame(self)
 
         # highlights and selectes treeview item
-        print(objectstorage.active_countings_index)
         iid = self.tree_active_countings.get_children()[
             objectstorage.active_countings_index
         ]

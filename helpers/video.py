@@ -1,10 +1,12 @@
 import sys
 import time
 from threading import Thread
+from tkinter import filedialog
 
 
 import cv2
 from PIL import Image, ImageTk
+import helpers.objectstorage as objectstorage
 
 if sys.version_info >= (3, 0):
     from queue import Queue
@@ -16,10 +18,17 @@ def load_video_and_frame():
     first frame is canvas image
     includes mouse motion and button press events
     """
+    if objectstorage.use_test_version is None:
+        video_source = filedialog.askopenfile(
+            filetypes=[("Videofiles", "*.mkv"), ("Videofiles", "*.mp4")]
+        )
+        objectstorage.videoobject = Video(video_source.name)
+
+        return
+
     # opens dialog to load video file
     video_source = "C:/Users/Goerner/Desktop/code/OpenTrafficCam/OTAnalytics/tests/data/input/radeberg_FR20_2020-02-20_12-00-00.mp4"
     filepath = video_source
-
     return Video(filepath)
 
 

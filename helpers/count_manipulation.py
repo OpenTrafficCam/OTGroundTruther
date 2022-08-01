@@ -10,6 +10,3 @@ def assign_vehicle_class(event):
 
         # change 0 to active_count_index
         active_count.Vhc_class = "Car"
-        print(
-            vars(objectstorage.active_countings[objectstorage.active_countings_index])
-        )
