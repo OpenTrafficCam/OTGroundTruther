@@ -19,7 +19,6 @@ from helpers.datamanagement import (
 from helpers.view_section import FrameSection
 import keyboard
 from helpers.section import shapely_object
-from time import sleep
 
 
 class gui(tk.Tk):
@@ -50,7 +49,11 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
+        self.bind("b", assign_vehicle_class, add="+")
+        self.bind("t", assign_vehicle_class, add="+")
         self.bind("c", assign_vehicle_class, add="+")
+        self.bind("b", self.frame_active_counts.update_treeview, add="+")
+        self.bind("t", self.frame_active_counts.update_treeview, add="+")
         self.bind("c", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")

@@ -41,8 +41,6 @@ def fill_background_dic(event):
             objectstorage.active_countings_index
         ].counted_vehicle_information()
 
-    print(objectstorage.background_dic)
-
 
 def set_new_vehicle_counter():
 
