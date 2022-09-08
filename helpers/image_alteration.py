@@ -72,54 +72,54 @@ def draw_finished_counts(np_image):
 
     for object_id in background_dic_subset:
 
-        if background_dic_subset[object_id]["GT_Type"] == "Line":
+        # if background_dic_subset[object_id]["GT_Type"] == "Line":
 
-            np_image = cv2.line(
-                np_image,
-                background_dic_subset[object_id]["Entry_Coordinate"],
-                background_dic_subset[object_id]["Exit_Coordinate"],
-                (200, 125, 125, 255),
-                3,
-            )
+        np_image = cv2.line(
+            np_image,
+            background_dic_subset[object_id]["Entry_Coordinate"],
+            background_dic_subset[object_id]["Exit_Coordinate"],
+            (200, 125, 125, 255),
+            3,
+        )
 
-        else:
-            pts = np.array(
-                background_dic_subset[object_id]["All_Coordinates"],
-                np.int32,
-            )
+        # else:
+        #     pts = np.array(
+        #         background_dic_subset[object_id]["All_Coordinates"],
+        #         np.int32,
+        #     )
 
-            pts = pts.reshape((-1, 1, 2))
-            np_image = cv2.polylines(
-                np_image,
-                [pts],
-                isClosed=False,
-                color=(200, 125, 125, 255),
-                thickness=2,
-            )
+        #     pts = pts.reshape((-1, 1, 2))
+        #     np_image = cv2.polylines(
+        #         np_image,
+        #         [pts],
+        #         isClosed=False,
+        #         color=(200, 125, 125, 255),
+        #         thickness=2,
+        #     )
 
-            np_image = cv2.circle(
-                np_image,
-                (
-                    background_dic_subset[object_id]["Entry_Coordinate"][0],
-                    background_dic_subset[object_id]["Entry_Coordinate"][1],
-                ),
-                5,
-                (0, 255, 255, 255),
-            )
-            np_image = cv2.putText(
-                np_image,
-                str(background_dic_subset[object_id]["ID"]),
-                (
-                    background_dic_subset[object_id]["Entry_Coordinate"][0],
-                    background_dic_subset[object_id]["Entry_Coordinate"][1],
-                ),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 255, 255),
-                1,
-                cv2.LINE_AA,
-                False,
-            )
+        np_image = cv2.circle(
+            np_image,
+            (
+                background_dic_subset[object_id]["Entry_Coordinate"][0],
+                background_dic_subset[object_id]["Entry_Coordinate"][1],
+            ),
+            5,
+            (0, 255, 255, 255),
+        )
+        np_image = cv2.putText(
+            np_image,
+            str(background_dic_subset[object_id]["ID"]),
+            (
+                background_dic_subset[object_id]["Entry_Coordinate"][0],
+                background_dic_subset[object_id]["Entry_Coordinate"][1],
+            ),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 255, 255),
+            1,
+            cv2.LINE_AA,
+            False,
+        )
 
     return np_image
 
@@ -156,7 +156,12 @@ def draw_active_count(np_image):
         #         thickness=2,
         #         tipLength=0.1,
         #     )
-        if active_count.Exit_Coordinate and not active_count.First_Coordinate:
+        if (
+            # active_count.Exit_Coordinate
+            # and not active_count.First_Coordinate_set
+            active_count.valid_line
+            and not active_count.First_Coordinate_set
+        ):
             np_image = cv2.line(
                 np_image,
                 active_count.Entry_Coordinate,

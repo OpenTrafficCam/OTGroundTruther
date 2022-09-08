@@ -7,7 +7,7 @@ import ast
 from helpers.count import current_count
 
 
-def fill_ground_truth(event, active_count_index=None):
+def fill_ground_truth(event):
     if (
         objectstorage.active_countings
         and objectstorage.active_countings[
@@ -63,14 +63,14 @@ def dataframe_to_dict():
         objectstorage.background_dic[object_id]["Entry_Coordinate"] = ast.literal_eval(
             objectstorage.background_dic[object_id]["Entry_Coordinate"]
         )
-        objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
-            objectstorage.background_dic[object_id]["All_Coordinates"]
-        )
-        objectstorage.background_dic[object_id][
-            "All_Coordinates_Frames"
-        ] = ast.literal_eval(
-            objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
-        )
+        # objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
+        #     objectstorage.background_dic[object_id]["All_Coordinates"]
+        # )
+        # objectstorage.background_dic[object_id][
+        #     "All_Coordinates_Frames"
+        # ] = ast.literal_eval(
+        #     objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
+        # )
         objectstorage.background_dic[object_id]["Crossed_gates"] = (
             objectstorage.background_dic[object_id]["Crossed_gates"]
             .strip("][")

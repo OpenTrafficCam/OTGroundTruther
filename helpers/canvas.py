@@ -76,32 +76,39 @@ class OtcCanvas(tk.Canvas):
         self.coordinateX = int(self.canvasx(event.x))
         self.coordinateY = int(self.canvasy(event.y))
 
+        # when there are nor entry coordinates than set entry coordinates
         if button_bool["gt_active"]:
-            # active_count.Type = "Line"
-            if not active_count.First_Coordinate:
+            if not active_count.First_Coordinate_set:
 
                 active_count.Entry_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
-                active_countings[
-                    objectstorage.active_countings_index
-                ].Entry_Frame = objectstorage.videoobject.current_frame
-                active_count.First_Coordinate = True
-
+                active_count.Entry_Frame = objectstorage.videoobject.current_frame
+                active_count.First_Coordinate_set = True
+            # if count has already entry coordinates recieve exit coordinates
             else:
                 active_count.Exit_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
                 active_count.Exit_Frame = objectstorage.videoobject.current_frame
-                active_count.First_Coordinate = False
+                active_count.First_Coordinate_set = False
+
+                # check of intersection with gate/section
+                active_count.get_intersect_and_frame(self)
+
+                # if no intersection than proceed as entry coordinates
+                if not active_count.valid_line:
+                    self.Exit_Frame = None
+                    self.Exit_Coordinate = None
+                    active_count.Entry_Coordinate = (
+                        self.coordinateX,
+                        self.coordinateY,
+                    )
+                    active_count.First_Coordinate_set = True
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
-
-            objectstorage.active_countings[
-                objectstorage.active_countings_index
-            ].get_intersect_and_frame(self)
 
     def delete_points(self):
         """delete list of polygon points after scrolling, sliding, playing, rewinding"""

@@ -43,7 +43,8 @@ class current_count:
         self.Crossed_gates = []
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
-        self.First_Coordinate = False
+        self.First_Coordinate_set = False
+        self.valid_line = False
 
     def counted_vehicle_information(self):
 
@@ -70,9 +71,28 @@ class current_count:
                     objectstorage.active_countings_index
                 ].counted_vehicle_information()[key]
                 is None
+                or self.First_Coordinate_set is True
+                or self.valid_line is False
             ):
                 print(key + " is None")
+                print(f"Besetzen der ersten Coordinate: {self.First_Coordinate_set}")
                 return False
+
+        return True
+
+    def __line_validation(self, list_of_crossed_gates):
+        """Return true if line has crossed at least two sections.
+        (make line valid)
+
+        Args:
+            list_of_crossed_gates (_type_): List of crossed gates
+
+        Returns:
+            _type_: _description_
+        """
+        if len(list_of_crossed_gates) < 2:
+            return False
+        print("Line is valid")
         return True
 
     def get_intersect_and_frame(self, event):
@@ -101,7 +121,7 @@ class current_count:
 
         count_linestring = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
-        dataframe["Intersects"] = section_geoobjects.intersects(count_linestring)
+        dataframe["Intersects"] = section_geoseries.intersects(count_linestring)
 
         list_of_crossed_gates = list(
             dataframe["Detector"][dataframe["Intersects"] == True]
@@ -122,6 +142,8 @@ class current_count:
                 self.Crossed_gates.append(
                     (gate, objectstorage.videoobject.current_frame)
                 )
+        # validate line
+        self.valid_line = self.__line_validation(list_of_crossed_gates)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
