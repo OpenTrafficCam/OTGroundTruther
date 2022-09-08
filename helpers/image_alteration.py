@@ -127,36 +127,36 @@ def draw_finished_counts(np_image):
 def draw_active_count(np_image):
     for active_count in objectstorage.active_countings:
         # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
-        if active_count.Type != "Line" and len(active_count.All_Coordinates) >= 2:
-            # Polygon corner points coordinates
-            pts = np.array(
-                active_count.All_Coordinates,
-                np.int32,
-            )
+        # if len(active_count.All_Coordinates) >= 2:
+        #     # Polygon corner points coordinates
+        #     pts = np.array(
+        #         active_count.All_Coordinates,
+        #         np.int32,
+        #     )
 
-            pts = pts.reshape((-1, 1, 2))
-            np_image = cv2.polylines(
-                np_image,
-                [pts],
-                isClosed=False,
-                color=(200, 125, 125, 255),
-                thickness=2,
-            )
-            np_image = cv2.arrowedLine(
-                np_image,
-                (
-                    active_count.All_Coordinates[-2][0],
-                    active_count.All_Coordinates[-2][1],
-                ),
-                (
-                    active_count.All_Coordinates[-1][0],
-                    active_count.All_Coordinates[-1][1],
-                ),
-                color=(200, 125, 125, 255),
-                thickness=2,
-                tipLength=0.1,
-            )
-        elif active_count.Exit_Coordinate and not active_count.first_coordinate:
+        #     pts = pts.reshape((-1, 1, 2))
+        #     np_image = cv2.polylines(
+        #         np_image,
+        #         [pts],
+        #         isClosed=False,
+        #         color=(200, 125, 125, 255),
+        #         thickness=2,
+        #     )
+        #     np_image = cv2.arrowedLine(
+        #         np_image,
+        #         (
+        #             active_count.All_Coordinates[-2][0],
+        #             active_count.All_Coordinates[-2][1],
+        #         ),
+        #         (
+        #             active_count.All_Coordinates[-1][0],
+        #             active_count.All_Coordinates[-1][1],
+        #         ),
+        #         color=(200, 125, 125, 255),
+        #         thickness=2,
+        #         tipLength=0.1,
+        #     )
+        if active_count.Exit_Coordinate and not active_count.First_Coordinate:
             np_image = cv2.line(
                 np_image,
                 active_count.Entry_Coordinate,

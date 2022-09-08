@@ -76,18 +76,18 @@ class OtcCanvas(tk.Canvas):
         self.coordinateX = int(self.canvasx(event.x))
         self.coordinateY = int(self.canvasy(event.y))
 
-        if button_bool["gt_line"]:
-            active_count.Type = "Line"
-            if not active_count.first_coordinate:
+        if button_bool["gt_active"]:
+            # active_count.Type = "Line"
+            if not active_count.First_Coordinate:
 
                 active_count.Entry_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
                 active_countings[
-                    0
+                    objectstorage.active_countings_index
                 ].Entry_Frame = objectstorage.videoobject.current_frame
-                active_count.first_coordinate = True
+                active_count.First_Coordinate = True
 
             else:
                 active_count.Exit_Coordinate = (
@@ -95,28 +95,13 @@ class OtcCanvas(tk.Canvas):
                     self.coordinateY,
                 )
                 active_count.Exit_Frame = objectstorage.videoobject.current_frame
-                active_count.first_coordinate = False
-            active_count.line_drawn = not active_count.first_coordinate
-
-            #            active_countings[0].intersection_list()
-            manipulate_image(objectstorage.videoobject.np_image.copy())
-
-        if button_bool["gt_polyline"]:
-            active_count.Type = "Polyline"
-            active_count.All_Coordinates.append([self.coordinateX, self.coordinateY])
-            active_count.All_Coordinates_Frames.append(
-                objectstorage.videoobject.current_frame
-            )
-            active_count.Entry_Frame = active_count.All_Coordinates_Frames[0]
-            active_count.Entry_Coordinate = active_count.All_Coordinates[0]
-
-            if len(active_count.All_Coordinates) > 1:
-
-                active_count.Exit_Coordinate = active_count.All_Coordinates[-1]
-
-                active_count.Exit_Frame = active_count.All_Coordinates_Frames[-1]
+                active_count.First_Coordinate = False
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
+
+            objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].get_intersect_and_frame(self)
 
     def delete_points(self):
         """delete list of polygon points after scrolling, sliding, playing, rewinding"""

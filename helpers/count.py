@@ -40,11 +40,10 @@ class current_count:
         self.Exit_Coordinate = None
         self.All_Coordinates = []
         self.All_Coordinates_Frames = []
-        self.Type = None
         self.Crossed_gates = []
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
-        self.first_coordinate = False
+        self.First_Coordinate = False
 
     def counted_vehicle_information(self):
 
@@ -57,9 +56,8 @@ class current_count:
             "Exit_Gate": self.Exit_Gate,
             "Exit_Frame": self.Exit_Frame,
             "Exit_Coordinate": self.Exit_Coordinate,
-            "All_Coordinates": self.All_Coordinates,
-            "All_Coordinates_Frames": self.All_Coordinates_Frames,
-            "GT_Type": self.Type,
+            # "All_Coordinates": self.All_Coordinates,
+            # "All_Coordinates_Frames": self.All_Coordinates_Frames,
             "Crossed_gates": self.Crossed_gates,
         }
 
@@ -79,36 +77,31 @@ class current_count:
 
     def get_intersect_and_frame(self, event):
         """Calculates if trajectorie of vehicle crosses any section. Returns crossed Gate and Frame when crossed as list of tuples.
-            Problem cant detect if vehicle crosses gate a second time
         Args:
             event (_type_): gets triggered when when class or coordinate is changed.
         """
         # only do when at least two points exist or at least the second point.
-        if objectstorage.button_bool["linedetector_toggle"] or not self.Exit_Coordinate:
+        if (
+            objectstorage.button_bool["linedetector_toggle"]
+            or not self.Exit_Coordinate
+            or not objectstorage.flow_dict["Detectors"]
+        ):
             return
-        geoobjects = [
-            objectstorage.flow_dict["Detectors"][k]["Geometry_polygon"]
+        section_geoobjects = [
+            objectstorage.flow_dict["Detectors"][k]["Geometry_line"]
             for k, v in objectstorage.flow_dict["Detectors"].items()
         ]
 
-        s = geopandas.GeoSeries(geoobjects)
+        section_geoseries = geopandas.GeoSeries(section_geoobjects)
 
-        dataframe = pd.DataFrame(data=s)
+        dataframe = pd.DataFrame(data=section_geoseries)
         dataframe["Detector"] = objectstorage.flow_dict["Detectors"]
 
-        if self.Type == "Line":
-            lineobject = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
+        print(dataframe)
 
-        else:
-            try:
-                lineobject = LineString(self.All_Coordinates[-2:])
-            except ValueError:
-                print(
-                    "Cant calculate intersection, LineStrings must have at least 2 coordinate tuples"
-                )
-                return
+        count_linestring = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
-        dataframe["Intersects"] = s.intersects(lineobject)
+        dataframe["Intersects"] = section_geoobjects.intersects(count_linestring)
 
         list_of_crossed_gates = list(
             dataframe["Detector"][dataframe["Intersects"] == True]

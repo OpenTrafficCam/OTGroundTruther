@@ -44,8 +44,7 @@ button_bool = {
     "display_live_track": False,
     "slider": False,
     "dataframe_cleaned": False,
-    "gt_line": False,
-    "gt_polyline": True,
+    "gt_active": True,
 }
 
 

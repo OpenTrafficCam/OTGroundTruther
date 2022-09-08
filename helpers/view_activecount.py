@@ -55,18 +55,18 @@ class FrameActiveCounts(tk.LabelFrame):
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
-        self.button_count_polyline = tk.Button(
-            master=self.frame_control_active_counts,
-            width=12,
-            text="Polyline",
-            command=lambda: self.button_count_type_poly_switch(),
-        )
-        self.button_count_polyline.grid(row=0, column=0, padx=(10, 0))
+        # self.button_count_polyline = tk.Button(
+        #     master=self.frame_control_active_counts,
+        #     width=12,
+        #     text="Polyline",
+        #     command=lambda: self.button_count_type_poly_switch(),
+        # )
+        # self.button_count_polyline.grid(row=0, column=0, padx=(10, 0))
 
         self.button_count_line = tk.Button(
             master=self.frame_control_active_counts,
             width=12,
-            text="Line",
+            text="Activate Counting",
             command=lambda: self.button_count_type_line_switch(),
         )
         self.button_count_line.grid(row=0, column=1, padx=(10, 0))
@@ -124,9 +124,9 @@ class FrameActiveCounts(tk.LabelFrame):
                     ),
                 )
         # could be anywhere in code
-        objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].get_intersect_and_frame(self)
+        # objectstorage.active_countings[
+        #     objectstorage.active_countings_index
+        # ].get_intersect_and_frame(self)
 
         # highlights and selectes treeview item
         iid = self.tree_active_countings.get_children()[
@@ -152,17 +152,16 @@ class FrameActiveCounts(tk.LabelFrame):
                 if count_ID == values:
                     self.tree_active_countings.delete(child)
 
-    def button_count_type_poly_switch(self):
-        if not objectstorage.button_bool["gt_line"]:
-            objectstorage.button_bool["gt_polyline"] = not objectstorage.button_bool[
-                "gt_polyline"
-            ]
-            print(objectstorage.button_bool["gt_polyline"])
+    # def button_count_type_poly_switch(self):
+    #     if not objectstorage.button_bool["gt_line"]:
+    #         objectstorage.button_bool["gt_polyline"] = not objectstorage.button_bool[
+    #             "gt_polyline"
+    #         ]
+    #         print(objectstorage.button_bool["gt_polyline"])
 
     def button_count_type_line_switch(self):
-        print("NOTHING HAPPENS CAUSE THIS BOTTON CAUSES PROBLEMS")
-        # if not objectstorage.button_bool["gt_polyline"]:
-        #     objectstorage.button_bool["gt_line"] = not objectstorage.button_bool[
-        #         "gt_line"
-        #     ]
-        #     print(objectstorage.button_bool["gt_line"])
+
+        objectstorage.button_bool["gt_active"] = not objectstorage.button_bool[
+            "gt_active"
+        ]
+        print(objectstorage.button_bool["gt_active"])
