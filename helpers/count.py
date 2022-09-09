@@ -38,9 +38,11 @@ class current_count:
         self.Exit_Gate = "Placeholder"
         self.Exit_Frame = None
         self.Exit_Coordinate = None
-        self.All_Coordinates = []
-        self.All_Coordinates_Frames = []
+        # self.All_Coordinates = []
+        # self.All_Coordinates_Frames = []
         self.Crossed_gates = []
+        self.Crossed_gates_Coordinates = []
+
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
         self.First_Coordinate_set = False
@@ -117,16 +119,21 @@ class current_count:
         dataframe = pd.DataFrame(data=section_geoseries)
         dataframe["Detector"] = objectstorage.flow_dict["Detectors"]
 
-        print(dataframe)
-
         count_linestring = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
         dataframe["Intersects"] = section_geoseries.intersects(count_linestring)
+        dataframe["Intersects_Coord"] = section_geoseries.intersection(count_linestring)
 
         list_of_crossed_gates = list(
             dataframe["Detector"][dataframe["Intersects"] == True]
         )
-        for gate in list_of_crossed_gates:
+        list_of_crossed_gates_coordinates = list(
+            dataframe["Intersects_Coord"][dataframe["Intersects"] == True]
+        )
+
+        for gate, intersection in zip(
+            list_of_crossed_gates, list_of_crossed_gates_coordinates
+        ):
             # if gate is already in tuple of crossed gates than break
             # unless vehicle crosses gate in a different frame
             if not (
@@ -142,6 +149,8 @@ class current_count:
                 self.Crossed_gates.append(
                     (gate, objectstorage.videoobject.current_frame)
                 )
+                self.Crossed_gates_Coordinates.append((intersection.x, intersection.y))
+
         # validate line
         self.valid_line = self.__line_validation(list_of_crossed_gates)
 

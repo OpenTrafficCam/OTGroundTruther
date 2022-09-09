@@ -29,17 +29,13 @@ def fill_ground_truth(event):
 
 
 def fill_background_dic(event):
-    if (
-        objectstorage.active_countings
-        and objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].all_values_set()
-    ):
+
+    active_count = objectstorage.active_countings[objectstorage.active_countings_index]
+
+    if objectstorage.active_countings and active_count.all_values_set():
         objectstorage.background_dic[
-            objectstorage.active_countings[objectstorage.active_countings_index].ID
-        ] = objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].counted_vehicle_information()
+            active_count.ID
+        ] = active_count.counted_vehicle_information()
 
 
 def set_new_vehicle_counter():
