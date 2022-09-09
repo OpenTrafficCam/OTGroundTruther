@@ -127,7 +127,7 @@ def draw_finished_counts(np_image):
 def draw_active_count(np_image):
     for active_count in objectstorage.active_countings:
         # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
-        # if len(active_count.All_Coordinates) >= 2:
+        # if len(active_count.All_Coordinates) >= 2:n
         #     # Polygon corner points coordinates
         #     pts = np.array(
         #         active_count.All_Coordinates,

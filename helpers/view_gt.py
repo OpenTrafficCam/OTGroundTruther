@@ -74,8 +74,6 @@ class FrameGT(tk.LabelFrame):
         for object, object_id in objectstorage.background_dic.items():
 
             if object == selected_object_id:
-                print(object, object_id)
-                print(objectstorage.background_dic)
                 selected_frame = objectstorage.background_dic[selected_object_id][
                     "Entry_Frame"
                 ]
@@ -92,9 +90,8 @@ class FrameGT(tk.LabelFrame):
                 "",
                 index,
                 text=row["ID"],
-                values=objectstorage.ground_truth.iloc[index:, 1:],
+                values=row["Class"],
             )
-        print(objectstorage.ground_truth)
 
     def delete_from_gt_treeview(self):
 

@@ -5,9 +5,11 @@ import json
 import pandas as pd
 import ast
 from helpers.count import current_count
+from tkinter.messagebox import askyesno
 
 
 def fill_ground_truth(event):
+
     if (
         objectstorage.active_countings
         and objectstorage.active_countings[
@@ -30,12 +32,17 @@ def fill_ground_truth(event):
 
 def fill_background_dic(event):
 
-    active_count = objectstorage.active_countings[objectstorage.active_countings_index]
-
-    if objectstorage.active_countings and active_count.all_values_set():
+    if (
+        objectstorage.active_countings
+        and objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ].all_values_set()
+    ):
         objectstorage.background_dic[
-            active_count.ID
-        ] = active_count.counted_vehicle_information()
+            objectstorage.active_countings[objectstorage.active_countings_index].ID
+        ] = objectstorage.active_countings[
+            objectstorage.active_countings_index
+        ].counted_vehicle_information()
 
 
 def set_new_vehicle_counter():
@@ -50,6 +57,10 @@ def set_new_vehicle_counter():
     )
 
 
+def delete_progress():
+    pass
+
+
 def dataframe_to_dict():
 
     objectstorage.background_dic = objectstorage.ground_truth.transpose().to_dict()
@@ -59,14 +70,10 @@ def dataframe_to_dict():
         objectstorage.background_dic[object_id]["Entry_Coordinate"] = ast.literal_eval(
             objectstorage.background_dic[object_id]["Entry_Coordinate"]
         )
-        # objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
-        #     objectstorage.background_dic[object_id]["All_Coordinates"]
-        # )
-        # objectstorage.background_dic[object_id][
-        #     "All_Coordinates_Frames"
-        # ] = ast.literal_eval(
-        #     objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
-        # )
+        objectstorage.background_dic[object_id]["Exit_Coordinate"] = ast.literal_eval(
+            objectstorage.background_dic[object_id]["Exit_Coordinate"]
+        )
+
         objectstorage.background_dic[object_id]["Crossed_gates"] = (
             objectstorage.background_dic[object_id]["Crossed_gates"]
             .strip("][")
@@ -74,11 +81,28 @@ def dataframe_to_dict():
         )
 
 
-def create_ground_truth_dataframe():
-    pass
+def load_gt_from_csv(treeview_gt, treeview_active_counts):
 
+    if not objectstorage.ground_truth.empty:
+        answer = askyesno(
+            "Existing Ground Truth detected",
+            "Work in process will be lost if you proceed!",
+        )
+        if answer:
 
-def load_gt_from_csv():
+            # set first coordinate to FALSE
+            # reset background_dic
+            objectstorage.background_dic = {}
+            # clear treeview-gt
+            # clear treeview-active_countings
+            print("tada")
+            treeview_gt.delete(*treeview_gt.get_children())
+            treeview_active_counts.delete(*treeview_active_counts.get_children())
+
+            # reset active_countings
+            objectstorage.active_countings = []
+            # reset active_countings_index
+            objectstorage.active_countings_index = 0
 
     file_path = filedialog.askopenfilename()
 

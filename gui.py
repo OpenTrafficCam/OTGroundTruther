@@ -190,6 +190,9 @@ class gui(tk.Tk):
 
         objectstorage.active_countings_index = 0
 
+        print(objectstorage.active_countings)
+        print(objectstorage.active_countings_index)
+
         if objectstorage.active_countings:
 
             iid = self.frame_active_counts.tree_active_countings.get_children()[
@@ -251,7 +254,12 @@ def main():  # sourcery skip: remove-redundant-if
     file.add_command(label="Save groundtruth", command=safe_gt_to_csv)
     file.add_command(
         label="Load groundtruth",
-        command=lambda: [load_gt_from_csv(), app.frame_gt.fill_treeview()],
+        command=lambda: [
+            load_gt_from_csv(
+                app.frame_gt.tree_gt, app.frame_active_counts.tree_active_countings
+            ),
+            app.frame_gt.fill_treeview(),
+        ],
     )
     file.add_separator()
     file.add_command(label="Exit", command=app.quit)
