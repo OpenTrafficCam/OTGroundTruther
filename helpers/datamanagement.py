@@ -7,7 +7,7 @@ import ast
 from helpers.count import current_count
 
 
-def fill_ground_truth(event, active_count_index=None):
+def fill_ground_truth(event):
     if (
         objectstorage.active_countings
         and objectstorage.active_countings[
@@ -29,17 +29,13 @@ def fill_ground_truth(event, active_count_index=None):
 
 
 def fill_background_dic(event):
-    if (
-        objectstorage.active_countings
-        and objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].all_values_set()
-    ):
+
+    active_count = objectstorage.active_countings[objectstorage.active_countings_index]
+
+    if objectstorage.active_countings and active_count.all_values_set():
         objectstorage.background_dic[
-            objectstorage.active_countings[objectstorage.active_countings_index].ID
-        ] = objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].counted_vehicle_information()
+            active_count.ID
+        ] = active_count.counted_vehicle_information()
 
 
 def set_new_vehicle_counter():
@@ -63,14 +59,14 @@ def dataframe_to_dict():
         objectstorage.background_dic[object_id]["Entry_Coordinate"] = ast.literal_eval(
             objectstorage.background_dic[object_id]["Entry_Coordinate"]
         )
-        objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
-            objectstorage.background_dic[object_id]["All_Coordinates"]
-        )
-        objectstorage.background_dic[object_id][
-            "All_Coordinates_Frames"
-        ] = ast.literal_eval(
-            objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
-        )
+        # objectstorage.background_dic[object_id]["All_Coordinates"] = ast.literal_eval(
+        #     objectstorage.background_dic[object_id]["All_Coordinates"]
+        # )
+        # objectstorage.background_dic[object_id][
+        #     "All_Coordinates_Frames"
+        # ] = ast.literal_eval(
+        #     objectstorage.background_dic[object_id]["All_Coordinates_Frames"]
+        # )
         objectstorage.background_dic[object_id]["Crossed_gates"] = (
             objectstorage.background_dic[object_id]["Crossed_gates"]
             .strip("][")

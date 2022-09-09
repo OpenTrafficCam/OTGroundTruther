@@ -82,9 +82,8 @@ def dump_to_flowdictionary(detector_name):
             "color": (200, 125, 125, 255),
             "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
             # USE REAL CALCULATION FOR POLYGON
-            "Geometry_polygon": shapely_object(x1, y1, x2, y2),
+            # "Geometry_polygon": shapely_object(x1, y1, x2, y2),
         }
-        print(objectstorage.flow_dict["Detectors"][detector_name])
 
 
 def shapely_object(x1, y1, x2, y2, linestring=False, buffer=50):

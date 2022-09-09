@@ -38,13 +38,15 @@ class current_count:
         self.Exit_Gate = "Placeholder"
         self.Exit_Frame = None
         self.Exit_Coordinate = None
-        self.All_Coordinates = []
-        self.All_Coordinates_Frames = []
-        self.Type = None
+        # self.All_Coordinates = []
+        # self.All_Coordinates_Frames = []
         self.Crossed_gates = []
+        self.Crossed_gates_Coordinates = []
+
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
-        self.first_coordinate = False
+        self.First_Coordinate_set = False
+        self.valid_line = False
 
     def counted_vehicle_information(self):
 
@@ -57,9 +59,8 @@ class current_count:
             "Exit_Gate": self.Exit_Gate,
             "Exit_Frame": self.Exit_Frame,
             "Exit_Coordinate": self.Exit_Coordinate,
-            "All_Coordinates": self.All_Coordinates,
-            "All_Coordinates_Frames": self.All_Coordinates_Frames,
-            "GT_Type": self.Type,
+            # "All_Coordinates": self.All_Coordinates,
+            # "All_Coordinates_Frames": self.All_Coordinates_Frames,
             "Crossed_gates": self.Crossed_gates,
         }
 
@@ -72,48 +73,67 @@ class current_count:
                     objectstorage.active_countings_index
                 ].counted_vehicle_information()[key]
                 is None
+                or self.First_Coordinate_set is True
+                or self.valid_line is False
             ):
                 print(key + " is None")
+                print(f"Besetzen der ersten Coordinate: {self.First_Coordinate_set}")
                 return False
+
+        return True
+
+    def __line_validation(self, list_of_crossed_gates):
+        """Return true if line has crossed at least two sections.
+        (make line valid)
+
+        Args:
+            list_of_crossed_gates (_type_): List of crossed gates
+
+        Returns:
+            _type_: _description_
+        """
+        if len(list_of_crossed_gates) < 2:
+            return False
+        print("Line is valid")
         return True
 
     def get_intersect_and_frame(self, event):
         """Calculates if trajectorie of vehicle crosses any section. Returns crossed Gate and Frame when crossed as list of tuples.
-            Problem cant detect if vehicle crosses gate a second time
         Args:
             event (_type_): gets triggered when when class or coordinate is changed.
         """
         # only do when at least two points exist or at least the second point.
-        if objectstorage.button_bool["linedetector_toggle"] or not self.Exit_Coordinate:
+        if (
+            objectstorage.button_bool["linedetector_toggle"]
+            or not self.Exit_Coordinate
+            or not objectstorage.flow_dict["Detectors"]
+        ):
             return
-        geoobjects = [
-            objectstorage.flow_dict["Detectors"][k]["Geometry_polygon"]
+        section_geoobjects = [
+            objectstorage.flow_dict["Detectors"][k]["Geometry_line"]
             for k, v in objectstorage.flow_dict["Detectors"].items()
         ]
 
-        s = geopandas.GeoSeries(geoobjects)
+        section_geoseries = geopandas.GeoSeries(section_geoobjects)
 
-        dataframe = pd.DataFrame(data=s)
+        dataframe = pd.DataFrame(data=section_geoseries)
         dataframe["Detector"] = objectstorage.flow_dict["Detectors"]
 
-        if self.Type == "Line":
-            lineobject = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
+        count_linestring = LineString([self.Entry_Coordinate, self.Exit_Coordinate])
 
-        else:
-            try:
-                lineobject = LineString(self.All_Coordinates[-2:])
-            except ValueError:
-                print(
-                    "Cant calculate intersection, LineStrings must have at least 2 coordinate tuples"
-                )
-                return
-
-        dataframe["Intersects"] = s.intersects(lineobject)
+        dataframe["Intersects"] = section_geoseries.intersects(count_linestring)
+        dataframe["Intersects_Coord"] = section_geoseries.intersection(count_linestring)
 
         list_of_crossed_gates = list(
             dataframe["Detector"][dataframe["Intersects"] == True]
         )
-        for gate in list_of_crossed_gates:
+        list_of_crossed_gates_coordinates = list(
+            dataframe["Intersects_Coord"][dataframe["Intersects"] == True]
+        )
+
+        for gate, intersection in zip(
+            list_of_crossed_gates, list_of_crossed_gates_coordinates
+        ):
             # if gate is already in tuple of crossed gates than break
             # unless vehicle crosses gate in a different frame
             if not (
@@ -129,6 +149,10 @@ class current_count:
                 self.Crossed_gates.append(
                     (gate, objectstorage.videoobject.current_frame)
                 )
+                self.Crossed_gates_Coordinates.append((intersection.x, intersection.y))
+
+        # validate line
+        self.valid_line = self.__line_validation(list_of_crossed_gates)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
