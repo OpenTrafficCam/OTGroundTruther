@@ -151,7 +151,7 @@ class current_count:
 
                 self.Entry_Gate = list_of_crossed_gates[0]
                 self.Exit_Gate = list_of_crossed_gates[1]
-                self.Crossed_Frames.append(objectstorage.videoobject.current_frame)
+            self.Crossed_Frames = [self.Entry_Frame, self.Exit_Frame]
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")

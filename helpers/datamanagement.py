@@ -73,6 +73,7 @@ def create_eventbased_dataframe():
                     index
                 ],
             }
+            print(objectstorage.background_dic[track_id]["Crossed_Frames"])
 
     return eventbased_dictionary
 
@@ -224,9 +225,15 @@ def safe_gt_to_csv():
 def quick_safe_to_csv(event):
     if objectstorage.quicksafe_filepath_gt:
         objectstorage.ground_truth.to_csv(objectstorage.quicksafe_filepath_gt)
+    # if eventdataframe was safed one, then use the path for quick saving
     if objectstorage.quicksafe_filepath_event:
+        # create eventbased dictionary
+        eventbased_dictionary = create_eventbased_dataframe()
+        # create dataframe from eventbased Dictionary
+        eventased_dictionary_to_dataframe(eventbased_dictionary)
+
         objectstorage.eventbased_dataframe.to_csv(
-            objectstorage.quicksafe_filepath_event
+            objectstorage.quicksafe_filepath_event, index=True
         )
         info_message("Info", "qicksafed")
 
