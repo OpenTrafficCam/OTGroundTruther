@@ -22,10 +22,12 @@ ground_truth = pd.DataFrame(
         "Exit_Coordinate",
     ]
 )
+eventbased_dataframe = None
 background_dic = {}
 
 use_test_version = "Test"
-quicksafe_filepath = None
+quicksafe_filepath_gt = None
+quicksafe_filepath_event = None
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 

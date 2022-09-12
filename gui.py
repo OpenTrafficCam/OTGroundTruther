@@ -94,7 +94,6 @@ class gui(tk.Tk):
             objectstorage.videoobject.scroll_speed -= 1
 
     def mouse_scroll(self, event):
-        print(objectstorage.videoobject.current_frame)
         if event.delta > 1:
             objectstorage.videoobject.current_frame += (
                 1 * objectstorage.videoobject.scroll_speed
@@ -130,7 +129,6 @@ class gui(tk.Tk):
     def change_active_countings_index(self, event):
 
         if event.keycode in [38, 40] and len(objectstorage.active_countings) == 0:
-            print("break")
             return
         elif (
             event.keycode == 38
@@ -189,9 +187,6 @@ class gui(tk.Tk):
     def reset_index(self, event):
 
         objectstorage.active_countings_index = 0
-
-        print(objectstorage.active_countings)
-        print(objectstorage.active_countings_index)
 
         if objectstorage.active_countings:
 

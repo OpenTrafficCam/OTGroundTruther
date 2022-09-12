@@ -167,7 +167,7 @@ def draw_active_count(np_image):
                 active_count.Entry_Coordinate,
                 active_count.Exit_Coordinate,
                 (200, 125, 125, 255),
-                2,
+                3,
             )
     return np_image
 

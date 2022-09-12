@@ -40,8 +40,9 @@ class current_count:
         self.Exit_Coordinate = None
         # self.All_Coordinates = []
         # self.All_Coordinates_Frames = []
-        self.Crossed_gates = []
-        self.Crossed_gates_Coordinates = []
+        self.Crossed_Gates = []
+        self.Crossed_Frames = []
+        self.Crossed_Gates_Coordinates = []
 
         print("Anzahl der Instanzen: " + str(current_count.counter))
 
@@ -61,7 +62,9 @@ class current_count:
             "Exit_Coordinate": self.Exit_Coordinate,
             # "All_Coordinates": self.All_Coordinates,
             # "All_Coordinates_Frames": self.All_Coordinates_Frames,
-            "Crossed_gates": self.Crossed_gates,
+            "Crossed_Gates": self.Crossed_Gates,
+            "Crossed_Frames": self.Crossed_Frames,
+            "Crossed_Coordinates": self.Crossed_Gates_Coordinates,
         }
 
     def all_values_set(self):
@@ -127,29 +130,23 @@ class current_count:
         list_of_crossed_gates = list(
             dataframe["Detector"][dataframe["Intersects"] == True]
         )
-        list_of_crossed_gates_coordinates = list(
+        list_of_Crossed_Gates_Coordinates = list(
             dataframe["Intersects_Coord"][dataframe["Intersects"] == True]
         )
+        # initialize empty lists
+        self.Crossed_Gates = []
+        self.Crossed_Frames = []
+        self.Crossed_Gates_Coordinates = []
 
         for gate, intersection in zip(
-            list_of_crossed_gates, list_of_crossed_gates_coordinates
+            list_of_crossed_gates, list_of_Crossed_Gates_Coordinates
         ):
-            # if gate is already in tuple of crossed gates than break
-            # unless vehicle crosses gate in a different frame
-            if not (
-                bool(
-                    [
-                        item
-                        for item in self.Crossed_gates
-                        if item[0] == gate
-                        and item[1] == objectstorage.videoobject.current_frame
-                    ]
-                )
-            ):
-                self.Crossed_gates.append(
-                    (gate, objectstorage.videoobject.current_frame)
-                )
-                self.Crossed_gates_Coordinates.append((intersection.x, intersection.y))
+
+            self.Crossed_Gates.append(gate)
+
+            self.Crossed_Frames.append(objectstorage.videoobject.current_frame)
+
+            self.Crossed_Gates_Coordinates.append((intersection.x, intersection.y))
 
         # validate line
         self.valid_line = self.__line_validation(list_of_crossed_gates)

@@ -83,18 +83,12 @@ class FrameActiveCounts(tk.LabelFrame):
                 latest_count.Vhc_class,
                 latest_count.Entry_Coordinate,
                 latest_count.Exit_Coordinate,
-                [
-                    "None"
-                    if latest_count.Crossed_gates == []
-                    else list(zip(*latest_count.Crossed_gates))[0]
-                ],
+                "None",
             ),
         )
         self.update_treeview(self)
 
     def update_treeview(self, event):
-        # selected_item = self.tree_active_countings.selection()[0]
-        # print(selected_item)
         # make selectable
         if not objectstorage.active_countings:
             return
@@ -116,11 +110,7 @@ class FrameActiveCounts(tk.LabelFrame):
                         count.Vhc_class,
                         count.Entry_Coordinate,
                         count.Exit_Coordinate,
-                        [
-                            "None"
-                            if count.Crossed_gates == []
-                            else list(zip(*count.Crossed_gates))[0]
-                        ],
+                        ["None" if count.Crossed_Gates == [] else count.Crossed_Gates],
                     ),
                 )
         # could be anywhere in code
