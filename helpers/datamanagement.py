@@ -59,7 +59,6 @@ def create_eventbased_dataframe():
             index = objectstorage.background_dic[track_id]["Crossed_Gates"].index(
                 crossed_gate
             )
-            print(index)
             eventbased_dictionary[i] = {
                 "SectionID": crossed_gate,
                 "TrackID": track_id,

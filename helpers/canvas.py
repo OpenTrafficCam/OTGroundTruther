@@ -79,11 +79,11 @@ class OtcCanvas(tk.Canvas):
         # when there are nor entry coordinates than set entry coordinates
         if button_bool["gt_active"]:
             if not active_count.First_Coordinate_set:
-
                 active_count.Entry_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
+                active_count.Crossed_Frames = [objectstorage.videoobject.current_frame]
                 active_count.Entry_Frame = objectstorage.videoobject.current_frame
                 active_count.First_Coordinate_set = True
             # if count has already entry coordinates recieve exit coordinates
@@ -100,8 +100,8 @@ class OtcCanvas(tk.Canvas):
 
                 # if no intersection than proceed as entry coordinates
                 if not active_count.valid_line:
-                    self.Exit_Frame = None
-                    self.Exit_Coordinate = None
+                    active_count.Exit_Frame = None
+                    active_count.Exit_Coordinate = None
                     active_count.Entry_Coordinate = (
                         self.coordinateX,
                         self.coordinateY,

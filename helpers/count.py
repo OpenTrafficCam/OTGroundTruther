@@ -60,8 +60,6 @@ class current_count:
             "Exit_Gate": self.Exit_Gate,
             "Exit_Frame": self.Exit_Frame,
             "Exit_Coordinate": self.Exit_Coordinate,
-            # "All_Coordinates": self.All_Coordinates,
-            # "All_Coordinates_Frames": self.All_Coordinates_Frames,
             "Crossed_Gates": self.Crossed_Gates,
             "Crossed_Frames": self.Crossed_Frames,
             "Crossed_Coordinates": self.Crossed_Gates_Coordinates,
@@ -138,18 +136,22 @@ class current_count:
         self.Crossed_Frames = []
         self.Crossed_Gates_Coordinates = []
 
-        for gate, intersection in zip(
-            list_of_crossed_gates, list_of_Crossed_Gates_Coordinates
-        ):
-
-            self.Crossed_Gates.append(gate)
-
-            self.Crossed_Frames.append(objectstorage.videoobject.current_frame)
-
-            self.Crossed_Gates_Coordinates.append((intersection.x, intersection.y))
-
         # validate line
         self.valid_line = self.__line_validation(list_of_crossed_gates)
+
+        if self.valid_line:
+
+            for gate, intersection in zip(
+                list_of_crossed_gates, list_of_Crossed_Gates_Coordinates
+            ):
+
+                self.Crossed_Gates.append(gate)
+
+                self.Crossed_Gates_Coordinates.append((intersection.x, intersection.y))
+
+                self.Entry_Gate = list_of_crossed_gates[0]
+                self.Exit_Gate = list_of_crossed_gates[1]
+                self.Crossed_Frames.append(objectstorage.videoobject.current_frame)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")

@@ -55,14 +55,6 @@ class FrameActiveCounts(tk.LabelFrame):
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
-        # self.button_count_polyline = tk.Button(
-        #     master=self.frame_control_active_counts,
-        #     width=12,
-        #     text="Polyline",
-        #     command=lambda: self.button_count_type_poly_switch(),
-        # )
-        # self.button_count_polyline.grid(row=0, column=0, padx=(10, 0))
-
         self.button_count_line = tk.Button(
             master=self.frame_control_active_counts,
             width=12,
