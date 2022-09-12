@@ -63,12 +63,16 @@ def create_eventbased_dataframe():
                 "SectionID": crossed_gate,
                 "TrackID": track_id,
                 "Class": objectstorage.background_dic[track_id]["Class"],
-                "X": objectstorage.background_dic[track_id]["Crossed_Coordinates"][
-                    index
-                ][0],
-                "Y": objectstorage.background_dic[track_id]["Crossed_Coordinates"][
-                    index
-                ][1],
+                "X": int(
+                    objectstorage.background_dic[track_id]["Crossed_Coordinates"][
+                        index
+                    ][0]
+                ),
+                "Y": int(
+                    objectstorage.background_dic[track_id]["Crossed_Coordinates"][
+                        index
+                    ][1]
+                ),
                 "Frame": objectstorage.background_dic[track_id]["Crossed_Frames"][
                     index
                 ],
