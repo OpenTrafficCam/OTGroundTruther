@@ -1,6 +1,5 @@
 import tkinter.ttk as ttk
 import tkinter as tk
-from tkinter import messagebox
 from helpers.image_alteration import manipulate_image
 import helpers.objectstorage as objectstorage
 import keyboard
@@ -139,8 +138,8 @@ class FrameSection(tk.LabelFrame):
 
         # only if line or polygon creation is activate
         if (
-            objectstorage.button_bool["linedetector_toggle"]
-            or objectstorage.button_bool["polygondetector_toggle"]
+            objectstorage.config_dict["linedetector_toggle"]
+            or objectstorage.config_dict["polygondetector_toggle"]
         ):
 
             self.new_detector_creation = tk.Toplevel()

@@ -3,7 +3,6 @@ import helpers.objectstorage as objectstorage
 import tkinter
 import cv2
 from helpers.section import draw_section_line, draw_ellipse_around_section
-import numpy as np
 
 
 def manipulate_image(np_image=None):
@@ -16,7 +15,7 @@ def manipulate_image(np_image=None):
             np_image,
         )
 
-    if objectstorage.button_bool["linedetector_toggle"]:
+    if objectstorage.config_dict["linedetector_toggle"]:
 
         np_image = draw_section_line(np_image)
         np_image = draw_ellipse_around_section(
@@ -78,7 +77,7 @@ def draw_finished_counts(np_image):
             np_image,
             background_dic_subset[object_id]["Entry_Coordinate"],
             background_dic_subset[object_id]["Exit_Coordinate"],
-            (200, 125, 125, 255),
+            (254, 255, 0, 255),
             3,
         )
 
@@ -166,7 +165,7 @@ def draw_active_count(np_image):
                 np_image,
                 active_count.Entry_Coordinate,
                 active_count.Exit_Coordinate,
-                (200, 125, 125, 255),
+                (254, 255, 0, 255),
                 3,
             )
     return np_image

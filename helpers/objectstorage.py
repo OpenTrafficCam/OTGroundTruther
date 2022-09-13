@@ -31,7 +31,7 @@ quicksafe_filepath_event = None
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 
-button_bool = {
+config_dict = {
     "linedetector_toggle": False,
     "polygondetector_toggle": False,
     "tracks_imported": False,
@@ -47,6 +47,7 @@ button_bool = {
     "slider": False,
     "dataframe_cleaned": False,
     "gt_active": True,
+    "count_active": False,
 }
 
 

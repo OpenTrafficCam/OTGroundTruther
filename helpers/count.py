@@ -9,12 +9,21 @@ import pandas as pd
 
 def initialize_new_count(event):
     """_summary_"""
-    objectstorage.active_countings.append(current_count())
+    # if pressed key is n or there are no active counts (for creating active count by mouseclick)
+    if event.keysym_num == 110 or not objectstorage.config_dict["count_active"]:
 
-    if len(objectstorage.active_countings) > 1:
-        objectstorage.active_countings_index = len(objectstorage.active_countings) - 1
-    else:
-        return
+        print(vars(event))
+        print("active count created")
+        objectstorage.active_countings.append(current_count())
+
+        if len(objectstorage.active_countings) > 1:
+            # define index
+            # stay at latest created vehicle
+            objectstorage.active_countings_index = (
+                len(objectstorage.active_countings) - 1
+            )
+        else:
+            return
 
 
 class current_count:
@@ -105,7 +114,7 @@ class current_count:
         """
         # only do when at least two points exist or at least the second point.
         if (
-            objectstorage.button_bool["linedetector_toggle"]
+            objectstorage.config_dict["linedetector_toggle"]
             or not self.Exit_Coordinate
             or not objectstorage.flow_dict["Detectors"]
         ):
@@ -149,9 +158,29 @@ class current_count:
 
                 self.Crossed_Gates_Coordinates.append((intersection.x, intersection.y))
 
-                self.Entry_Gate = list_of_crossed_gates[0]
-                self.Exit_Gate = list_of_crossed_gates[1]
-            self.Crossed_Frames = [self.Entry_Frame, self.Exit_Frame]
+            self.Entry_Gate = list_of_crossed_gates[0]
+            self.Exit_Gate = list_of_crossed_gates[-1]
+
+            if len(self.Crossed_Gates) > 2:
+                self.__interpolate_frames()
+
+    def __interpolate_frames(self):
+        """Interpolates between Entry and Exit-Frame"""
+        self.Crossed_Frames = [self.Entry_Frame]
+
+        interim_result = (self.Exit_Frame - self.Entry_Frame) / (
+            len(self.Crossed_Gates) - 1
+        )
+        if interim_result == 0:
+            interim_result = 1
+
+        for number_of_crossing_events in range(len(self.Crossed_Gates) - 2):
+
+            self.Crossed_Frames.append(
+                int((number_of_crossing_events + 1) * interim_result + self.Entry_Frame)
+            )
+
+        self.Crossed_Frames.append(self.Exit_Frame)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")

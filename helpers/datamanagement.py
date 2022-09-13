@@ -1,4 +1,3 @@
-from matplotlib.patches import Polygon
 import helpers.objectstorage as objectstorage
 from tkinter import filedialog, messagebox
 import json
@@ -28,6 +27,10 @@ def fill_ground_truth(event):
 
         # delete finished object from active-list
         del objectstorage.active_countings[objectstorage.active_countings_index]
+
+        # if last active count is finished make active makeable via mouse click
+        if not objectstorage.active_countings:
+            objectstorage.config_dict["count_active"] = False
 
 
 def fill_background_dic(event):
@@ -77,7 +80,6 @@ def create_eventbased_dataframe():
                     index
                 ],
             }
-            print(objectstorage.background_dic[track_id]["Crossed_Frames"])
 
     return eventbased_dictionary
 
@@ -154,7 +156,6 @@ def dataframe_to_dict():
         ] = ast.literal_eval(
             objectstorage.background_dic[object_id]["Crossed_Coordinates"]
         )
-    print(objectstorage.background_dic)
 
 
 def load_gt_from_csv(treeview_gt, treeview_active_counts):
@@ -280,7 +281,6 @@ def save_flowfile():
         # delete shapeley objects because they cant be safed
         for detector in objectstorage.flow_dict["Detectors"]:
             del objectstorage.flow_dict["Detectors"][detector]["Geometry_line"]
-        #            del objectstorage.flow_dict["Detectors"][detector]["Geometry_polygon"]
 
         json.dump(objectstorage.flow_dict, file, indent=4)
     else:

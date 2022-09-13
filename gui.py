@@ -3,8 +3,8 @@ import tkinter as tk
 from helpers.video import load_video_and_frame
 import helpers.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
-from helpers.view_activecount import FrameActiveCounts
-from helpers.view_gt import FrameGT
+from view.view_activecount import FrameActiveCounts
+from view.view_gt import FrameGT
 from helpers.count import initialize_new_count
 from helpers.count_manipulation import assign_vehicle_class
 from helpers.datamanagement import (
@@ -16,7 +16,7 @@ from helpers.datamanagement import (
     quick_safe_to_csv,
     load_gt_from_csv,
 )
-from helpers.view_section import FrameSection
+from view.view_section import FrameSection
 import keyboard
 from helpers.section import shapely_object
 
@@ -66,6 +66,8 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             "<ButtonPress-1>",
             lambda event: [
+                initialize_new_count(event),
+                self.frame_active_counts.insert_active_count_to_treeview(event),
                 objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
                 objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
                 self.frame_active_counts.update_treeview(event),
@@ -209,9 +211,6 @@ class gui(tk.Tk):
             objectstorage.flow_dict["Detectors"][detector][
                 "Geometry_line"
             ] = shapely_object(x1, y1, x2, y2, linestring=True)
-            objectstorage.flow_dict["Detectors"][detector][
-                "Geometry_polygon"
-            ] = shapely_object(x1, y1, x2, y2)
 
             self.frame_sections.tree_sections.insert(
                 parent="", index="end", text=detector
