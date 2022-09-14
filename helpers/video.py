@@ -1,3 +1,5 @@
+from datetime import datetime
+import re
 import sys
 import time
 from threading import Thread
@@ -192,7 +194,6 @@ class Video(FileVideoStream):
         if self.videowidth != self.width or self.videoheight != self.height:
             self.need_for_resize = True
 
-            #
             self.y_resize_factor = self.height / self.videoheight
             self.width = int(self.videowidth * self.y_resize_factor)
 
@@ -203,6 +204,8 @@ class Video(FileVideoStream):
             self.y_resize_factor = 1
 
         self.initialize_empty_image()
+        self.datetime_str = self.__get_datetime_from_filename()
+        self.__get_datetime_obj()
 
     def get_frame(self, np_image):
         """Reads frame from videostream.
@@ -264,3 +267,31 @@ class Video(FileVideoStream):
 
     def initialize_empty_image(self):
         self.transparent_image = None
+
+    def __get_datetime_from_filename(self, epoch_datetime="1970-01-01_00-00-00"):
+        """Get date and time from file name.
+        Searches for "_yyyy-mm-dd_hh-mm-ss".
+        Returns "yyyy-mm-dd_hh-mm-ss".
+        Args:
+            filename (str): filename with expression
+            epoch_datetime (str): Unix epoch (00:00:00 on 1 January 1970)
+        Returns:
+            str: datetime
+        """
+        regex = "_([0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}_[0-9]{2,2}-[0-9]{2,2}-[0-9]{2,2})"
+        match = re.search(regex, self.filename)
+        if not match:
+            return epoch_datetime
+
+        # Assume that there is only one timestamp in the file name
+        self.datetime_str = match.group(1)  # take group withtout underscore
+
+        try:
+            datetime.strptime(self.datetime_str, "%Y-%m-%d_%H-%M-%S")
+        except ValueError:
+            return epoch_datetime
+
+        return self.datetime_str
+
+    def __get_datetime_obj(self):
+        self.datetime_obj = datetime.strptime(self.datetime_str, "%Y-%m-%d_%H-%M-%S")

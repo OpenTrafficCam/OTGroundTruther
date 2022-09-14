@@ -5,10 +5,10 @@ from shapely.geometry import LineString, Polygon
 
 
 def button_line_switch():
-    objectstorage.button_bool["linedetector_toggle"] = not objectstorage.button_bool[
+    objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
         "linedetector_toggle"
     ]
-    print(objectstorage.button_bool["linedetector_toggle"])
+    print(objectstorage.config_dict["linedetector_toggle"])
 
 
 def draw_section_line(np_image):
@@ -66,7 +66,7 @@ def dump_to_flowdictionary(detector_name):
         flow_dict (dictionary): Dictionary with sections and movements.
         detector_name (String): Entrywidgetinput, functions as key of dictionary.
     """
-    if objectstorage.button_bool["linedetector_toggle"] is True:
+    if objectstorage.config_dict["linedetector_toggle"] is True:
 
         x1 = objectstorage.maincanvas.points[0][0]
         y1 = objectstorage.maincanvas.points[0][1]

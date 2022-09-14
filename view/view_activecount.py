@@ -55,14 +55,6 @@ class FrameActiveCounts(tk.LabelFrame):
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
-        # self.button_count_polyline = tk.Button(
-        #     master=self.frame_control_active_counts,
-        #     width=12,
-        #     text="Polyline",
-        #     command=lambda: self.button_count_type_poly_switch(),
-        # )
-        # self.button_count_polyline.grid(row=0, column=0, padx=(10, 0))
-
         self.button_count_line = tk.Button(
             master=self.frame_control_active_counts,
             width=12,
@@ -73,28 +65,26 @@ class FrameActiveCounts(tk.LabelFrame):
 
     def insert_active_count_to_treeview(self, event):
         # insert latest item from activecount list
-        latest_count = objectstorage.active_countings[-1]
+        # if button n is pressed or there is no active count
+        if event.keysym_num == 110 or not objectstorage.config_dict["count_active"]:
 
-        self.tree_active_countings.insert(
-            "",
-            tk.END,
-            text=latest_count.ID,
-            values=(
-                latest_count.Vhc_class,
-                latest_count.Entry_Coordinate,
-                latest_count.Exit_Coordinate,
-                [
-                    "None"
-                    if latest_count.Crossed_gates == []
-                    else list(zip(*latest_count.Crossed_gates))[0]
-                ],
-            ),
-        )
-        self.update_treeview(self)
+            objectstorage.config_dict["count_active"] = True
+            latest_count = objectstorage.active_countings[-1]
+
+            self.tree_active_countings.insert(
+                "",
+                tk.END,
+                text=latest_count.ID,
+                values=(
+                    latest_count.Vhc_class,
+                    latest_count.Entry_Coordinate,
+                    latest_count.Exit_Coordinate,
+                    "None",
+                ),
+            )
+            self.update_treeview(self)
 
     def update_treeview(self, event):
-        # selected_item = self.tree_active_countings.selection()[0]
-        # print(selected_item)
         # make selectable
         if not objectstorage.active_countings:
             return
@@ -116,11 +106,7 @@ class FrameActiveCounts(tk.LabelFrame):
                         count.Vhc_class,
                         count.Entry_Coordinate,
                         count.Exit_Coordinate,
-                        [
-                            "None"
-                            if count.Crossed_gates == []
-                            else list(zip(*count.Crossed_gates))[0]
-                        ],
+                        ["None" if count.Crossed_Gates == [] else count.Crossed_Gates],
                     ),
                 )
         # could be anywhere in code
@@ -152,16 +138,9 @@ class FrameActiveCounts(tk.LabelFrame):
                 if count_ID == values:
                     self.tree_active_countings.delete(child)
 
-    # def button_count_type_poly_switch(self):
-    #     if not objectstorage.button_bool["gt_line"]:
-    #         objectstorage.button_bool["gt_polyline"] = not objectstorage.button_bool[
-    #             "gt_polyline"
-    #         ]
-    #         print(objectstorage.button_bool["gt_polyline"])
-
     def button_count_type_line_switch(self):
 
-        objectstorage.button_bool["gt_active"] = not objectstorage.button_bool[
+        objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
             "gt_active"
         ]
-        print(objectstorage.button_bool["gt_active"])
+        print(objectstorage.config_dict["gt_active"])

@@ -3,8 +3,8 @@ import tkinter as tk
 from helpers.video import load_video_and_frame
 import helpers.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
-from helpers.view_activecount import FrameActiveCounts
-from helpers.view_gt import FrameGT
+from view.view_activecount import FrameActiveCounts
+from view.view_gt import FrameGT
 from helpers.count import initialize_new_count
 from helpers.count_manipulation import assign_vehicle_class
 from helpers.datamanagement import (
@@ -16,7 +16,7 @@ from helpers.datamanagement import (
     quick_safe_to_csv,
     load_gt_from_csv,
 )
-from helpers.view_section import FrameSection
+from view.view_section import FrameSection
 import keyboard
 from helpers.section import shapely_object
 
@@ -49,12 +49,10 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
-        self.bind("b", assign_vehicle_class, add="+")
-        self.bind("t", assign_vehicle_class, add="+")
-        self.bind("c", assign_vehicle_class, add="+")
-        self.bind("b", self.frame_active_counts.update_treeview, add="+")
-        self.bind("t", self.frame_active_counts.update_treeview, add="+")
-        self.bind("c", self.frame_active_counts.update_treeview, add="+")
+        for i in range(1, 10):
+            self.bind(str(i), assign_vehicle_class, add="+")
+            self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
+
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_background_dic, add="+")
@@ -66,6 +64,8 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             "<ButtonPress-1>",
             lambda event: [
+                initialize_new_count(event),
+                self.frame_active_counts.insert_active_count_to_treeview(event),
                 objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
                 objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
                 self.frame_active_counts.update_treeview(event),
@@ -94,7 +94,6 @@ class gui(tk.Tk):
             objectstorage.videoobject.scroll_speed -= 1
 
     def mouse_scroll(self, event):
-        print(objectstorage.videoobject.current_frame)
         if event.delta > 1:
             objectstorage.videoobject.current_frame += (
                 1 * objectstorage.videoobject.scroll_speed
@@ -130,7 +129,6 @@ class gui(tk.Tk):
     def change_active_countings_index(self, event):
 
         if event.keycode in [38, 40] and len(objectstorage.active_countings) == 0:
-            print("break")
             return
         elif (
             event.keycode == 38
@@ -190,9 +188,6 @@ class gui(tk.Tk):
 
         objectstorage.active_countings_index = 0
 
-        print(objectstorage.active_countings)
-        print(objectstorage.active_countings_index)
-
         if objectstorage.active_countings:
 
             iid = self.frame_active_counts.tree_active_countings.get_children()[
@@ -214,9 +209,6 @@ class gui(tk.Tk):
             objectstorage.flow_dict["Detectors"][detector][
                 "Geometry_line"
             ] = shapely_object(x1, y1, x2, y2, linestring=True)
-            objectstorage.flow_dict["Detectors"][detector][
-                "Geometry_polygon"
-            ] = shapely_object(x1, y1, x2, y2)
 
             self.frame_sections.tree_sections.insert(
                 parent="", index="end", text=detector

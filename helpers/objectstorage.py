@@ -22,14 +22,16 @@ ground_truth = pd.DataFrame(
         "Exit_Coordinate",
     ]
 )
+eventbased_dataframe = None
 background_dic = {}
 
 use_test_version = "Test"
-quicksafe_filepath = None
+quicksafe_filepath_gt = None
+quicksafe_filepath_event = None
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 
-button_bool = {
+config_dict = {
     "linedetector_toggle": False,
     "polygondetector_toggle": False,
     "tracks_imported": False,
@@ -45,6 +47,7 @@ button_bool = {
     "slider": False,
     "dataframe_cleaned": False,
     "gt_active": True,
+    "count_active": False,
 }
 
 

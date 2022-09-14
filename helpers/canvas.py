@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import helpers.objectstorage as objectstorage
-from helpers.objectstorage import active_countings, button_bool
+from helpers.objectstorage import active_countings, config_dict
 
 from helpers.image_alteration import manipulate_image
 
@@ -39,7 +39,7 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
-        if button_bool["linedetector_toggle"]:
+        if config_dict["linedetector_toggle"]:
             #  uses mouseevents to get coordinates (left button)
             self.coordinateX = int(self.canvasx(event.x))
             self.coordinateY = int(self.canvasy(event.y))
@@ -60,7 +60,7 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
-        if button_bool["linedetector_toggle"]:
+        if config_dict["linedetector_toggle"]:
             return
         if not objectstorage.active_countings:
             messagebox.showinfo(
@@ -77,13 +77,13 @@ class OtcCanvas(tk.Canvas):
         self.coordinateY = int(self.canvasy(event.y))
 
         # when there are nor entry coordinates than set entry coordinates
-        if button_bool["gt_active"]:
+        if config_dict["gt_active"]:
             if not active_count.First_Coordinate_set:
-
                 active_count.Entry_Coordinate = (
                     self.coordinateX,
                     self.coordinateY,
                 )
+                active_count.Crossed_Frames = [objectstorage.videoobject.current_frame]
                 active_count.Entry_Frame = objectstorage.videoobject.current_frame
                 active_count.First_Coordinate_set = True
             # if count has already entry coordinates recieve exit coordinates
@@ -100,8 +100,8 @@ class OtcCanvas(tk.Canvas):
 
                 # if no intersection than proceed as entry coordinates
                 if not active_count.valid_line:
-                    self.Exit_Frame = None
-                    self.Exit_Coordinate = None
+                    active_count.Exit_Frame = None
+                    active_count.Exit_Coordinate = None
                     active_count.Entry_Coordinate = (
                         self.coordinateX,
                         self.coordinateY,
@@ -119,7 +119,7 @@ class OtcCanvas(tk.Canvas):
             self.points = [(0, 0), (0, 0)]
 
     def undo_active_count_coords(self, event):
-        if button_bool["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
+        if config_dict["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
             # only do for polygon points
             active_count = objectstorage.active_countings[
                 objectstorage.active_countings_index
