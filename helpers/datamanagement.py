@@ -230,6 +230,9 @@ def safe_gt_to_csv():
 def quick_safe_to_csv(event):
     if objectstorage.quicksafe_filepath_gt:
         objectstorage.ground_truth.to_csv(objectstorage.quicksafe_filepath_gt)
+    else:
+        info_message("Warning", "Safe groundtruth first to set filepath!")
+
     # if eventdataframe was safed one, then use the path for quick saving
     if objectstorage.quicksafe_filepath_event:
         # create eventbased dictionary
@@ -240,10 +243,12 @@ def quick_safe_to_csv(event):
         objectstorage.eventbased_dataframe.to_csv(
             objectstorage.quicksafe_filepath_event, index=True
         )
-        info_message("Info", "qicksafed")
-
     else:
-        info_message("Warning", "Safe groundtruth first!")
+        info_message("Warning", "Safe eventbased csv first to set filepath!")
+
+        return
+
+    info_message("Info", "qicksafed")
 
 
 def load_flowfile():
