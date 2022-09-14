@@ -48,7 +48,7 @@ def fill_background_dic(event):
         ].counted_vehicle_information()
 
 
-def create_eventbased_dataframe():
+def create_eventbased_dictionary():
 
     eventbased_dictionary = {}
     i = 0
@@ -219,7 +219,7 @@ def safe_gt_to_csv():
         objectstorage.quicksafe_filepath_event = file_path_event
 
         # create eventbased dictionary
-        eventbased_dictionary = create_eventbased_dataframe()
+        eventbased_dictionary = create_eventbased_dictionary()
         # create dataframe from eventbased Dictionary
         eventased_dictionary_to_dataframe(eventbased_dictionary)
 
@@ -233,7 +233,7 @@ def quick_safe_to_csv(event):
     # if eventdataframe was safed one, then use the path for quick saving
     if objectstorage.quicksafe_filepath_event:
         # create eventbased dictionary
-        eventbased_dictionary = create_eventbased_dataframe()
+        eventbased_dictionary = create_eventbased_dictionary()
         # create dataframe from eventbased Dictionary
         eventased_dictionary_to_dataframe(eventbased_dictionary)
 
