@@ -45,8 +45,6 @@ class current_count:
         self.Exit_Gate = "Placeholder"
         self.Exit_Frame = None
         self.Exit_Coordinate = None
-        # self.All_Coordinates = []
-        # self.All_Coordinates_Frames = []
         self.Crossed_Gates = []
         self.Crossed_Frames = []
         self.Crossed_Gates_Coordinates = []
