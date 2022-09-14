@@ -160,24 +160,25 @@ class current_count:
 
             if len(self.Crossed_Gates) > 2:
                 self.__interpolate_frames()
+            else:
+                self.Crossed_Frames = [self.Entry_Frame, self.Exit_Frame]
 
     def __interpolate_frames(self):
         """Interpolates between Entry and Exit-Frame"""
         self.Crossed_Frames = [self.Entry_Frame]
-
         interim_result = (self.Exit_Frame - self.Entry_Frame) / (
             len(self.Crossed_Gates) - 1
         )
+
         if interim_result == 0:
             interim_result = 1
-
-        for number_of_crossing_events in range(len(self.Crossed_Gates) - 2):
-
-            self.Crossed_Frames.append(
-                int((number_of_crossing_events + 1) * interim_result + self.Entry_Frame)
-            )
+        self.Crossed_Frames.extend(
+            int((number_of_crossing_events + 1) * interim_result + self.Entry_Frame)
+            for number_of_crossing_events in range(len(self.Crossed_Gates) - 2)
+        )
 
         self.Crossed_Frames.append(self.Exit_Frame)
+        print(self.Crossed_Frames)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
