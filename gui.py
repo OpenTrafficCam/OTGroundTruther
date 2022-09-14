@@ -49,12 +49,10 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
-        self.bind("b", assign_vehicle_class, add="+")
-        self.bind("t", assign_vehicle_class, add="+")
-        self.bind("c", assign_vehicle_class, add="+")
-        self.bind("b", self.frame_active_counts.update_treeview, add="+")
-        self.bind("t", self.frame_active_counts.update_treeview, add="+")
-        self.bind("c", self.frame_active_counts.update_treeview, add="+")
+        for i in range(1, 10):
+            self.bind(str(i), assign_vehicle_class, add="+")
+            self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
+
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_background_dic, add="+")

@@ -1,5 +1,16 @@
 import helpers.objectstorage as objectstorage
 
+vehicle_definition = {
+    "1": "Car",
+    "2": "Bycicle",
+    "3": "Person",
+    "4": "Bus",
+    "5": "Van",
+    "6": "Truck",
+    "7": "Motorcycle",
+    "8": "Trailortruck",
+}
+
 
 def assign_vehicle_class(event):
 
@@ -7,20 +18,8 @@ def assign_vehicle_class(event):
         return
     active_count = objectstorage.active_countings[objectstorage.active_countings_index]
 
-    if event.keysym == "c":
-        print("assigning Class Car to count: " + str(active_count.ID))
-
-        # change 0 to active_count_index
-        active_count.Vhc_class = "Car"
-
-    if event.keysym == "b":
-        print("assigning Class Car to count: " + str(active_count.ID))
-
-        # change 0 to active_count_index
-        active_count.Vhc_class = "Bicycle"
-
-    if event.keysym == "t":
-        print("assigning Class Car to count: " + str(active_count.ID))
-
-        # change 0 to active_count_index
-        active_count.Vhc_class = "Truck"
+    active_count.Vhc_class = vehicle_definition[event.keysym]
+    print(
+        f"assigning Class {vehicle_definition[event.keysym]} to count: "
+        + str(active_count.ID)
+    )

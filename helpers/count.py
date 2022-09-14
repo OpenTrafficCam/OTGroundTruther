@@ -12,8 +12,6 @@ def initialize_new_count(event):
     # if pressed key is n or there are no active counts (for creating active count by mouseclick)
     if event.keysym_num == 110 or not objectstorage.config_dict["count_active"]:
 
-        print(vars(event))
-        print("active count created")
         objectstorage.active_countings.append(current_count())
 
         if len(objectstorage.active_countings) > 1:
@@ -87,7 +85,6 @@ class current_count:
                 or self.valid_line is False
             ):
                 print(key + " is None")
-                print(f"Besetzen der ersten Coordinate: {self.First_Coordinate_set}")
                 return False
 
         return True
