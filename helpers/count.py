@@ -176,7 +176,6 @@ class current_count:
         )
 
         self.Crossed_Frames.append(self.Exit_Frame)
-        print(self.Crossed_Frames)
 
     def __del__(self):
         print("Object with ID " + str(self.ID) + " deleted")
