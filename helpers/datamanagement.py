@@ -229,7 +229,9 @@ def safe_gt_to_csv():
 
 def quick_safe_to_csv(event):
     if objectstorage.quicksafe_filepath_gt:
-        objectstorage.ground_truth.to_csv(objectstorage.quicksafe_filepath_gt)
+        objectstorage.ground_truth.to_csv(
+            objectstorage.quicksafe_filepath_gt, index=False
+        )
     else:
         info_message("Warning", "Safe groundtruth first to set filepath!")
 
