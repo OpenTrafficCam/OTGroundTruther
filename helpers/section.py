@@ -30,8 +30,6 @@ def draw_section_line(np_image):
 
 
 def draw_ellipse_around_section(np_image, p0, p1):
-    # p0 = (objectstorage.maincanvas.points[0][0], objectstorage.maincanvas.points[0][1])
-    # p1 = (objectstorage.maincanvas.points[1][0], objectstorage.maincanvas.points[1][1])
     middle_point_x = (p0[0] + p1[0]) / 2
     middle_point_y = (p0[1] + p1[1]) / 2
 
@@ -47,7 +45,7 @@ def draw_ellipse_around_section(np_image, p0, p1):
     np_image = cv2.ellipse(
         np_image,
         (int(middle_point_x), int(middle_point_y)),
-        (int(major_axis_length), 50),
+        (int(major_axis_length), (int(major_axis_length*0.25))),
         angle,
         0,
         360,
