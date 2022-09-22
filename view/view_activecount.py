@@ -24,8 +24,6 @@ class FrameActiveCounts(tk.LabelFrame):
         tree_files_cols = {
             "#0": "ID",
             "Class": "Class",
-            "Start": "Start",
-            "End": "End",
             "Crossed Gates": "Crossed Gates",
         }
         self.tree_active_countings["columns"] = tuple(
@@ -39,14 +37,7 @@ class FrameActiveCounts(tk.LabelFrame):
         self.tree_active_countings.heading(
             "Class", text=tree_files_cols["Class"], anchor="center"
         )
-        self.tree_active_countings.column("Start", anchor="center", width=50)
-        self.tree_active_countings.heading(
-            "Start", text=tree_files_cols["Start"], anchor="center"
-        )
-        self.tree_active_countings.column("End", anchor="center", width=50)
-        self.tree_active_countings.heading(
-            "End", text=tree_files_cols["End"], anchor="center"
-        )
+
         self.tree_active_countings.column("Crossed Gates", anchor="center", width=50)
         self.tree_active_countings.heading(
             "Crossed Gates", text=tree_files_cols["Crossed Gates"], anchor="center"
@@ -77,8 +68,6 @@ class FrameActiveCounts(tk.LabelFrame):
                 text=latest_count.ID,
                 values=(
                     latest_count.Vhc_class,
-                    latest_count.Entry_Coordinate,
-                    latest_count.Exit_Coordinate,
                     "None",
                 ),
             )
@@ -104,9 +93,7 @@ class FrameActiveCounts(tk.LabelFrame):
                     child,
                     values=(
                         count.Vhc_class,
-                        count.Entry_Coordinate,
-                        count.Exit_Coordinate,
-                        ["None" if count.Crossed_Gates == [] else count.Crossed_Gates],
+                        ["None" if count.Gates == [] else count.Gates],
                     ),
                 )
         # could be anywhere in code

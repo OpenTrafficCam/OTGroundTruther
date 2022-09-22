@@ -9,12 +9,6 @@ def manipulate_image(np_image=None):
     if np_image is None:
         np_image = objectstorage.videoobject.np_image.copy()
 
-    if objectstorage.active_countings:
-
-        np_image = draw_active_count(
-            np_image,
-        )
-
     if objectstorage.config_dict["linedetector_toggle"]:
 
         np_image = draw_section_line(np_image)
@@ -81,21 +75,6 @@ def draw_finished_counts(np_image):
             3,
         )
 
-        # else:
-        #     pts = np.array(
-        #         background_dic_subset[object_id]["All_Coordinates"],
-        #         np.int32,
-        #     )
-
-        #     pts = pts.reshape((-1, 1, 2))
-        #     np_image = cv2.polylines(
-        #         np_image,
-        #         [pts],
-        #         isClosed=False,
-        #         color=(200, 125, 125, 255),
-        #         thickness=2,
-        #     )
-
         np_image = cv2.circle(
             np_image,
             (
@@ -121,55 +100,6 @@ def draw_finished_counts(np_image):
         )
 
     return np_image
-
-
-def draw_active_count(np_image):
-    for active_count in objectstorage.active_countings:
-        # active_count = objectstorage.active_countings[objectstorage.active_countings_index]
-        # if len(active_count.All_Coordinates) >= 2:n
-        #     # Polygon corner points coordinates
-        #     pts = np.array(
-        #         active_count.All_Coordinates,
-        #         np.int32,
-        #     )
-
-        #     pts = pts.reshape((-1, 1, 2))
-        #     np_image = cv2.polylines(
-        #         np_image,
-        #         [pts],
-        #         isClosed=False,
-        #         color=(200, 125, 125, 255),
-        #         thickness=2,
-        #     )
-        #     np_image = cv2.arrowedLine(
-        #         np_image,
-        #         (
-        #             active_count.All_Coordinates[-2][0],
-        #             active_count.All_Coordinates[-2][1],
-        #         ),
-        #         (
-        #             active_count.All_Coordinates[-1][0],
-        #             active_count.All_Coordinates[-1][1],
-        #         ),
-        #         color=(200, 125, 125, 255),
-        #         thickness=2,
-        #         tipLength=0.1,
-        #     )
-        if (
-            # active_count.Exit_Coordinate
-            # and not active_count.First_Coordinate_set
-            active_count.valid_line
-            and not active_count.First_Coordinate_set
-        ):
-            np_image = cv2.line(
-                np_image,
-                active_count.Entry_Coordinate,
-                active_count.Exit_Coordinate,
-                (254, 255, 0, 255),
-                3,
-            )
-    return np_image
-
 
 def draw_detectors_from_dict(np_image):
     """Draws detectors on every frame.
@@ -211,17 +141,17 @@ def draw_tag_around_start_coordinate(np_image):
         else:
             color = (124, 252, 0, 255)
 
-        if active_count.Entry_Coordinate is not None:
+        if active_count.Coordinates:
             np_image = cv2.circle(
                 np_image,
-                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                (active_count.Coordinates[0][0], active_count.Coordinates[0][1]),
                 5,
                 color,
             )
             np_image = cv2.putText(
                 np_image,
                 str(active_count.ID),
-                (active_count.Entry_Coordinate[0], active_count.Entry_Coordinate[1]),
+                (active_count.Coordinates[0][0], active_count.Coordinates[0][1]),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1,
                 color,

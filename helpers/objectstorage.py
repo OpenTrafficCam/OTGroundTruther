@@ -23,6 +23,9 @@ ground_truth = pd.DataFrame(
     ]
 )
 eventbased_dataframe = None
+
+eventbased_dictionary = {}
+
 background_dic = {}
 
 use_test_version = "Test"

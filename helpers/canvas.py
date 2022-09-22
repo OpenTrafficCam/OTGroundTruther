@@ -27,9 +27,8 @@ class OtcCanvas(tk.Canvas):
         )
         self.bind(
             "<Button-2>",
-            lambda event: [
-                self.undo_active_count_coords(event),
-            ],
+            lambda event: []
+                
         )
 
     def click_receive_section_coordinates(self, event, list_index):
@@ -68,9 +67,6 @@ class OtcCanvas(tk.Canvas):
                 message="First create empty count with hotkey n",
             )
             return
-        active_count = objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ]
 
         # uses mouseevents to get coordinates (left button)
         self.coordinateX = int(self.canvasx(event.x))
@@ -78,37 +74,15 @@ class OtcCanvas(tk.Canvas):
 
         # when there are nor entry coordinates than set entry coordinates
         if config_dict["gt_active"]:
-            if not active_count.First_Coordinate_set:
-                active_count.Entry_Coordinate = (
+                objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(
                     self.coordinateX,
-                    self.coordinateY,
-                )
-                active_count.Crossed_Frames = [objectstorage.videoobject.current_frame]
-                active_count.Entry_Frame = objectstorage.videoobject.current_frame
-                active_count.First_Coordinate_set = True
-            # if count has already entry coordinates recieve exit coordinates
-            else:
-                active_count.Exit_Coordinate = (
-                    self.coordinateX,
-                    self.coordinateY,
-                )
-                active_count.Exit_Frame = objectstorage.videoobject.current_frame
-                active_count.First_Coordinate_set = False
+                    self.coordinateY,)
+                ]
+                objectstorage.active_countings[objectstorage.active_countings_index].Frames = [objectstorage.videoobject.current_frame]
 
-                # check of intersection with gate/section
-                active_count.get_intersect_and_frame(self)
+        print(objectstorage.active_countings[objectstorage.active_countings_index].Coordinates)
 
-                # if no intersection than proceed as entry coordinates
-                if not active_count.valid_line:
-                    active_count.Exit_Frame = None
-                    active_count.Exit_Coordinate = None
-                    active_count.Entry_Coordinate = (
-                        self.coordinateX,
-                        self.coordinateY,
-                    )
-                    active_count.First_Coordinate_set = True
-
-            manipulate_image(objectstorage.videoobject.np_image.copy())
+        manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def delete_points(self):
         """delete list of polygon points after scrolling, sliding, playing, rewinding"""
@@ -118,15 +92,15 @@ class OtcCanvas(tk.Canvas):
         else:
             self.points = [(0, 0), (0, 0)]
 
-    def undo_active_count_coords(self, event):
-        if config_dict["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
-            # only do for polygon points
-            active_count = objectstorage.active_countings[
-                objectstorage.active_countings_index
-            ]
-            del active_count.All_Coordinates[-1]
+    # def undo_active_count_coords(self, event):
+    #     if config_dict["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
+    #         # only do for polygon points
+    #         active_count = objectstorage.active_countings[
+    #             objectstorage.active_countings_index
+    #         ]
+    #         del active_count.All_Coordinates[-1]
 
-            manipulate_image(objectstorage.videoobject.np_image.copy())
+    #         manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
 class CanvasFrame(tk.Frame):
