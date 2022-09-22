@@ -43,6 +43,7 @@ class current_count:
         self.Gates = []
         self.Frames = []
         self.Coordinates = []
+        self.Valid_count = False
 
         print("Anzahl der Instanzen: " + str(current_count.counter))
 

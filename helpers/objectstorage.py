@@ -25,6 +25,7 @@ ground_truth = pd.DataFrame(
 eventbased_dataframe = None
 
 eventbased_dictionary = {}
+eventbased_dictionary_index = 0
 
 background_dic = {}
 

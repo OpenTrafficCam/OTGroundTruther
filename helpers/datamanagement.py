@@ -33,55 +33,73 @@ def fill_ground_truth(event):
             objectstorage.config_dict["count_active"] = False
 
 
-def fill_background_dic(event):
+# def fill_background_dic(event):
 
+#     if (
+#         objectstorage.active_countings
+#         and objectstorage.active_countings[
+#             objectstorage.active_countings_index
+#         ].all_values_set()
+#     ):
+#         objectstorage.background_dic[
+#             objectstorage.active_countings[objectstorage.active_countings_index].ID
+#         ] = objectstorage.active_countings[
+#             objectstorage.active_countings_index
+#         ].counted_vehicle_information()
+
+def fill_eventbased_dictionary(event):
+    
     if (
         objectstorage.active_countings
         and objectstorage.active_countings[
             objectstorage.active_countings_index
         ].all_values_set()
     ):
-        objectstorage.background_dic[
-            objectstorage.active_countings[objectstorage.active_countings_index].ID
-        ] = objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].counted_vehicle_information()
+
+        objectstorage.eventbased_dictionary_index +=1
+
+        active_count = objectstorage.active_countings[objectstorage.active_countings_index]
+
+        objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": active_count.Gates[-1],"TrackID": active_count.ID, "X":active_count.Coordinates[0][0],"Y":active_count.Coordinates[0][1]}
+
+        print(objectstorage.eventbased_dictionary)
 
 
 def create_eventbased_dictionary():
+    pass
 
-    eventbased_dictionary = {}
-    i = 0
-    print(objectstorage.background_dic)
-    # loop through background dic
-    for track_id in objectstorage.background_dic.keys():
+#     eventbased_dictionary = {}
+#     i = 0
+#     print(objectstorage.background_dic)
+#     # loop through background dic
+#     for track_id in objectstorage.background_dic.keys():
 
-        # loop through gates
-        for crossed_gate in objectstorage.background_dic[track_id]["Crossed_Gates"]:
-            i += 1
-            index = objectstorage.background_dic[track_id]["Crossed_Gates"].index(
-                crossed_gate
-            )
-            eventbased_dictionary[i] = {
-                "SectionID": crossed_gate,
-                "TrackID": track_id,
-                "Class": objectstorage.background_dic[track_id]["Class"],
-                "X": int(
-                    objectstorage.background_dic[track_id]["Crossed_Coordinates"][
-                        index
-                    ][0]
-                ),
-                "Y": int(
-                    objectstorage.background_dic[track_id]["Crossed_Coordinates"][
-                        index
-                    ][1]
-                ),
-                "Frame": objectstorage.background_dic[track_id]["Crossed_Frames"][
-                    index
-                ],
-            }
+#         # loop through gates
+#         for crossed_gate in objectstorage.background_dic[track_id]["Crossed_Gates"]:
+#             i += 1
+#             index = objectstorage.background_dic[track_id]["Crossed_Gates"].index(
+#                 crossed_gate
+#             )
+#             eventbased_dictionary[i] = {
+#                 "SectionID": crossed_gate,
+#                 "TrackID": track_id,
+#                 "Class": objectstorage.background_dic[track_id]["Class"],
+#                 "X": int(
+#                     objectstorage.background_dic[track_id]["Crossed_Coordinates"][
+#                         index
+#                     ][0]
+#                 ),
+#                 "Y": int(
+#                     objectstorage.background_dic[track_id]["Crossed_Coordinates"][
+#                         index
+#                     ][1]
+#                 ),
+#                 "Frame": objectstorage.background_dic[track_id]["Crossed_Frames"][
+#                     index
+#                 ],
+#             }
 
-    return eventbased_dictionary
+#     return eventbased_dictionary
 
 
 def eventased_dictionary_to_dataframe(eventbased_dictionary):

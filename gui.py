@@ -8,7 +8,8 @@ from view.view_gt import FrameGT
 from helpers.count import initialize_new_count
 from helpers.count_manipulation import assign_vehicle_class
 from helpers.datamanagement import (
-    fill_background_dic,
+    
+    fill_eventbased_dictionary,
     fill_ground_truth,
     load_flowfile,
     save_flowfile,
@@ -55,7 +56,7 @@ class gui(tk.Tk):
 
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
-        self.bind("<Return>", fill_background_dic, add="+")
+        self.bind("<Return>", fill_eventbased_dictionary, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.reset_index, add="+")
         self.bind("<F5>", quick_safe_to_csv)
