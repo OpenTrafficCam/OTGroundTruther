@@ -44,14 +44,16 @@ def fill_eventbased_dictionary(event):
             objectstorage.active_countings_index
         ].all_values_set()
     ):
-
-        objectstorage.eventbased_dictionary_index +=1
-
         active_count = objectstorage.active_countings[objectstorage.active_countings_index]
 
-        objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": active_count.Gates[-1],"TrackID": active_count.ID, "X":active_count.Coordinates[0][0],"Y":active_count.Coordinates[0][1]}
+        for crossed_gate, crossed_coordinate, crossed_frame in zip(active_count.Gates, active_count.Coordinates, active_count.Frames):
+            print(crossed_gate, crossed_coordinate, crossed_frame)
 
-        print(objectstorage.eventbased_dictionary)
+            objectstorage.eventbased_dictionary_index +=1          
+
+            objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame}
+
+            print(objectstorage.eventbased_dictionary)
 
 
 def create_eventbased_dictionary():

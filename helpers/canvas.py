@@ -75,14 +75,13 @@ class OtcCanvas(tk.Canvas):
             self.coordinateX = int(self.canvasx(event.x))
             self.coordinateY = int(self.canvasy(event.y))
 
-        self.check_click_validation(event)
-       
-
-        
+        self.assign_information(event)
+             
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
-    def check_click_validation(self,event):
-        """return true if click is in section
+    def assign_information(self,event):
+        """depending on left or right mousclick and if click is in section
+           coorindates get added, reseted or initilized
         """
         for gate in objectstorage.flow_dict["Detectors"]:
             p0 = (objectstorage.flow_dict["Detectors"][gate]['start_x'],objectstorage.flow_dict["Detectors"][gate]['start_y'])
@@ -118,25 +117,6 @@ class OtcCanvas(tk.Canvas):
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates = []
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []
                     objectstorage.active_countings[objectstorage.active_countings_index].Frames = []
-
-
-
-
-
-
-
-
-
-
-
-
-    def delete_points(self):
-        """delete list of polygon points after scrolling, sliding, playing, rewinding"""
-
-        if self.polygon_points:
-            self.polygon_points = []
-        else:
-            self.points = [(0, 0), (0, 0)]
 
     # def undo_active_count_coords(self, event):
     #     if config_dict["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
