@@ -72,6 +72,13 @@ class gui(tk.Tk):
                 self.frame_active_counts.update_treeview(event),
             ],
         )
+        objectstorage.maincanvas.bind(
+            "<ButtonPress-3>",
+            lambda event: [
+                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
+                self.frame_active_counts.update_treeview(event),
+            ],
+        )
 
     def jump_to_frame(self, event):
         if not objectstorage.active_countings:

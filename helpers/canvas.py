@@ -75,21 +75,13 @@ class OtcCanvas(tk.Canvas):
             self.coordinateX = int(self.canvasx(event.x))
             self.coordinateY = int(self.canvasy(event.y))
 
-        if self.check_click_validation():
+        self.check_click_validation(event)
        
-            objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(
-                self.coordinateX,
-                self.coordinateY,)
-                ]
-            objectstorage.active_countings[objectstorage.active_countings_index].Frames = [objectstorage.videoobject.current_frame]
-        else:
-            #rest coordinates// necessary if clicked again
-            objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []
 
-
+        
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
-    def check_click_validation(self):
+    def check_click_validation(self,event):
         """return true if click is in section
         """
         for gate in objectstorage.flow_dict["Detectors"]:
@@ -110,9 +102,26 @@ class OtcCanvas(tk.Canvas):
 
                 print(f"Coordinate in the gate: {gate}")
 
-                objectstorage.active_countings[objectstorage.active_countings_index].Gates =[gate]
+                if event.num == 3:
+                    # append on right click
+                    objectstorage.active_countings[objectstorage.active_countings_index].Gates.append(gate)
+                    objectstorage.active_countings[objectstorage.active_countings_index].Coordinates.append((self.coordinateX,self.coordinateY))
+                    objectstorage.active_countings[objectstorage.active_countings_index].Frames.append(objectstorage.videoobject.current_frame)
+                    break
+                    #create on left click
+                elif event.num == 1:
+                    objectstorage.active_countings[objectstorage.active_countings_index].Gates = [gate]
+                    objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(self.coordinateX,self.coordinateY,)]
+                    objectstorage.active_countings[objectstorage.active_countings_index].Frames = [objectstorage.videoobject.current_frame]
+                    break
+            elif event.num == 1:
+                    objectstorage.active_countings[objectstorage.active_countings_index].Gates = []
+                    objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []
+                    objectstorage.active_countings[objectstorage.active_countings_index].Frames = []
 
-                return True
+
+
+
 
 
 

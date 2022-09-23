@@ -60,12 +60,14 @@ class current_count:
     def all_values_set(self):
 
         for key in self.counted_vehicle_information().keys():
+            print(bool(objectstorage.active_countings[
+                    objectstorage.active_countings_index
+                ].counted_vehicle_information()[key]))
 
-            if (
+            if not(
                 objectstorage.active_countings[
                     objectstorage.active_countings_index
                 ].counted_vehicle_information()[key]
-                is None
             ):
                 print(key + " is None")
                 return False
