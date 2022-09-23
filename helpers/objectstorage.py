@@ -12,7 +12,11 @@ active_countings_index = 0
 # ground_truth = []
 ground_truth = pd.DataFrame(
      columns=[
-        "ID"]
+        "ID", "Class",
+            "Crossed_Gates",
+            "Crossed_Frames",
+            "Crossed_Coordinates",
+        ]
 
 )
 eventbased_dataframe = None

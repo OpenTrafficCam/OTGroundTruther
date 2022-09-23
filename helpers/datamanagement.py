@@ -47,7 +47,6 @@ def fill_eventbased_dictionary(event):
         active_count = objectstorage.active_countings[objectstorage.active_countings_index]
 
         for crossed_gate, crossed_coordinate, crossed_frame in zip(active_count.Gates, active_count.Coordinates, active_count.Frames):
-            print(crossed_gate, crossed_coordinate, crossed_frame)
 
             objectstorage.eventbased_dictionary_index +=1          
 
