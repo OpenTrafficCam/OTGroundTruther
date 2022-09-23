@@ -32,20 +32,8 @@ def fill_ground_truth(event):
         if not objectstorage.active_countings:
             objectstorage.config_dict["count_active"] = False
 
+        print(objectstorage.ground_truth)
 
-# def fill_background_dic(event):
-
-#     if (
-#         objectstorage.active_countings
-#         and objectstorage.active_countings[
-#             objectstorage.active_countings_index
-#         ].all_values_set()
-#     ):
-#         objectstorage.background_dic[
-#             objectstorage.active_countings[objectstorage.active_countings_index].ID
-#         ] = objectstorage.active_countings[
-#             objectstorage.active_countings_index
-#         ].counted_vehicle_information()
 
 def fill_eventbased_dictionary(event):
     

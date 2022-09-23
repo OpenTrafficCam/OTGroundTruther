@@ -11,16 +11,9 @@ active_countings_index = 0
 
 # ground_truth = []
 ground_truth = pd.DataFrame(
-    columns=[
-        "ID",
-        "Class",
-        "Entry_Gate",
-        "Entry_Frame",
-        "Entry_Coordinate",
-        "Exit_Gate",
-        "Exit_Frame",
-        "Exit_Coordinate",
-    ]
+     columns=[
+        "ID"]
+
 )
 eventbased_dataframe = None
 

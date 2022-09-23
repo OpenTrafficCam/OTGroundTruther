@@ -74,9 +74,8 @@ class OtcCanvas(tk.Canvas):
 
             self.coordinateX = int(self.canvasx(event.x))
             self.coordinateY = int(self.canvasy(event.y))
-            objectstorage.active_countings[objectstorage.active_countings_index].Gates = [self.check_click_validation()]
 
-        if objectstorage.active_countings[objectstorage.active_countings_index].Gates:
+        if self.check_click_validation():
        
             objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(
                 self.coordinateX,
@@ -85,7 +84,7 @@ class OtcCanvas(tk.Canvas):
             objectstorage.active_countings[objectstorage.active_countings_index].Frames = [objectstorage.videoobject.current_frame]
         else:
             #rest coordinates// necessary if clicked again
-            objectstorage.active_countings[objectstorage.active_countings_index].Coordinates =  []
+            objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []
 
 
         manipulate_image(objectstorage.videoobject.np_image.copy())
@@ -93,8 +92,6 @@ class OtcCanvas(tk.Canvas):
     def check_click_validation(self):
         """return true if click is in section
         """
-        # check if the click was in one of the ellipses
-
         for gate in objectstorage.flow_dict["Detectors"]:
             p0 = (objectstorage.flow_dict["Detectors"][gate]['start_x'],objectstorage.flow_dict["Detectors"][gate]['start_y'])
             p1 = (objectstorage.flow_dict["Detectors"][gate]['end_x'],objectstorage.flow_dict["Detectors"][gate]['end_y'])
@@ -108,10 +105,16 @@ class OtcCanvas(tk.Canvas):
             a = dist(p0, p1) / 2
             b = a * 0.25
             # turned ellipse equation
-            
+
             if (x * np.cos(radian) + y * np.sin(radian)) ** 2 / a ** 2 + (x * np.sin(radian) - y * np.cos(radian)) ** 2 / b ** 2 <= 1:
+
                 print(f"Coordinate in the gate: {gate}")
-                return gate
+
+                objectstorage.active_countings[objectstorage.active_countings_index].Gates =[gate]
+
+                return True
+
+
 
 
 

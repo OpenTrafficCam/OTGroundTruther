@@ -1,3 +1,3 @@
-emptylist= [(1,5)]
+emptylist= [None]
 
 print(bool(emptylist))
