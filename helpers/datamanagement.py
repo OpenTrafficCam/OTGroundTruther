@@ -15,7 +15,6 @@ def fill_ground_truth(event):
             objectstorage.active_countings_index
         ].all_values_set()
     ):
-        print("set")
         # change 0 to active_count_index
         # appends dataframe with values from dictionary
 
