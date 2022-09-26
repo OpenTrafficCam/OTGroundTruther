@@ -8,7 +8,11 @@ from tkinter.messagebox import askyesno
 
 
 def fill_ground_truth(event):
+    """adds track to ground truth dataframe, only necessary to draw tracks
 
+    Args:
+        event (tkinter.event): Return button adds to groundtruth if all values of count are set
+    """
     if (
         objectstorage.active_countings
         and objectstorage.active_countings[
@@ -36,6 +40,11 @@ def fill_ground_truth(event):
 
 
 def fill_eventbased_dictionary(event):
+    """Fills dictionary according to event
+
+    Args:
+        event (tkinter.event): Return button adds to eventbased dictionary if all values of count are set
+    """
     
     if (
         objectstorage.active_countings
@@ -52,7 +61,7 @@ def fill_eventbased_dictionary(event):
             objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame, "Class": active_count.Vhc_class}
 
 def eventased_dictionary_to_dataframe():
-    """_summary_
+    """Creates a dataframe to later be safed as csv
 
     Args:
         eventbased_dictionary (dic): dictionary with frame and belonging events
@@ -85,6 +94,11 @@ def eventased_dictionary_to_dataframe():
     return eventbased_dataframe
 
 def set_new_vehicle_counter(eventbased_dataframe):
+    """Sets to counter ID according to the max value of the trackID imported from the event csv
+
+    Args:
+        eventbased_dictionary (dic): dictionary with frame and belonging events
+    """
 
     current_count.counter = eventbased_dataframe["TrackID"].max()
 
@@ -94,6 +108,12 @@ def set_new_vehicle_counter(eventbased_dataframe):
     )
 
 def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
+    """Function to create the eventbased dictionary and dataframe
+
+    Args:
+        treeview_gt (_type_): treeview with gt
+        treeview_active_counts (_type_): treeview with active_countings
+    """
 
     if not objectstorage.ground_truth.empty:
         answer = askyesno(
@@ -141,7 +161,10 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
     treeview_gt.delete(*treeview_gt.get_children())
 
 
-def dic_to_gt_dataframe():  # sourcery skip: avoid-builtin-shadow
+def dic_to_gt_dataframe():   # sourcery skip: avoid-builtin-shadow
+    """Create dataframe from dictionary
+    """
+
     #create dataframe
     ground_truth_dic = {}
 
@@ -162,6 +185,8 @@ def dic_to_gt_dataframe():  # sourcery skip: avoid-builtin-shadow
     
 
 def safe_eventbased_dataframe():
+    """First creates dataframe and than csv
+    """
 
     #create dataframe from dictionary
     eventbased_dataframe = eventased_dictionary_to_dataframe()
@@ -175,31 +200,14 @@ def safe_eventbased_dataframe():
     eventbased_dataframe.to_csv(file_path_eventbased, index=True)
 
 
-# def quick_safe_to_csv(event):
-#     if objectstorage.quicksafe_filepath_gt:
-#         objectstorage.ground_truth.to_csv(
-#             objectstorage.quicksafe_filepath_gt, index=False
-#         )
-#     else:
-#         info_message("Warning", "Safe groundtruth first to set filepath!")
+def quick_safe_to_csv(event):
 
-#     # if eventdataframe was safed one, then use the path for quick saving
-#     if objectstorage.quicksafe_filepath_event:
-#         # create eventbased dictionary
-#         eventbased_dictionary = create_eventbased_dictionary()
-#         # create dataframe from eventbased Dictionary
-#         eventased_dictionary_to_dataframe(eventbased_dictionary)
+    eventbased_dataframe = eventased_dictionary_to_dataframe()
 
-#         objectstorage.eventbased_dataframe.to_csv(
-#             objectstorage.quicksafe_filepath_event, index=True
-#         )
-#     else:
-#         info_message("Warning", "Safe eventbased csv first to set filepath!")
-
-#         return
-
-#     info_message("Info", "qicksafed")
-
+    if objectstorage.quicksafe_filepath_event:
+        eventbased_dataframe.to_csv(objectstorage.quicksafe_filepath_event, index=True)
+    else:
+        info_message("Warning", "Safe events first to set filepath!")
 
 def load_flowfile():
     """Loads flow file.

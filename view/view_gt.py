@@ -69,21 +69,24 @@ class FrameGT(tk.LabelFrame):
             # maybe need index later
 
     def click_tree_jump_to_frame(self, event):
+        # sourcery skip: do-not-use-bare-except
         curItem = self.tree_gt.focus()
         selected_object_id = self.tree_gt.item(curItem)["text"]
 
-        for object, object_id in objectstorage.background_dic.items():
 
-            if object == selected_object_id:
-                selected_frame = objectstorage.background_dic[selected_object_id][
-                    "Entry_Frame"
-                ]
+        count = objectstorage.ground_truth[objectstorage.ground_truth["ID"] == selected_object_id]
 
-                objectstorage.videoobject.current_frame = selected_frame
+        try:
+            selected_frame = count["Crossed_Frames"].str[0]
 
-                objectstorage.videoobject.set_frame()
 
-                manipulate_image(objectstorage.videoobject.np_image.copy())
+            objectstorage.videoobject.current_frame = int(selected_frame)
+
+            objectstorage.videoobject.set_frame()
+
+            manipulate_image(objectstorage.videoobject.np_image.copy())
+        except:
+            return
 
     def fill_treeview(self):
         for index, row in objectstorage.ground_truth.iterrows():
