@@ -122,7 +122,7 @@ class FrameActiveCounts(tk.LabelFrame):
             children = self.tree_active_countings.get_children("")
             for child in children:
                 values = self.tree_active_countings.item(child, "text")
-                if count_ID == values:
+                if int(count_ID) == int(values):
                     self.tree_active_countings.delete(child)
 
     def button_count_type_line_switch(self):

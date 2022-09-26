@@ -17,7 +17,7 @@ def fill_ground_truth(event):
     ):
         # change 0 to active_count_index
         # appends dataframe with values from dictionary
-
+ 
         objectstorage.ground_truth = objectstorage.ground_truth.append(
             objectstorage.active_countings[
                 objectstorage.active_countings_index
@@ -100,21 +100,22 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
             "Existing Ground Truth detected",
             "Work in process will be lost if you proceed!",
         )
-        if answer:
+        if not answer:
+            return
 
-            # set first coordinate to FALSE
-            # reset background_dic
-            # clear treeview-gt
-            # clear treeview-active_countings
-            treeview_gt.delete(*treeview_gt.get_children())
-            treeview_active_counts.delete(*treeview_active_counts.get_children())
+        # set first coordinate to FALSE
+        # reset background_dic
+        # clear treeview-gt
+        # clear treeview-active_countings
+        treeview_gt.delete(*treeview_gt.get_children())
+        treeview_active_counts.delete(*treeview_active_counts.get_children())
 
-            # reset active_countings
-            objectstorage.active_countings = []
-            # reset active_countings_index
-            objectstorage.active_countings_index = 0
+        # reset active_countings
+        objectstorage.active_countings = []
+        # reset active_countings_index
+        objectstorage.active_countings_index = 0
 
-            objectstorage.config_dict["count_active"] = False
+        objectstorage.config_dict["count_active"] = False
 
     file_path = filedialog.askopenfilename()
 
@@ -135,6 +136,9 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
 
     #set counter with last tracknumber 
     set_new_vehicle_counter(eventbased_dataframe)
+
+    # since the filling treeview functions is called// treeview needs to get wiped out
+    treeview_gt.delete(*treeview_gt.get_children())
 
 
 def dic_to_gt_dataframe():  # sourcery skip: avoid-builtin-shadow
