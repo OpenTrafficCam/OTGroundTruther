@@ -58,8 +58,8 @@ def draw_finished_counts(np_image):
 
 
     current_frame = objectstorage.videoobject.current_frame
-    objectstorage.ground_truth["First_Frame"] = int(objectstorage.ground_truth["Crossed_Frames"].str[0])
-    objectstorage.ground_truth["Last_Frame"] = int(objectstorage.ground_truth["Crossed_Frames"].str[-1])
+    objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[0]
+    objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[-1]
     
     df = objectstorage.ground_truth.loc[(objectstorage.ground_truth['First_Frame'] <= current_frame) & (objectstorage.ground_truth['Last_Frame'] >= current_frame)]
 

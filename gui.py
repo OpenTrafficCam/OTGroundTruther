@@ -12,10 +12,10 @@ from helpers.datamanagement import (
     fill_eventbased_dictionary,
     fill_ground_truth,
     load_flowfile,
+    safe_eventbased_dataframe,
     save_flowfile,
-    safe_gt_to_csv,
-    quick_safe_to_csv,
-    load_gt_from_csv,
+    #quick_safe_to_csv,
+    load_event_dic_from_csv,
 )
 from view.view_section import FrameSection
 import keyboard
@@ -59,7 +59,7 @@ class gui(tk.Tk):
         self.bind("<Return>", fill_eventbased_dictionary, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.reset_index, add="+")
-        self.bind("<F5>", quick_safe_to_csv)
+        self.bind("<F5>",) #quick_safe_to_csv)
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -251,11 +251,11 @@ def main():  # sourcery skip: remove-redundant-if
         command=lambda: [load_video_and_frame(), app.add_canvas_frame()],
     )
     file.add_separator()
-    file.add_command(label="Save groundtruth", command=safe_gt_to_csv)
+    file.add_command(label="Save events", command=safe_eventbased_dataframe)
     file.add_command(
         label="Load groundtruth",
         command=lambda: [
-            load_gt_from_csv(
+            load_event_dic_from_csv(
                 app.frame_gt.tree_gt, app.frame_active_counts.tree_active_countings
             ),
             app.frame_gt.fill_treeview(),
