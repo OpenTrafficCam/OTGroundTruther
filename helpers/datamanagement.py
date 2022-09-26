@@ -47,12 +47,9 @@ def fill_eventbased_dictionary(event):
 
         for crossed_gate, crossed_coordinate, crossed_frame in zip(active_count.Gates, active_count.Coordinates, active_count.Frames):
 
-            objectstorage.eventbased_dictionary_index +=1          
+            objectstorage.eventbased_dictionary_index += 1          
 
-            objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame}
-
-            print(objectstorage.eventbased_dictionary)
-
+            objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame, "Class": active_count.Vhc_class}
 
 def eventased_dictionary_to_dataframe():
     """_summary_
@@ -117,6 +114,8 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
             # reset active_countings_index
             objectstorage.active_countings_index = 0
 
+            objectstorage.config_dict["count_active"] = False
+
     file_path = filedialog.askopenfilename()
 
     # safe path for quick safe later
@@ -132,8 +131,31 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
     #create dictionary from csv
     objectstorage.eventbased_dictionary = eventbased_dataframe.to_dict('index')
 
+    dic_to_gt_dataframe()
+
     #set counter with last tracknumber 
     set_new_vehicle_counter(eventbased_dataframe)
+
+
+def dic_to_gt_dataframe():  # sourcery skip: avoid-builtin-shadow
+    #create dataframe
+    ground_truth_dic = {}
+
+    for event in objectstorage.eventbased_dictionary:
+        id = objectstorage.eventbased_dictionary[event]["TrackID"]
+        if objectstorage.eventbased_dictionary[event]["TrackID"] not in ground_truth_dic:
+            
+            ground_truth_dic[objectstorage.eventbased_dictionary[event]["TrackID"]] = {"Class": [], "Crossed_Gates": [], "Crossed_Frames": [], "Crossed_Coordinates": []}
+            ground_truth_dic[id]["Class"] = objectstorage.eventbased_dictionary[event]["Class"]
+
+        ground_truth_dic[id]["Crossed_Gates"].append(objectstorage.eventbased_dictionary[event]["SectionID"])
+        ground_truth_dic[id]["Crossed_Frames"].append(objectstorage.eventbased_dictionary[event]["Frame"])
+        ground_truth_dic[id]["Crossed_Coordinates"].append((objectstorage.eventbased_dictionary[event]["X"],objectstorage.eventbased_dictionary[event]["Y"]))
+
+    objectstorage.ground_truth = pd.DataFrame.from_dict(ground_truth_dic, orient="index")
+    objectstorage.ground_truth.reset_index(inplace=True)
+    objectstorage.ground_truth.rename({'index': 'ID'}, axis=1, inplace=True)
+    
 
 def safe_eventbased_dataframe():
 

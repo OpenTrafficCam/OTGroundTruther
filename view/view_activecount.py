@@ -87,8 +87,8 @@ class FrameActiveCounts(tk.LabelFrame):
         for child in children:
             values = self.tree_active_countings.item(child, "text")
 
-            if count_ID == values:
-
+            if int(count_ID) == int(values):
+                
                 self.tree_active_countings.item(
                     child,
                     values=(
