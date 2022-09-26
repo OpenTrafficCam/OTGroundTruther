@@ -3,6 +3,7 @@ import helpers.objectstorage as objectstorage
 import tkinter
 import cv2
 from helpers.section import draw_section_line, draw_ellipse_around_section
+from more_itertools import pairwise
 
 
 def manipulate_image(np_image=None):
@@ -91,7 +92,8 @@ def draw_finished_counts(np_image):
                 False,)
             # draw line if track consists of more than one coordinate
             if len(coordinates) > 1:
-                np_image = cv2.line(np_image,coordinates[0],coordinates[1],(254, 255, 0, 255),3,)                
+                for coordinate_start, coordinate_end in pairwise(coordinates):
+                    np_image = cv2.line(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),3,)                
             
         except:
             continue
@@ -155,4 +157,9 @@ def draw_tag_around_start_coordinate(np_image):
                 cv2.LINE_AA,
                 False,
             )
+        # draw line when count has two coordinates
+        if len(active_count.Coordinates) > 1:
+            for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
+                np_image = cv2.line(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),3,)     
+
     return np_image
