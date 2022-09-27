@@ -1,12 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
-import helpers.objectstorage as objectstorage
-from helpers.objectstorage import config_dict
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.objectstorage import config_dict
 
 from helpers.image_alteration import manipulate_image
-from math import atan2, dist, pi
+from math import atan2, dist
 import numpy as np
-import cv2
 
 
 class OtcCanvas(tk.Canvas):
@@ -28,11 +27,7 @@ class OtcCanvas(tk.Canvas):
                 self.click_receive_section_coordinates(event, 1),
             ],
         )
-        self.bind(
-            "<Button-2>",
-            lambda event: []
-                
-        )
+
 
     def click_receive_section_coordinates(self, event, list_index):
         """Saves coordinates from canvas event to linepoint list.
@@ -64,12 +59,12 @@ class OtcCanvas(tk.Canvas):
         """
         if config_dict["linedetector_toggle"]:
             return
-        if not objectstorage.active_countings:
-            messagebox.showinfo(
-                title="Info",
-                message="First create empty count with hotkey n",
-            )
-            return
+        # if not objectstorage.active_countings:
+        #     messagebox.showinfo(
+        #         title="Info",
+        #         message="First create empty count with hotkey n",
+        #     )
+        #     return
         if config_dict["gt_active"]:
 
             self.coordinateX = int(self.canvasx(event.x))
@@ -118,15 +113,6 @@ class OtcCanvas(tk.Canvas):
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []
                     objectstorage.active_countings[objectstorage.active_countings_index].Frames = []
 
-    # def undo_active_count_coords(self, event):
-    #     if config_dict["gt_polyline"] and len(active_countings[0].All_Coordinates) > 0:
-    #         # only do for polygon points
-    #         active_count = objectstorage.active_countings[
-    #             objectstorage.active_countings_index
-    #         ]
-    #         del active_count.All_Coordinates[-1]
-
-    #         manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
 class CanvasFrame(tk.Frame):

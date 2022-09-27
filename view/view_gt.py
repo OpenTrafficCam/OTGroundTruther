@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import helpers.objectstorage as objectstorage
-from helpers.datamanagement import info_message
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.datamanagement import info_message
 from helpers.image_alteration import manipulate_image
 
 

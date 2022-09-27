@@ -1,13 +1,13 @@
-from helpers.canvas import CanvasFrame
+from view.canvas import CanvasFrame
 import tkinter as tk
 from helpers.video import load_video_and_frame
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
 from view.view_activecount import FrameActiveCounts
 from view.view_gt import FrameGT
-from helpers.count import initialize_new_count
-from helpers.count_manipulation import assign_vehicle_class
-from helpers.datamanagement import (
+from helpers.count.count import initialize_new_count
+from helpers.count.count_manipulation import assign_vehicle_class
+from helpers.filehelper.datamanagement import (
     
     fill_eventbased_dictionary,
     fill_ground_truth,
@@ -35,6 +35,7 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
         self.bind("<MouseWheel>", self.mouse_scroll)
+        self.bind("<Button-2>",self.undo_active_count_coords)
         self.bind("<Right>", self.arrow_key_scroll)
         self.bind("<Left>", self.arrow_key_scroll)
         self.bind("+", self.change_scroll_up)
@@ -223,6 +224,22 @@ class gui(tk.Tk):
             )
 
         manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    def undo_active_count_coords(self, event):
+        if not objectstorage.active_countings:
+            return
+        if len(objectstorage.active_countings[objectstorage.active_countings_index].Coordinates) > 1:
+            active_count = objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ]
+            del active_count.Coordinates[-1]
+            del active_count.Frames[-1]
+            del active_count.Gates[-1]
+
+            print("Last rightclick deletet")
+
+
+            manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
 def main():  # sourcery skip: remove-redundant-if

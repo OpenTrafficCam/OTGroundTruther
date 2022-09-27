@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 
 
 class FrameActiveCounts(tk.LabelFrame):

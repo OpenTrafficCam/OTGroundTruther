@@ -1,5 +1,5 @@
 from PIL import Image, ImageTk
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 import tkinter
 import cv2
 from helpers.section import draw_section_line, draw_ellipse_around_section
@@ -50,7 +50,7 @@ def draw_finished_counts(np_image):
         np_image (_type_): numpy array as image to draw lines on
 
     Returns:
-        _type_: altered numpy array as image
+        _type_: altered numpy array as image with drawn finished counts
     """
     # subset background dic when frames match
     if objectstorage.ground_truth.empty:
@@ -58,12 +58,13 @@ def draw_finished_counts(np_image):
 
 
     current_frame = objectstorage.videoobject.current_frame
+
     objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[0]
     objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[-1]
     
-    df = objectstorage.ground_truth.loc[(objectstorage.ground_truth['First_Frame'] <= current_frame) & (objectstorage.ground_truth['Last_Frame'] >= current_frame)]
+    df_subset = objectstorage.ground_truth.loc[(objectstorage.ground_truth['First_Frame'] <= current_frame) & (objectstorage.ground_truth['Last_Frame'] >= current_frame)]
 
-    for index, row in df.iterrows():
+    for index, row in df_subset.iterrows():
         try:
             coordinates = row["Crossed_Coordinates"]
             track_id = row["ID"]
@@ -93,8 +94,8 @@ def draw_finished_counts(np_image):
             # draw line if track consists of more than one coordinate
             if len(coordinates) > 1:
                 for coordinate_start, coordinate_end in pairwise(coordinates):
-                    np_image = cv2.line(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),3,)                
-            
+                    np_image = cv2.line(np_image, coordinate_start,
+                    coordinate_end, (254, 255, 0, 255), 3,)
         except:
             continue
     return np_image

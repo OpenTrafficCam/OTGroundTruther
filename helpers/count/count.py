@@ -1,11 +1,4 @@
-import helpers.objectstorage as objectstorage
-from shapely.geometry import Polygon, LineString, Point
-import geopandas
-import pandas as pd
-
-
-# import helpers.objectstorage as objectstorage
-
+import helpers.filehelper.objectstorage as objectstorage
 
 def initialize_new_count(event):
     """_summary_"""
@@ -22,8 +15,6 @@ def initialize_new_count(event):
             )
         else:
             return
-
-
 
 class current_count:
     """_summary_
@@ -59,6 +50,7 @@ class current_count:
 
     def all_values_set(self):
 
+
         for key in self.counted_vehicle_information().keys():
             if not(
                 objectstorage.active_countings[
@@ -67,6 +59,7 @@ class current_count:
             ):
                 print(key + " is None")
                 return False
+            
 
         return True
 
