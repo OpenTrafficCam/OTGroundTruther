@@ -110,8 +110,6 @@ class FrameGT(tk.LabelFrame):
 
             object_id = self.tree_gt.item(grount_truth_object, "text")
 
-            print(object_id)
-
             self.tree_gt.delete(grount_truth_object)
 
             #del objectstorage.eventbased_dictionary[object_id]
@@ -120,6 +118,9 @@ class FrameGT(tk.LabelFrame):
                 if objectstorage.eventbased_dictionary[key]["TrackID"] == object_id:
                     del objectstorage.eventbased_dictionary[key]
             
-            print(objectstorage.eventbased_dictionary)
             
-            manipulate_image(objectstorage.videoobject.np_image.copy())
+
+        objectstorage.ground_truth =  objectstorage.ground_truth[objectstorage.ground_truth["ID"] != object_id]
+
+           
+        manipulate_image(objectstorage.videoobject.np_image.copy())
