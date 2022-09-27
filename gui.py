@@ -51,7 +51,7 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
-        for i in range(1, 10):
+        for i in range(1, 9):
             self.bind(str(i), assign_vehicle_class, add="+")
             self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
 
@@ -237,7 +237,6 @@ class gui(tk.Tk):
             del active_count.Gates[-1]
 
             print("Last rightclick deletet")
-
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
