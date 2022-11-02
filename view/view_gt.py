@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import helpers.objectstorage as objectstorage
-from helpers.datamanagement import info_message
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.datamanagement import info_message
 from helpers.image_alteration import manipulate_image
 
 
@@ -69,21 +69,24 @@ class FrameGT(tk.LabelFrame):
             # maybe need index later
 
     def click_tree_jump_to_frame(self, event):
+        # sourcery skip: do-not-use-bare-except
         curItem = self.tree_gt.focus()
         selected_object_id = self.tree_gt.item(curItem)["text"]
 
-        for object, object_id in objectstorage.background_dic.items():
 
-            if object == selected_object_id:
-                selected_frame = objectstorage.background_dic[selected_object_id][
-                    "Entry_Frame"
-                ]
+        count = objectstorage.ground_truth[objectstorage.ground_truth["ID"] == selected_object_id]
 
-                objectstorage.videoobject.current_frame = selected_frame
+        try:
+            selected_frame = count["Crossed_Frames"].str[0]
 
-                objectstorage.videoobject.set_frame()
 
-                manipulate_image(objectstorage.videoobject.np_image.copy())
+            objectstorage.videoobject.current_frame = int(selected_frame)
+
+            objectstorage.videoobject.set_frame()
+
+            manipulate_image(objectstorage.videoobject.np_image.copy())
+        except:
+            return
 
     def fill_treeview(self):
         for index, row in objectstorage.ground_truth.iterrows():
@@ -109,6 +112,15 @@ class FrameGT(tk.LabelFrame):
 
             self.tree_gt.delete(grount_truth_object)
 
-            del objectstorage.background_dic[object_id]
+            #del objectstorage.eventbased_dictionary[object_id]
 
-            manipulate_image(objectstorage.videoobject.np_image.copy())
+            for key in objectstorage.eventbased_dictionary.copy():
+                if objectstorage.eventbased_dictionary[key]["TrackID"] == object_id:
+                    del objectstorage.eventbased_dictionary[key]
+            
+            
+
+        objectstorage.ground_truth =  objectstorage.ground_truth[objectstorage.ground_truth["ID"] != object_id]
+
+           
+        manipulate_image(objectstorage.videoobject.np_image.copy())

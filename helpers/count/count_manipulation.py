@@ -1,4 +1,4 @@
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 
 vehicle_definition = {
     "1": "Car",

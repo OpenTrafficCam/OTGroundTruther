@@ -1,10 +1,10 @@
 import tkinter.ttk as ttk
 import tkinter as tk
 from helpers.image_alteration import manipulate_image
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 import keyboard
 from helpers.section import button_line_switch, dump_to_flowdictionary
-from helpers.datamanagement import info_message
+from helpers.filehelper.datamanagement import info_message
 
 
 class FrameSection(tk.LabelFrame):
@@ -173,7 +173,5 @@ class FrameSection(tk.LabelFrame):
             lambda: self.create_section_entry_window(),
         )
         self.new_detector_creation.destroy()
-
-        objectstorage.maincanvas.delete_points()
 
         manipulate_image(objectstorage.videoobject.np_image.copy())

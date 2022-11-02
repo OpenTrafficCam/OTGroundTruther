@@ -1,20 +1,21 @@
-from helpers.canvas import CanvasFrame
+from view.canvas import CanvasFrame
 import tkinter as tk
 from helpers.video import load_video_and_frame
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 from helpers.image_alteration import manipulate_image
 from view.view_activecount import FrameActiveCounts
 from view.view_gt import FrameGT
-from helpers.count import initialize_new_count
-from helpers.count_manipulation import assign_vehicle_class
-from helpers.datamanagement import (
-    fill_background_dic,
+from helpers.count.count import initialize_new_count
+from helpers.count.count_manipulation import assign_vehicle_class
+from helpers.filehelper.datamanagement import (
+    
+    fill_eventbased_dictionary,
     fill_ground_truth,
     load_flowfile,
+    safe_eventbased_dataframe,
     save_flowfile,
-    safe_gt_to_csv,
-    quick_safe_to_csv,
-    load_gt_from_csv,
+    #quick_safe_to_csv,
+    load_event_dic_from_csv,
 )
 from view.view_section import FrameSection
 import keyboard
@@ -34,6 +35,7 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
         self.bind("<MouseWheel>", self.mouse_scroll)
+        self.bind("<Button-2>",self.undo_active_count_coords)
         self.bind("<Right>", self.arrow_key_scroll)
         self.bind("<Left>", self.arrow_key_scroll)
         self.bind("+", self.change_scroll_up)
@@ -49,16 +51,16 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
-        for i in range(1, 10):
+        for i in range(1, 9):
             self.bind(str(i), assign_vehicle_class, add="+")
             self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
 
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
-        self.bind("<Return>", fill_background_dic, add="+")
+        self.bind("<Return>", fill_eventbased_dictionary, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.reset_index, add="+")
-        self.bind("<F5>", quick_safe_to_csv)
+        self.bind("<F5>",) #quick_safe_to_csv)
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
@@ -68,6 +70,13 @@ class gui(tk.Tk):
                 self.frame_active_counts.insert_active_count_to_treeview(event),
                 objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
                 objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
+                self.frame_active_counts.update_treeview(event),
+            ],
+        )
+        objectstorage.maincanvas.bind(
+            "<ButtonPress-3>",
+            lambda event: [
+                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
                 self.frame_active_counts.update_treeview(event),
             ],
         )
@@ -216,6 +225,21 @@ class gui(tk.Tk):
 
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
+    def undo_active_count_coords(self, event):
+        if not objectstorage.active_countings:
+            return
+        if len(objectstorage.active_countings[objectstorage.active_countings_index].Coordinates) > 1:
+            active_count = objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ]
+            del active_count.Coordinates[-1]
+            del active_count.Frames[-1]
+            del active_count.Gates[-1]
+
+            print("Last rightclick deletet")
+
+            manipulate_image(objectstorage.videoobject.np_image.copy())
+
 
 def main():  # sourcery skip: remove-redundant-if
     """Main function."""
@@ -243,11 +267,11 @@ def main():  # sourcery skip: remove-redundant-if
         command=lambda: [load_video_and_frame(), app.add_canvas_frame()],
     )
     file.add_separator()
-    file.add_command(label="Save groundtruth", command=safe_gt_to_csv)
+    file.add_command(label="Save events", command=safe_eventbased_dataframe)
     file.add_command(
         label="Load groundtruth",
         command=lambda: [
-            load_gt_from_csv(
+            load_event_dic_from_csv(
                 app.frame_gt.tree_gt, app.frame_active_counts.tree_active_countings
             ),
             app.frame_gt.fill_treeview(),

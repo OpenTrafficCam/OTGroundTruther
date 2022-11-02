@@ -8,7 +8,7 @@ from tkinter import filedialog
 
 import cv2
 from PIL import Image, ImageTk
-import helpers.objectstorage as objectstorage
+import helpers.filehelper.objectstorage as objectstorage
 
 if sys.version_info >= (3, 0):
     from queue import Queue
