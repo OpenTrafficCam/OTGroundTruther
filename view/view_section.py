@@ -174,6 +174,4 @@ class FrameSection(tk.LabelFrame):
         )
         self.new_detector_creation.destroy()
 
-        objectstorage.maincanvas.delete_points()
-
         manipulate_image(objectstorage.videoobject.np_image.copy())
