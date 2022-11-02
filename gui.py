@@ -14,7 +14,7 @@ from helpers.filehelper.datamanagement import (
     load_flowfile,
     safe_eventbased_dataframe,
     save_flowfile,
-    #quick_safe_to_csv,
+    quick_safe_to_csv,
     load_event_dic_from_csv,
 )
 from view.view_section import FrameSection
@@ -60,7 +60,7 @@ class gui(tk.Tk):
         self.bind("<Return>", fill_eventbased_dictionary, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.reset_index, add="+")
-        self.bind("<F5>",) #quick_safe_to_csv)
+        self.bind("<F5>", quick_safe_to_csv)
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(

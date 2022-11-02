@@ -160,7 +160,7 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
     treeview_gt.delete(*treeview_gt.get_children())
 
 
-def dic_to_gt_dataframe():   # sourcery skip: avoid-builtin-shadow
+def dic_to_gt_dataframe():  
     """Create dataframe from dictionary
     """
 
