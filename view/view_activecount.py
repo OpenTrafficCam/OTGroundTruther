@@ -102,9 +102,7 @@ class FrameActiveCounts(tk.LabelFrame):
         # ].get_intersect_and_frame(self)
 
         # highlights and selectes treeview item
-        iid = self.tree_active_countings.get_children()[
-            objectstorage.active_countings_index
-        ]
+        iid = self.tree_active_countings.get_children()[objectstorage.active_countings_index]
         self.tree_active_countings.selection_set(iid)
 
     def delete_from_treeview(self, event):
@@ -129,5 +127,8 @@ class FrameActiveCounts(tk.LabelFrame):
 
         objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
             "gt_active"
+        ]
+        objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
+            "linedetector_toggle"
         ]
         print(objectstorage.config_dict["gt_active"])
