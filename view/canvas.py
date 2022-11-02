@@ -34,7 +34,7 @@ class OtcCanvas(tk.Canvas):
 
         Args:
             event (tkinter.event): Click on canvas triggers event.
-            list_index (index):
+            list_index (index): 0 : start, 1 : end
         """
         if config_dict["linedetector_toggle"]:
             #  uses mouseevents to get coordinates (left button)

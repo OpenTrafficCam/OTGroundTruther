@@ -1,0 +1,44 @@
+{
+    "Detectors": {
+        "Nord": {
+            "type": "line",
+            "start_x": 554,
+            "start_y": 358,
+            "end_x": -41,
+            "end_y": 331,
+            "color": [
+                200,
+                125,
+                125,
+                255
+            ]
+        },
+        "Sued": {
+            "type": "line",
+            "start_x": 490,
+            "start_y": 147,
+            "end_x": 243,
+            "end_y": 140,
+            "color": [
+                200,
+                125,
+                125,
+                255
+            ]
+        },
+        "West": {
+            "type": "line",
+            "start_x": 494,
+            "start_y": 147,
+            "end_x": 551,
+            "end_y": 340,
+            "color": [
+                200,
+                125,
+                125,
+                255
+            ]
+        }
+    },
+    "Movements": {}
+}
