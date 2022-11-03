@@ -42,19 +42,36 @@ class FrameSection(tk.LabelFrame):
         self.button_line = tk.Button(
             master=self.frame_control_section,
             width=12,
+            bg="red",
             text="Add Line",
-            command=lambda: button_line_switch(),
+            
         )
         self.button_line.grid(row=0, column=0, padx=(10, 10))
 
         # Add delete-Section
-        self.button_line = tk.Button(
+        self.button_line_delete = tk.Button(
             master=self.frame_control_section,
             width=12,
             text="Delete Line",
             command=lambda: self.delete_section(),
         )
-        self.button_line.grid(row=0, column=1, padx=(10, 10))
+        self.button_line_delete.grid(row=0, column=1, padx=(10, 10))
+
+    def button_line_switch(self, opposite_button):
+        objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
+            "linedetector_toggle"
+        ]
+        objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
+            "gt_active"
+        ]
+        print("Drawing Section:"+ str(objectstorage.config_dict["linedetector_toggle"]))
+        if objectstorage.config_dict["linedetector_toggle"]:
+                self.button_line.configure(bg='green')
+                opposite_button.configure(bg='red')
+
+        else:
+            self.button_line.configure(bg='red')
+            opposite_button.configure(bg='green')
 
     def add_section(self, entrywidget):
         """Saves created section to flowfile.

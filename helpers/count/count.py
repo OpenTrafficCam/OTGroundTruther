@@ -34,6 +34,7 @@ class current_count:
         self.Gates = []
         self.Frames = []
         self.Coordinates = []
+
         self.Valid_count = False
         self.Vid_filename = objectstorage.videoobject.filename
 
@@ -61,7 +62,8 @@ class current_count:
             ):
                 print(key + " is None")
                 return False
-            
+
+            #calculate Datetime
 
         return True
 

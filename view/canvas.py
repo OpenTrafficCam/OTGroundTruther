@@ -109,6 +109,7 @@ class OtcCanvas(tk.Canvas):
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(self.coordinateX,self.coordinateY,)]
                     objectstorage.active_countings[objectstorage.active_countings_index].Frames = [objectstorage.videoobject.current_frame]
                     break
+            # delete if not clicked in section
             elif event.num == 1:
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates = []
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = []

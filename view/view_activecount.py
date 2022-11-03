@@ -46,17 +46,17 @@ class FrameActiveCounts(tk.LabelFrame):
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
-        self.button_count_line = tk.Button(
+        self.button_count = tk.Button(
             master=self.frame_control_active_counts,
-            width=12,
+            width=20,
+            bg="green",
             text="Activate Counting",
-            command=lambda: self.button_count_type_line_switch(),
-        )
-        self.button_count_line.grid(row=0, column=1, padx=(10, 0))
+            )
+        self.button_count.grid(row=0, column=1, padx=(10, 0))
 
     def insert_active_count_to_treeview(self, event):
         # insert latest item from activecount list
-        # if button n is pressed or there is no active count
+        # if button n (keysym = n) is pressed or there is no active count
         if event.keysym_num == 110 or not objectstorage.config_dict["count_active"] and objectstorage.config_dict["gt_active"]:
 
             objectstorage.config_dict["count_active"] = True
@@ -97,11 +97,8 @@ class FrameActiveCounts(tk.LabelFrame):
                     ),
                 )
         # could be anywhere in code
-        # objectstorage.active_countings[
-        #     objectstorage.active_countings_index
-        # ].get_intersect_and_frame(self)
 
-        # highlights and selectes treeview item
+        # highlights and selects treeview item
         iid = self.tree_active_countings.get_children()[objectstorage.active_countings_index]
         self.tree_active_countings.selection_set(iid)
 
@@ -123,7 +120,7 @@ class FrameActiveCounts(tk.LabelFrame):
                 if int(count_ID) == int(values):
                     self.tree_active_countings.delete(child)
 
-    def button_count_type_line_switch(self):
+    def button_count_switch(self, opposite_button):
 
         objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
             "gt_active"
@@ -131,4 +128,12 @@ class FrameActiveCounts(tk.LabelFrame):
         objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
             "linedetector_toggle"
         ]
-        print(objectstorage.config_dict["gt_active"])
+        if objectstorage.config_dict["gt_active"]:
+            self.button_count.configure(bg='green')
+            opposite_button.configure(bg='red')
+
+        else:
+            self.button_count.configure(bg='red')
+            opposite_button.configure(bg='green')
+
+        print("Adding to count: "+str(objectstorage.config_dict["gt_active"]))

@@ -76,6 +76,8 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             "<ButtonPress-3>",
             lambda event: [
+                initialize_new_count(event),
+                self.frame_active_counts.insert_active_count_to_treeview(event),
                 objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
                 self.frame_active_counts.update_treeview(event),
             ],
@@ -183,6 +185,9 @@ class gui(tk.Tk):
 
         if objectstorage.use_test_version is not None:
             objectstorage.videoobject = load_video_and_frame()
+
+        self.frame_active_counts.button_count.configure(command=lambda: self.frame_active_counts.button_count_switch(self.frame_sections.button_line))
+        self.frame_sections.button_line.configure(command=lambda: self.frame_sections.button_line_switch(self.frame_active_counts.button_count))  
 
     def add_canvas_frame(self):
         np_image = objectstorage.videoobject.get_frame(np_image=True)

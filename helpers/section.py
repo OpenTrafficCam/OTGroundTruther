@@ -4,14 +4,7 @@ from math import atan2, dist, pi
 from shapely.geometry import LineString, Polygon
 
 
-def button_line_switch():
-    objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
-        "linedetector_toggle"
-    ]
-    objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
-        "gt_active"
-    ]
-    print(objectstorage.config_dict["linedetector_toggle"])
+
 
 
 def draw_section_line(np_image):
