@@ -38,7 +38,7 @@ class FrameActiveCounts(tk.LabelFrame):
             "Class", text=tree_files_cols["Class"], anchor="center"
         )
 
-        self.tree_active_countings.column("Crossed Gates", anchor="center", width=50)
+        self.tree_active_countings.column("Crossed Gates", anchor="center", width=100)
         self.tree_active_countings.heading(
             "Crossed Gates", text=tree_files_cols["Crossed Gates"], anchor="center"
         )

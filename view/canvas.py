@@ -88,15 +88,16 @@ class OtcCanvas(tk.Canvas):
             y = - self.coordinateY + middle_point_y
             radian = atan2(p1[1] - p0[1],p0[0] - p1[0])
 
+
             a = dist(p0, p1) / 2
-            b = a * 0.25
+            b = a * 0.15
             # turned ellipse equation
 
             if (x * np.cos(radian) + y * np.sin(radian)) ** 2 / a ** 2 + (x * np.sin(radian) - y * np.cos(radian)) ** 2 / b ** 2 <= 1:
 
                 print(f"Coordinate in the gate: {gate}")
 
-                if event.num == 3:
+                if event.num == 3 and bool(objectstorage.active_countings[objectstorage.active_countings_index].Gates):
                     # append on right click
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates.append(gate)
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates.append((self.coordinateX,self.coordinateY))
