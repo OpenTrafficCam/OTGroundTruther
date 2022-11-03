@@ -35,8 +35,10 @@ class current_count:
         self.Frames = []
         self.Coordinates = []
         self.Valid_count = False
+        self.Vid_filename = objectstorage.videoobject.filename
 
         print("Anzahl der Instanzen: " + str(current_count.counter))
+        print(self.Vid_filename)
 
     def counted_vehicle_information(self):
 
