@@ -57,7 +57,7 @@ def fill_eventbased_dictionary(event):
 
             objectstorage.eventbased_dictionary_index += 1          
 
-            objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame, "Class": active_count.Vhc_class}
+            objectstorage.eventbased_dictionary[str(objectstorage.eventbased_dictionary_index)] = {"SectionID": crossed_gate,"TrackID": active_count.ID, "X":crossed_coordinate[0],"Y":crossed_coordinate[1], "Frame":crossed_frame, "Class": active_count.Vhc_class, "Vidfilename": active_count.Vid_filename}
 
 def eventased_dictionary_to_dataframe():
     """Creates a dataframe to later be safed as csv
