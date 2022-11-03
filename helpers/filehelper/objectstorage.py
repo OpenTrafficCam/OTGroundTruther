@@ -58,3 +58,9 @@ color_dict = {
     "person": (214, 107, 88),
     "bus": (179, 177, 68),
 }
+#TODO: Implement ELLIPSEHEIGHT
+ELLIPSEHEIGHT = 0.15
+"Factor that gets multiplied with ellipsewidth to define ellipseheihgt"
+
+MAXSCROLLSPEED = 20
+"Maxscrollspeed"

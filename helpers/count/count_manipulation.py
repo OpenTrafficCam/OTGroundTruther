@@ -2,7 +2,7 @@ import helpers.filehelper.objectstorage as objectstorage
 
 vehicle_definition = {
     "1": "Car",
-    "2": "Bycicle",
+    "2": "Bicycle",
     "3": "Person",
     "4": "Bus",
     "5": "Van",

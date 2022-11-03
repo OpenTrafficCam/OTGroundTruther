@@ -94,7 +94,7 @@ class gui(tk.Tk):
 
     def change_scroll_up(self, event):
         print("scrollspeed:" + str(objectstorage.videoobject.scroll_speed))
-        if objectstorage.videoobject.scroll_speed < 10:
+        if objectstorage.videoobject.scroll_speed < 20:
             objectstorage.videoobject.scroll_speed += 1
 
     def change_scroll_down(self, event):

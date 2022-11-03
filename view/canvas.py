@@ -97,7 +97,7 @@ class OtcCanvas(tk.Canvas):
 
                 print(f"Coordinate in the gate: {gate}")
 
-                if event.num == 3 and bool(objectstorage.active_countings[objectstorage.active_countings_index].Gates):
+                if event.num == 3 and bool(objectstorage.active_countings[objectstorage.active_countings_index].Gates and objectstorage.active_countings[objectstorage.active_countings_index].Gates[-1] != gate ):
                     # append on right click
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates.append(gate)
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates.append((self.coordinateX,self.coordinateY))

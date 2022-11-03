@@ -95,8 +95,8 @@ def draw_finished_counts(np_image):
             # draw line if track consists of more than one coordinate
             if len(coordinates) > 1:
                 for coordinate_start, coordinate_end in pairwise(coordinates):
-                    np_image = cv2.line(np_image, coordinate_start,
-                    coordinate_end, (254, 255, 0, 255), 3,)
+                    np_image = cv2.arrowedLine(np_image, coordinate_start,
+                    coordinate_end, (255,185,15,255), 1,)
         except:
             continue
     return np_image
@@ -162,6 +162,6 @@ def draw_tag_around_start_coordinate(np_image):
         # draw line when count has two coordinates
         if len(active_count.Coordinates) > 1:
             for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
-                np_image = cv2.line(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),3,)     
+                np_image = cv2.arrowedLine(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),1,)     
 
     return np_image
