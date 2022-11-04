@@ -102,6 +102,7 @@ def set_new_vehicle_counter(eventbased_dataframe):
     """
 
     current_count.counter = eventbased_dataframe["TrackID"].max()
+    objectstorage.eventbased_dictionary_index = eventbased_dataframe["EventID"].max()
 
     print(
         "Nach import der GT startet die Zählung mit der ID: "
