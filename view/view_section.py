@@ -3,7 +3,7 @@ import tkinter as tk
 from helpers.image_alteration import manipulate_image
 import helpers.filehelper.objectstorage as objectstorage
 import keyboard
-from helpers.section import button_line_switch, dump_to_flowdictionary
+from helpers.section import dump_to_flowdictionary
 from helpers.filehelper.datamanagement import info_message
 
 
