@@ -102,7 +102,7 @@ def set_new_vehicle_counter(eventbased_dataframe):
     """
 
     current_count.counter = eventbased_dataframe["TrackID"].max()
-    objectstorage.eventbased_dictionary_index = eventbased_dataframe["EventID"].max()
+    
 
     print(
         "Nach import der GT startet die Zählung mit der ID: "
@@ -148,6 +148,8 @@ def load_event_dic_from_csv(treeview_gt, treeview_active_counts):
         file_path,
     )
     eventbased_dataframe.drop(['DateTime'], axis=1, inplace=True)
+
+    objectstorage.eventbased_dictionary_index = eventbased_dataframe["EventID"].max()
 
     eventbased_dataframe.set_index("EventID" , drop=True, inplace=True)
 
