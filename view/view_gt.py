@@ -118,9 +118,7 @@ class FrameGT(tk.LabelFrame):
                 if objectstorage.eventbased_dictionary[key]["TrackID"] == object_id:
                     del objectstorage.eventbased_dictionary[key]
             
-            
-
-        objectstorage.ground_truth =  objectstorage.ground_truth[objectstorage.ground_truth["ID"] != object_id]
+            objectstorage.ground_truth =  objectstorage.ground_truth[objectstorage.ground_truth["ID"] != object_id]
 
            
         manipulate_image(objectstorage.videoobject.np_image.copy())
