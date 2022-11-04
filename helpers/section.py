@@ -5,8 +5,6 @@ from shapely.geometry import LineString, Polygon
 
 
 
-
-
 def draw_section_line(np_image):
     """_summary_
 
