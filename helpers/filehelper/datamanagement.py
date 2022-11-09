@@ -179,14 +179,21 @@ def dic_to_gt_dataframe():
             ground_truth_dic[objectstorage.eventbased_dictionary[event]["TrackID"]] = {"Class": [], "Crossed_Gates": [], "Crossed_Frames": [], "Crossed_Coordinates": []}
             ground_truth_dic[id]["Class"] = objectstorage.eventbased_dictionary[event]["Class"]
 
-        ground_truth_dic[id]["Crossed_Gates"].append(objectstorage.eventbased_dictionary[event]["SectionID"])
-        ground_truth_dic[id]["Crossed_Frames"].append(objectstorage.eventbased_dictionary[event]["Frame"])
-        ground_truth_dic[id]["Crossed_Coordinates"].append((objectstorage.eventbased_dictionary[event]["X"],objectstorage.eventbased_dictionary[event]["Y"]))
+        if not ground_truth_dic[id]["Crossed_Frames"] or objectstorage.eventbased_dictionary[event]["Frame"] < ground_truth_dic[id]["Crossed_Frames"][-1]:
+            ground_truth_dic[id]["Crossed_Gates"].insert(0,objectstorage.eventbased_dictionary[event]["SectionID"])
+            ground_truth_dic[id]["Crossed_Frames"].insert(0,objectstorage.eventbased_dictionary[event]["Frame"])
+            ground_truth_dic[id]["Crossed_Coordinates"].insert(0,(objectstorage.eventbased_dictionary[event]["X"],objectstorage.eventbased_dictionary[event]["Y"]))
+
+        else:
+            ground_truth_dic[id]["Crossed_Gates"].append(objectstorage.eventbased_dictionary[event]["SectionID"])
+            ground_truth_dic[id]["Crossed_Frames"].append(objectstorage.eventbased_dictionary[event]["Frame"])
+            ground_truth_dic[id]["Crossed_Coordinates"].append((objectstorage.eventbased_dictionary[event]["X"],objectstorage.eventbased_dictionary[event]["Y"]))
+
 
     objectstorage.ground_truth = pd.DataFrame.from_dict(ground_truth_dic, orient="index")
     objectstorage.ground_truth.reset_index(inplace=True)
     objectstorage.ground_truth.rename({'index': 'ID'}, axis=1, inplace=True)
-    
+    print(objectstorage.ground_truth["Crossed_Frames"])
 
 def safe_eventbased_dataframe():
     """First creates dataframe and than csv
