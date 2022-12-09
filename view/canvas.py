@@ -102,8 +102,12 @@ class OtcCanvas(tk.Canvas):
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates.append(gate)
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates.append((self.coordinateX,self.coordinateY))
                     objectstorage.active_countings[objectstorage.active_countings_index].Frames.append(objectstorage.videoobject.current_frame)
+                    
                     break
+                elif event.num == 3 and bool(objectstorage.active_countings[objectstorage.active_countings_index].Gates and objectstorage.active_countings[objectstorage.active_countings_index].Gates[-1] == gate ):
                     #create on left click
+                    objectstorage.active_countings[objectstorage.active_countings_index].Coordinates[-1] = (self.coordinateX,self.coordinateY,)
+                    objectstorage.active_countings[objectstorage.active_countings_index].Frames[-1] = objectstorage.videoobject.current_frame
                 elif event.num == 1:
                     objectstorage.active_countings[objectstorage.active_countings_index].Gates = [gate]
                     objectstorage.active_countings[objectstorage.active_countings_index].Coordinates = [(self.coordinateX,self.coordinateY,)]

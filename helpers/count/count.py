@@ -62,9 +62,6 @@ class current_count:
             ):
                 print(key + " is None")
                 return False
-
-            #calculate Datetime
-
         return True
 
     def __del__(self):
