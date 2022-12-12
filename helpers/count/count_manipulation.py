@@ -1,14 +1,20 @@
 import helpers.filehelper.objectstorage as objectstorage
 
 vehicle_definition = {
-    "1": "Car",
-    "2": "Bicycle",
-    "3": "Person",
+    "1": "Pkw ohne Anhänger",
+    "3": "Fahrrad ohne Anhänger",
+    "2": "Person",
     "4": "Bus",
-    "5": "Van",
-    "6": "Truck",
-    "7": "Motorcycle",
-    "8": "Trailortruck",
+    "5": "Lkw ohne Anhänger",
+    "6": "Lkw mit Anhänger",
+    "7": "Pkw mit Anhänger",
+    "8": "Lieferwagen ohne Anhänger",
+    "9": "Lieferwagen mit Anhänger",
+    "equal": "Motorisierte Zweiräder",
+    "exclam":"Scooter",
+    "quotedbl": "Lastenrad",
+    "section": "Fahrrad mit Anhänger",
+    "percent":"Schienenfahrzeug"
 }
 
 
