@@ -2,8 +2,6 @@ import helpers.filehelper.objectstorage as objectstorage
 from helpers.filehelper.config import vehicle_definition
 
 
-
-
 def assign_vehicle_class(event):
 
     if not objectstorage.active_countings:
