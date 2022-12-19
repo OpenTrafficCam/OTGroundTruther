@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 
 maincanvas = None
 videoobject = None
@@ -19,7 +20,7 @@ ground_truth = pd.DataFrame(
         ]
 
 )
-
+starttime = time.time()
 eventbased_dictionary = {}
 eventbased_dictionary_index = 0
 

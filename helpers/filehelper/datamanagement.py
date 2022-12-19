@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from helpers.count.count import current_count
 from tkinter.messagebox import askyesno
+import time
 
 
 def fill_ground_truth(event):
@@ -68,7 +69,9 @@ def eventased_dictionary_to_dataframe():
     Returns:
         dataframe: dataframe with events and belonging datetime
     """
-
+    endtime = round(time.time() - objectstorage.starttime)
+    
+    objectstorage.eventbased_dictionary["999"] = {"SectionID": str(endtime),"TrackID": None, "X":1,"Y":1, "Frame":1, "Class": "Car", "Vidfilename": "file", }
 
     eventbased_dataframe = pd.DataFrame.from_dict(
         objectstorage.eventbased_dictionary, orient="index"
