@@ -9,6 +9,7 @@ def assign_vehicle_class(event):
     active_count = objectstorage.active_countings[objectstorage.active_countings_index]
 
     active_count.Vhc_class = vehicle_definition[event.keysym]
+    print(event.keysym)
     print(
         f"assigning Class {vehicle_definition[event.keysym]} to count: "
         + str(active_count.ID)

@@ -19,6 +19,7 @@ from helpers.filehelper.datamanagement import (
 )
 from view.view_section import FrameSection
 import keyboard
+from helpers.filehelper.config import vehicle_definition
 from helpers.section import shapely_object
 
 
@@ -51,7 +52,7 @@ class gui(tk.Tk):
 
         self.bind("m", self.jump_to_frame)
 
-        for i in range(1, 9):
+        for i in vehicle_definition.keys():
             self.bind(str(i), assign_vehicle_class, add="+")
             self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
 
