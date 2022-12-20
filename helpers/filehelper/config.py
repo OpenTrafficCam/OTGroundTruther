@@ -9,9 +9,9 @@ vehicle_definition = {
     "7": "Pkw mit Anhänger",
     "8": "Lieferwagen ohne Anhänger",
     "9": "Lieferwagen mit Anhänger",
-    "0": "Motorisierte Zweiräder"
-    # "33":"Scooter",
-    # "34": "Lastenrad",
-    # "35": "Fahrrad mit Anhänger",
-    # "36":"Schienenfahrzeug"
+    "0": "Motorisierte Zweiräder",
+    "q": "Scooter",
+    "w": "Lastenrad",
+    "e": "Fahrrad mit Anhänger",
+    "r": "Schienenfahrzeug"
 }
