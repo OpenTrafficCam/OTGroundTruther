@@ -5,22 +5,41 @@ import helpers.filehelper.objectstorage as objectstorage
 import keyboard
 from helpers.section import dump_to_flowdictionary
 from helpers.filehelper.datamanagement import info_message
+from PIL import Image, ImageTk
 
 
 class FrameSection(tk.LabelFrame):
     def __init__(self, **kwargs):
         super().__init__(text="Section", **kwargs)
         self.frame_tree = tk.Frame(master=self)
-        self.frame_tree.pack(fill="x")
+        self.frame_tree.pack(fill="y")
 
         # Files treeview
         self.tree_sections = ttk.Treeview(master=self.frame_tree, height=3)
-        self.tree_sections.pack(
-            fill="x",
+        self.tree_sections.pack(anchor=tk.W,
             padx=10,
             pady=10,
         )
+
+
+        image1 = Image.open("placeholder.png")
+        img = image1.resize((80, 80))
+        self.test = ImageTk.PhotoImage(img)
+        
+        self.control_label1 = tk.Label(master=self.frame_tree, image=self.test)
+
+        self.control_label1.config(bg="white")
+
+        self.tree_sections.pack(in_=self.frame_tree , side=tk.LEFT, padx=5,
+            pady=10,)
+        self.control_label1.pack(in_=self.frame_tree, side=tk.RIGHT, padx=5,
+            pady=10,)
+
+
         # TODO #11 cant prevent arrows from browsing through section treeview
+
+    
+
         self.tree_sections.bind(
             "<<TreeviewSelect>>",
         )
@@ -32,7 +51,7 @@ class FrameSection(tk.LabelFrame):
         self.tree_sections["columns"] = tuple(
             {k: v for k, v in tree_files_cols.items() if k != "#0"}.keys()
         )
-        self.tree_sections.column("#0", anchor="center")
+        self.tree_sections.column("#0", anchor="center", width=100)
         self.tree_sections.heading("#0", text=tree_files_cols["#0"], anchor="center")
 
         self.frame_control_section = tk.Frame(master=self)

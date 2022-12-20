@@ -26,19 +26,20 @@ class FrameActiveCounts(tk.LabelFrame):
             "Class": "Class",
             "Crossed Gates": "Crossed Gates",
         }
+
         self.tree_active_countings["columns"] = tuple(
             {k: v for k, v in tree_files_cols.items() if k != "#0"}.keys()
         )
-        self.tree_active_countings.column("#0", anchor="center", width=50)
+        self.tree_active_countings.column("#0",  anchor="center", width=30)
         self.tree_active_countings.heading(
             "#0", text=tree_files_cols["#0"], anchor="center"
         )
-        self.tree_active_countings.column("Class", anchor="center", width=50)
+        self.tree_active_countings.column("Class", anchor="center", width=200)
         self.tree_active_countings.heading(
             "Class", text=tree_files_cols["Class"], anchor="center"
         )
 
-        self.tree_active_countings.column("Crossed Gates", anchor="center", width=100)
+        self.tree_active_countings.column("Crossed Gates", anchor="center", width=200)
         self.tree_active_countings.heading(
             "Crossed Gates", text=tree_files_cols["Crossed Gates"], anchor="center"
         )

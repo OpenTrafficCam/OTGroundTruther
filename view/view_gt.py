@@ -41,7 +41,7 @@ class FrameGT(tk.LabelFrame):
         self.tree_gt["columns"] = tuple(
             {k: v for k, v in tree_files_cols.items() if k != "#0"}.keys()
         )
-        self.tree_gt.column("#0", anchor="center", width=50)
+        self.tree_gt.column("#0", anchor="center", width=10)
         self.tree_gt.heading("#0", text=tree_files_cols["#0"], anchor="center")
         self.tree_gt.column("Class", anchor="center", width=50)
         self.tree_gt.heading("Class", text=tree_files_cols["Class"], anchor="center")
