@@ -15,3 +15,19 @@ vehicle_definition = {
     "e": "Fahrrad mit Anhänger",
     "r": "Schienenfahrzeug"
 }
+
+vehicle_picture_graph= {
+    "p": "car.png",
+    "3": "cyclist.png",
+    "2": "pedestrian.png",
+    "4": "bus.png",
+    "5": "truck.png",
+    "6": "truck_trailer.png",
+    "P": "car_trailer.png",
+    "8": "van.png",
+    "9": "van_trailer.png",
+    "0": "motorcycle_rider.png",
+    "q": "scooter_rider.png",
+    "w": "cargo_cyclist.png",
+    "e": "cyclist-trailer.png",
+    "r": "tram_train.png"}

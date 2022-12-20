@@ -5,6 +5,7 @@ import helpers.filehelper.objectstorage as objectstorage
 import keyboard
 from helpers.section import dump_to_flowdictionary
 from helpers.filehelper.datamanagement import info_message
+from helpers.filehelper.config import vehicle_picture_graph
 from PIL import Image, ImageTk
 
 
@@ -36,9 +37,7 @@ class FrameSection(tk.LabelFrame):
             pady=10,)
 
 
-        # TODO #11 cant prevent arrows from browsing through section treeview
-
-    
+        # TODO #11 cant prevent arrows from browsing through section treeview   
 
         self.tree_sections.bind(
             "<<TreeviewSelect>>",
@@ -75,6 +74,13 @@ class FrameSection(tk.LabelFrame):
             command=lambda: self.delete_section(),
         )
         self.button_line_delete.grid(row=0, column=1, padx=(10, 10))
+
+    def display_chosen_vhv_class(self,event):
+        picture_path = vehicle_picture_graph[event.keysym]
+        image1 = Image.open(picture_path)
+        img = image1.resize((80, 80))
+        self.test = ImageTk.PhotoImage(img)
+        self.control_label1.configure(image=self.test)
 
     def button_line_switch(self, opposite_button):
         objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[

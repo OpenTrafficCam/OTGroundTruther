@@ -21,6 +21,7 @@ from view.view_section import FrameSection
 import keyboard
 from helpers.filehelper.config import vehicle_definition
 from helpers.section import shapely_object
+from PIL import Image, ImageTk
 
 
 class gui(tk.Tk):
@@ -54,6 +55,7 @@ class gui(tk.Tk):
 
         for i in vehicle_definition.keys():
             self.bind(str(i), assign_vehicle_class, add="+")
+            self.bind(str(i), self.frame_sections.display_chosen_vhv_class, add="+")
             self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
 
         self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
