@@ -42,16 +42,18 @@ class gui(tk.Tk):
         self.bind("<Left>", self.arrow_key_scroll)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
-        self.bind("n", initialize_new_count, add="+")
-        self.bind(
-            "n", self.frame_active_counts.insert_active_count_to_treeview, add="+"
-        )
+        # temporary deactivated
+        # self.bind("n", initialize_new_count, add="+")
+        # self.bind(
+        #     "n", self.frame_active_counts.insert_active_count_to_treeview, add="+"
+        # )
         self.bind("<Up>", self.change_active_countings_index, add="+")
         self.bind("<Down>", self.change_active_countings_index, add="+")
         self.bind("<Up>", self.frame_active_counts.update_treeview, add="+")
         self.bind("<Down>", self.frame_active_counts.update_treeview, add="+")
 
-        self.bind("m", self.jump_to_frame)
+        # temporary deactivated
+        #self.bind("m", self.jump_to_frame)
 
         for i in vehicle_definition.keys():
             self.bind(str(i), assign_vehicle_class, add="+")
@@ -62,6 +64,7 @@ class gui(tk.Tk):
         self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
         self.bind("<Return>", fill_eventbased_dictionary, add="+")
         self.bind("<Return>", fill_ground_truth, add="+")
+        self.bind("<Return>", self.frame_sections.display_chosen_vhv_class, add="+")
         self.bind("<Return>", self.reset_index, add="+")
         self.bind("<F5>", quick_safe_to_csv)
 
