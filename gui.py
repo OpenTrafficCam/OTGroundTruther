@@ -254,14 +254,15 @@ class gui(tk.Tk):
 
 def main():  # sourcery skip: remove-redundant-if
     """Main function."""
-    use_test_version = input("Type y to use testversion? \n")
+    # use_test_version = input("Type y to use testversion? \n")
 
-    if str(use_test_version) != "y":
-        use_test_version = None
-    # else:
+    # if str(use_test_version) != "y":
     #     use_test_version = None
+    # # else:
+    # #     use_test_version = None
 
-    objectstorage.use_test_version = use_test_version
+    #objectstorage.use_test_version = use_test_version
+    objectstorage.use_test_version = None
 
     app = gui()
     # app.resizable(False, False)
