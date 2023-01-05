@@ -71,7 +71,7 @@ def eventased_dictionary_to_dataframe():
     """
     endtime = round(time.time() - objectstorage.starttime)
     
-    objectstorage.eventbased_dictionary["999"] = {"SectionID": str(endtime),"TrackID": None, "X":1,"Y":1, "Frame":1, "Class": "Car", "Vidfilename": "file", }
+    #objectstorage.eventbased_dictionary["999"] = {"SectionID": str(endtime),"TrackID": None, "X":1,"Y":1, "Frame":1, "Class": "Car", "Vidfilename": "file", }
 
     eventbased_dataframe = pd.DataFrame.from_dict(
         objectstorage.eventbased_dictionary, orient="index"

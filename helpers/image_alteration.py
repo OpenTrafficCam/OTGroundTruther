@@ -153,7 +153,7 @@ def draw_tag_around_start_coordinate(np_image):
                 str(active_count.ID),
                 (active_count.Coordinates[0][0], active_count.Coordinates[0][1]),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                1,
+                0.75,
                 color,
                 1,
                 cv2.LINE_AA,

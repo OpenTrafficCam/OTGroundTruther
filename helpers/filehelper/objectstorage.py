@@ -63,5 +63,5 @@ color_dict = {
 ELLIPSEHEIGHT = 0.15
 "Factor that gets multiplied with ellipsewidth to define ellipseheihgt"
 
-MAXSCROLLSPEED = 20
+MAXSCROLLSPEED = 40
 "Maxscrollspeed"
