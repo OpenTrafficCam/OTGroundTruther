@@ -43,10 +43,10 @@ class gui(tk.Tk):
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
         # temporary deactivated
-        # self.bind("n", initialize_new_count, add="+")
-        # self.bind(
-        #     "n", self.frame_active_counts.insert_active_count_to_treeview, add="+"
-        # )
+        self.bind("x", initialize_new_count, add="+")
+        self.bind(
+            "x", self.frame_active_counts.insert_active_count_to_treeview, add="+"
+        )
         self.bind("<Up>", self.change_active_countings_index, add="+")
         self.bind("<Down>", self.change_active_countings_index, add="+")
         self.bind("<Up>", self.frame_active_counts.update_treeview, add="+")

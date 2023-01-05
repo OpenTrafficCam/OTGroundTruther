@@ -58,7 +58,7 @@ class FrameActiveCounts(tk.LabelFrame):
     def insert_active_count_to_treeview(self, event):
         # insert latest item from activecount list
         # if button n (keysym = n) is pressed or there is no active count
-        if event.keysym_num == 110 or not objectstorage.config_dict["count_active"] and objectstorage.config_dict["gt_active"]:
+        if event.keysym_num == 120 or not objectstorage.config_dict["count_active"] and objectstorage.config_dict["gt_active"]:
 
             objectstorage.config_dict["count_active"] = True
             latest_count = objectstorage.active_countings[-1]
