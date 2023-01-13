@@ -112,7 +112,7 @@ class FrameGT(tk.LabelFrame):
 
             self.tree_gt.delete(grount_truth_object)
 
-            #del objectstorage.eventbased_dictionary[object_id]
+#           del objectstorage.eventbased_dictionary[object_id]
 
             for key in objectstorage.eventbased_dictionary.copy():
                 if objectstorage.eventbased_dictionary[key]["TrackID"] == object_id:
