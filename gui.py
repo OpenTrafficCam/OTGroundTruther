@@ -270,18 +270,20 @@ def main():  # sourcery skip: remove-redundant-if
     menubar = tk.Menu(app)
     file = tk.Menu(
         menubar,
-        tearoff=1,
+        tearoff=0,
     )
-    file.add_command(label="Import flowfile", command=app.import_flowfile)
-    file.add_command(label="Save configuration", command=save_flowfile)
     file.add_command(
         label="Import videofile",
         command=lambda: [load_video_and_frame(), app.add_canvas_frame()],
     )
     file.add_separator()
+    file.add_command(label="Import flowfile", command=app.import_flowfile)
+    file.add_command(label="Save flowfile", command=save_flowfile)
+
+    file.add_separator()
     file.add_command(label="Save events", command=safe_eventbased_dataframe)
     file.add_command(
-        label="Load groundtruth",
+        label="Load events",
         command=lambda: [
             load_event_dic_from_csv(
                 app.frame_gt.tree_gt, app.frame_active_counts.tree_active_countings
