@@ -23,34 +23,6 @@ from view.view_gt import FrameGT
 from view.view_section import FrameSection
 
 
-def get_mouse_wheel_handler():
-    def windows_handler(event):
-        if event.delta > 0:
-            forward_video()
-        else:
-            rewind_video()
-
-    def linux_handler(event):
-        if event.delta > 0:
-            forward_video()
-        else:
-            rewind_video()
-        pass
-
-    def macos_handler(event):
-        if event.delta > 0:
-            rewind_video()
-        else:
-            forward_video()
-
-    if config.ON_MAC:
-        return macos_handler
-    elif config.ON_WINDOWS:
-        return windows_handler
-    else:
-        return linux_handler
-
-
 def handle_left_arrow_key_event(_):
     rewind_video()
 
@@ -89,7 +61,9 @@ class gui(tk.Tk):
 
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
-        self.bind("<MouseWheel>", get_mouse_wheel_handler())
+
+        self._init_mouse_scroll_keybind()
+
         self.bind(config.MIDDLE_CLICK_EVENT, self.undo_active_count_coords)
         self.bind("<Right>", handle_right_arrow_key_event)
         self.bind("<Left>", handle_left_arrow_key_event)
@@ -128,6 +102,27 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+
+    def _init_mouse_scroll_keybind(self):
+        def windows_handler(event):
+            if event.delta > 0:
+                forward_video()
+            else:
+                rewind_video()
+
+        def macos_handler(event):
+            if event.delta > 0:
+                rewind_video()
+            else:
+                forward_video()
+
+        if config.ON_MAC:
+            self.bind("<MouseWheel>", macos_handler)
+        elif config.ON_WINDOWS:
+            self.bind("<MouseWheel>", windows_handler)
+        else:
+            self.bind("<Button-5>", lambda _: forward_video())  # scroll up
+            self.bind("<Button-4>", lambda _: rewind_video())  # scroll down
 
     def handle_return_pressed_event(self, _):
         if config.RETURN_KEYBIND_IS_ENABLED:
