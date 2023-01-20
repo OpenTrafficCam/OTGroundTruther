@@ -21,6 +21,8 @@ from view.view_section import FrameSection
 import keyboard
 from helpers.filehelper.config import vehicle_definition
 from helpers.section import shapely_object
+import config
+
 def get_mouse_wheel_handler():
     def windows_handler(event):
         if event.delta > 0:
@@ -78,7 +80,7 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
         self.bind("<MouseWheel>", get_mouse_wheel_handler())
-        self.bind("<Button-2>",self.undo_active_count_coords)
+        self.bind(config.MIDDLE_CLICK_EVENT, self.undo_active_count_coords)
         self.bind("<Right>", self.arrow_key_scroll)
         self.bind("<Left>", self.arrow_key_scroll)
         self.bind("+", self.change_scroll_up)
@@ -111,24 +113,24 @@ class gui(tk.Tk):
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
-            "<ButtonPress-1>",
-            lambda event: [
-                initialize_new_count(event),
-                self.frame_active_counts.insert_active_count_to_treeview(event),
-                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
-                objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
-                self.frame_active_counts.update_treeview(event),
-            ],
+            config.LEFT_CLICK_EVENT, self.handle_left_click_event
         )
         objectstorage.maincanvas.bind(
-            "<ButtonPress-3>",
-            lambda event: [
-                initialize_new_count(event),
-                self.frame_active_counts.insert_active_count_to_treeview(event),
-                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
-                self.frame_active_counts.update_treeview(event),
-            ],
+            config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+
+    def handle_left_click_event(self, event):
+        initialize_new_count(event)
+        self.frame_active_counts.insert_active_count_to_treeview(event)
+        objectstorage.maincanvas.click_receive_vehicle_coordinates(event)
+        objectstorage.maincanvas.click_receive_section_coordinates(event, 0)
+        self.frame_active_counts.update_treeview(event)
+
+    def handle_right_click_event(self, event):
+        initialize_new_count(event),
+        self.frame_active_counts.insert_active_count_to_treeview(event),
+        objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
+        self.frame_active_counts.update_treeview(event),
 
     def jump_to_frame(self, event):
         if not objectstorage.active_countings:

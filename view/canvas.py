@@ -6,6 +6,7 @@ from helpers.filehelper.objectstorage import config_dict
 from helpers.image_alteration import manipulate_image
 from math import atan2, dist
 import numpy as np
+import config
 
 
 class OtcCanvas(tk.Canvas):
@@ -103,7 +104,7 @@ class OtcCanvas(tk.Canvas):
 
                 print(f"Coordinate in the gate: {gate}")
 
-                if event.num == 3 and bool(
+                if event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
                     objectstorage.active_countings[
                         objectstorage.active_countings_index
                     ].Gates
@@ -124,7 +125,7 @@ class OtcCanvas(tk.Canvas):
                     ].Frames.append(objectstorage.videoobject.current_frame)
 
                     break
-                elif event.num == 3 and bool(
+                elif event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
                     objectstorage.active_countings[
                         objectstorage.active_countings_index
                     ].Gates
@@ -143,7 +144,7 @@ class OtcCanvas(tk.Canvas):
                     objectstorage.active_countings[
                         objectstorage.active_countings_index
                     ].Frames[-1] = objectstorage.videoobject.current_frame
-                elif event.num == 1:
+                elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
                     objectstorage.active_countings[
                         objectstorage.active_countings_index
                     ].Gates = [gate]
@@ -160,7 +161,7 @@ class OtcCanvas(tk.Canvas):
                     ].Frames = [objectstorage.videoobject.current_frame]
                     break
             # delete if not clicked in section
-            elif event.num == 1:
+            elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
                 objectstorage.active_countings[
                     objectstorage.active_countings_index
                 ].Gates = []
