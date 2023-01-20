@@ -1,9 +1,7 @@
 import tkinter as tk
 
-import keyboard
-
-import config
 import helpers.filehelper.objectstorage as objectstorage
+import view.config as config
 from helpers.count.count import initialize_new_count
 from helpers.count.count_manipulation import assign_vehicle_class
 from helpers.filehelper.config import vehicle_definition
@@ -84,9 +82,11 @@ class gui(tk.Tk):
         self.set_layout()
 
         # hotkeys
-        keyboard.add_hotkey(
-            "enter", lambda: self.frame_sections.create_section_entry_window()
+        self.bind(
+            "<Return>", lambda _: self.frame_sections.create_section_entry_window()
         )
+        config.RETURN_KEYBIND_IS_ENABLED = True
+
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
         self.bind("<MouseWheel>", get_mouse_wheel_handler())
@@ -128,6 +128,10 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+
+    def handle_return_pressed_event(self, _):
+        if config.RETURN_KEYBIND_IS_ENABLED:
+            self.frame_sections.create_section_entry_window()
 
     def handle_left_click_event(self, event):
         initialize_new_count(event)

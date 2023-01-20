@@ -15,6 +15,8 @@ ON_MAC: bool = OS == "Darwin"
 LEFT_CLICK_EVENT: str = "<Button-1>"
 LEFT_CLICK_EVENT_NUMBER: int = 1
 
+RETURN_KEYBIND_IS_ENABLED = False
+
 if ON_WINDOWS:
     RIGHT_CLICK_EVENT: str = "<Button-3>"
     MIDDLE_CLICK_EVENT: str = "<Button-2>"

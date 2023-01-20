@@ -2,7 +2,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from pathlib import Path
 
-import keyboard
 from PIL import Image, ImageTk
 
 import helpers.filehelper.objectstorage as objectstorage
@@ -10,6 +9,7 @@ from helpers.filehelper.config import vehicle_picture_graph
 from helpers.filehelper.datamanagement import info_message
 from helpers.image_alteration import manipulate_image
 from helpers.section import dump_to_flowdictionary
+from view import config
 
 
 class FrameSection(tk.LabelFrame):
@@ -199,7 +199,7 @@ class FrameSection(tk.LabelFrame):
             self.new_detector_creation.geometry("%dx%d+%d+%d" % (250, 50, 850, 350))
 
             # removes hotkey so "enter" won't trigger
-            keyboard.remove_hotkey("enter")
+            config.RETURN_KEYBIND_IS_ENABLED = False
 
             detector_name_entry = tk.Entry(master=self.new_detector_creation)
 
@@ -221,10 +221,7 @@ class FrameSection(tk.LabelFrame):
 
     def on_close(self):
         # hotkeys
-        keyboard.add_hotkey(
-            "enter",
-            lambda: self.create_section_entry_window(),
-        )
+        config.RETURN_KEYBIND_IS_ENABLED = True
         self.new_detector_creation.destroy()
 
         manipulate_image(objectstorage.videoobject.np_image.copy())

@@ -3,8 +3,8 @@ from math import atan2, dist
 
 import numpy as np
 
-import config
 import helpers.filehelper.objectstorage as objectstorage
+import view.config as config
 from helpers.filehelper.objectstorage import config_dict
 from helpers.image_alteration import manipulate_image
 
