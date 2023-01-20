@@ -97,9 +97,7 @@ def draw_finished_counts(np_image):
             # draw line if track consists of more than one coordinate
             if len(coordinates) > 1:
                 for coordinate_start, coordinate_end in pairwise(coordinates):
-                    np_image = cv2.arrowedLine(np_image, coordinate_start,
-                    coordinate_end, (255,185,15,255), 1,)
-        except:
+        except Exception:
             continue
     return np_image
 

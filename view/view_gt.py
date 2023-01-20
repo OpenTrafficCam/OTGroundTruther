@@ -86,7 +86,7 @@ class FrameGT(tk.LabelFrame):
             objectstorage.videoobject.set_frame()
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
-        except:
+        except Exception:
             return
 
     def fill_treeview(self):
