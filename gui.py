@@ -51,6 +51,14 @@ def get_mouse_wheel_handler():
         return linux_handler
 
 
+def handle_left_arrow_key_event(_):
+    rewind_video()
+
+
+def handle_right_arrow_key_event(_):
+    forward_video()
+
+
 def forward_video() -> None:
     objectstorage.videoobject.current_frame += (
         1 * objectstorage.videoobject.scroll_speed
@@ -81,8 +89,8 @@ class gui(tk.Tk):
             self.add_canvas_frame()
         self.bind("<MouseWheel>", get_mouse_wheel_handler())
         self.bind(config.MIDDLE_CLICK_EVENT, self.undo_active_count_coords)
-        self.bind("<Right>", self.arrow_key_scroll)
-        self.bind("<Left>", self.arrow_key_scroll)
+        self.bind("<Right>", handle_right_arrow_key_event)
+        self.bind("<Left>", handle_left_arrow_key_event)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
         # temporary deactivated
