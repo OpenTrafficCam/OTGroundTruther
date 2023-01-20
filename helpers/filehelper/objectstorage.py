@@ -1,5 +1,6 @@
-import pandas as pd
 import time
+
+import pandas as pd
 
 maincanvas = None
 videoobject = None

@@ -2,12 +2,13 @@ from datetime import datetime
 import re
 import sys
 import time
+from datetime import datetime
 from threading import Thread
 from tkinter import filedialog
 
-
 import cv2
 from PIL import Image, ImageTk
+
 import helpers.filehelper.objectstorage as objectstorage
 
 if sys.version_info >= (3, 0):

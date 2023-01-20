@@ -1,12 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox
+from math import atan2, dist
+
+import numpy as np
+
+import config
 import helpers.filehelper.objectstorage as objectstorage
 from helpers.filehelper.objectstorage import config_dict
-
 from helpers.image_alteration import manipulate_image
-from math import atan2, dist
-import numpy as np
-import config
 
 
 class OtcCanvas(tk.Canvas):

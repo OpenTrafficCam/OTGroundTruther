@@ -1,13 +1,15 @@
-from pathlib import Path
-import tkinter.ttk as ttk
 import tkinter as tk
-from helpers.image_alteration import manipulate_image
-import helpers.filehelper.objectstorage as objectstorage
+import tkinter.ttk as ttk
+from pathlib import Path
+
 import keyboard
-from helpers.section import dump_to_flowdictionary
-from helpers.filehelper.datamanagement import info_message
-from helpers.filehelper.config import vehicle_picture_graph
 from PIL import Image, ImageTk
+
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.config import vehicle_picture_graph
+from helpers.filehelper.datamanagement import info_message
+from helpers.image_alteration import manipulate_image
+from helpers.section import dump_to_flowdictionary
 
 
 class FrameSection(tk.LabelFrame):

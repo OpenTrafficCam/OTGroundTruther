@@ -1,8 +1,9 @@
-import helpers.filehelper.objectstorage as objectstorage
-import cv2
 from math import atan2, dist, pi
+
+import cv2
 from shapely.geometry import LineString, Polygon
 
+import helpers.filehelper.objectstorage as objectstorage
 
 
 def draw_section_line(np_image):

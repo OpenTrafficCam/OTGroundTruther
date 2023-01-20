@@ -1,27 +1,29 @@
-from view.canvas import CanvasFrame
 import tkinter as tk
-from helpers.video import load_video_and_frame
+
+import keyboard
+
+import config
 import helpers.filehelper.objectstorage as objectstorage
-from helpers.image_alteration import manipulate_image
-from view.view_activecount import FrameActiveCounts
-from view.view_gt import FrameGT
 from helpers.count.count import initialize_new_count
 from helpers.count.count_manipulation import assign_vehicle_class
+from helpers.filehelper.config import vehicle_definition
 from helpers.filehelper.datamanagement import (
-    
     fill_eventbased_dictionary,
     fill_ground_truth,
+    load_event_dic_from_csv,
     load_flowfile,
+    quick_safe_to_csv,
     safe_eventbased_dataframe,
     save_flowfile,
-    quick_safe_to_csv,
-    load_event_dic_from_csv,
 )
-from view.view_section import FrameSection
-import keyboard
-from helpers.filehelper.config import vehicle_definition
+from helpers.image_alteration import manipulate_image
 from helpers.section import shapely_object
-import config
+from helpers.video import load_video_and_frame
+from view.canvas import CanvasFrame
+from view.view_activecount import FrameActiveCounts
+from view.view_gt import FrameGT
+from view.view_section import FrameSection
+
 
 def get_mouse_wheel_handler():
     def windows_handler(event):

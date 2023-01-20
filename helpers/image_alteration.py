@@ -1,9 +1,11 @@
-from PIL import Image, ImageTk
-import helpers.filehelper.objectstorage as objectstorage
 import tkinter
+
 import cv2
-from helpers.section import draw_section_line, draw_ellipse_around_section
 from more_itertools import pairwise
+from PIL import Image, ImageTk
+
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.section import draw_ellipse_around_section, draw_section_line
 
 
 def manipulate_image(np_image=None):
