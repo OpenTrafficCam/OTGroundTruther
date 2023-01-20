@@ -21,7 +21,48 @@ from view.view_section import FrameSection
 import keyboard
 from helpers.filehelper.config import vehicle_definition
 from helpers.section import shapely_object
-from PIL import Image, ImageTk
+def get_mouse_wheel_handler():
+    def windows_handler(event):
+        if event.delta > 0:
+            forward_video()
+        else:
+            rewind_video()
+
+    def linux_handler(event):
+        if event.delta > 0:
+            forward_video()
+        else:
+            rewind_video()
+        pass
+
+    def macos_handler(event):
+        if event.delta > 0:
+            rewind_video()
+        else:
+            forward_video()
+
+    if config.ON_MAC:
+        return macos_handler
+    elif config.ON_WINDOWS:
+        return windows_handler
+    else:
+        return linux_handler
+
+
+def forward_video() -> None:
+    objectstorage.videoobject.current_frame += (
+        1 * objectstorage.videoobject.scroll_speed
+    )
+    objectstorage.videoobject.set_frame()
+    manipulate_image(objectstorage.videoobject.np_image.copy())
+
+
+def rewind_video() -> None:
+    objectstorage.videoobject.current_frame -= (
+        1 * objectstorage.videoobject.scroll_speed
+    )
+    objectstorage.videoobject.set_frame()
+    manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
 class gui(tk.Tk):
@@ -36,7 +77,7 @@ class gui(tk.Tk):
         )
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
-        self.bind("<MouseWheel>", self.mouse_scroll)
+        self.bind("<MouseWheel>", get_mouse_wheel_handler())
         self.bind("<Button-2>",self.undo_active_count_coords)
         self.bind("<Right>", self.arrow_key_scroll)
         self.bind("<Left>", self.arrow_key_scroll)
