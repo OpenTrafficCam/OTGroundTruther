@@ -163,39 +163,6 @@ class gui(tk.Tk):
         if objectstorage.videoobject.scroll_speed > 1:
             objectstorage.videoobject.scroll_speed -= 1
 
-    def mouse_scroll(self, event):
-        if event.delta > 1:
-            objectstorage.videoobject.current_frame += (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        elif (
-            objectstorage.videoobject.current_frame
-            - 1 * objectstorage.videoobject.scroll_speed
-        ) >= 0:
-            objectstorage.videoobject.current_frame -= (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        objectstorage.videoobject.set_frame()
-
-        manipulate_image(objectstorage.videoobject.np_image.copy())
-
-    def arrow_key_scroll(self, event):
-
-        if event.keycode == 39:
-            objectstorage.videoobject.current_frame += (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        elif objectstorage.videoobject.current_frame > 0:
-            objectstorage.videoobject.current_frame -= (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        objectstorage.videoobject.set_frame()
-        manipulate_image(objectstorage.videoobject.np_image.copy())
-
     def change_active_countings_index(self, event):
 
         if event.keycode in [38, 40] and len(objectstorage.active_countings) == 0:
