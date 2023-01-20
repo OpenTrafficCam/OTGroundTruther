@@ -58,14 +58,20 @@ def draw_finished_counts(np_image):
     if objectstorage.ground_truth.empty:
         return np_image
 
-
     current_frame = objectstorage.videoobject.current_frame
 
-    objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[0]
-    objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth["Crossed_Frames"].str[-1]
-    
+    objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth[
+        "Crossed_Frames"
+    ].str[0]
+    objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth[
+        "Crossed_Frames"
+    ].str[-1]
+
     # dataframe faster than looping through dictionary
-    df_subset = objectstorage.ground_truth.loc[(objectstorage.ground_truth['First_Frame'] <= current_frame) & (objectstorage.ground_truth['Last_Frame'] >= current_frame)]
+    df_subset = objectstorage.ground_truth.loc[
+        (objectstorage.ground_truth["First_Frame"] <= current_frame)
+        & (objectstorage.ground_truth["Last_Frame"] >= current_frame)
+    ]
 
     for index, row in df_subset.iterrows():
         try:
@@ -93,13 +99,22 @@ def draw_finished_counts(np_image):
                 (0, 255, 255, 255),
                 1,
                 cv2.LINE_AA,
-                False,)
+                False,
+            )
             # draw line if track consists of more than one coordinate
             if len(coordinates) > 1:
                 for coordinate_start, coordinate_end in pairwise(coordinates):
+                    np_image = cv2.arrowedLine(
+                        np_image,
+                        coordinate_start,
+                        coordinate_end,
+                        (255, 185, 15, 255),
+                        1,
+                    )
         except Exception:
             continue
     return np_image
+
 
 def draw_detectors_from_dict(np_image):
     """Draws detectors on every frame.
@@ -162,6 +177,12 @@ def draw_tag_around_start_coordinate(np_image):
         # draw line when count has two coordinates
         if len(active_count.Coordinates) > 1:
             for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
-                np_image = cv2.arrowedLine(np_image,coordinate_start,coordinate_end,(254, 255, 0, 255),1,)     
+                np_image = cv2.arrowedLine(
+                    np_image,
+                    coordinate_start,
+                    coordinate_end,
+                    (254, 255, 0, 255),
+                    1,
+                )
 
     return np_image

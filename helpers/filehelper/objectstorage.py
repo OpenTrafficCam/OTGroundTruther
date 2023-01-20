@@ -13,13 +13,13 @@ active_countings_index = 0
 
 # ground_truth = []
 ground_truth = pd.DataFrame(
-     columns=[
-        "ID", "Class",
-            "Crossed_Gates",
-            "Crossed_Frames",
-            "Crossed_Coordinates",
-        ]
-
+    columns=[
+        "ID",
+        "Class",
+        "Crossed_Gates",
+        "Crossed_Frames",
+        "Crossed_Coordinates",
+    ]
 )
 starttime = time.time()
 eventbased_dictionary = {}
@@ -60,7 +60,7 @@ color_dict = {
     "person": (214, 107, 88),
     "bus": (179, 177, 68),
 }
-#TODO: Implement ELLIPSEHEIGHT
+# TODO: Implement ELLIPSEHEIGHT
 ELLIPSEHEIGHT = 0.15
 "Factor that gets multiplied with ellipsewidth to define ellipseheihgt"
 

@@ -1,4 +1,4 @@
-#definition of vehicleclasses and hotkeys as dictionary keys
+# definition of vehicleclasses and hotkeys as dictionary keys
 vehicle_definition = {
     "p": "Pkw ohne Anhänger",
     "b": "Fahrrad ohne Anhänger",
@@ -13,10 +13,10 @@ vehicle_definition = {
     "s": "Scooter",
     "c": "Lastenrad",
     "B": "Fahrrad mit Anhänger",
-    "8": "Schienenfahrzeug"
+    "8": "Schienenfahrzeug",
 }
 
-vehicle_picture_graph= {
+vehicle_picture_graph = {
     "p": "car.png",
     "b": "cyclist.png",
     "0": "pedestrian.png",
@@ -31,4 +31,5 @@ vehicle_picture_graph= {
     "c": "cargo_cyclist.png",
     "B": "cyclist-trailer.png",
     "8": "tram_train.png",
-    "Return": "placeholder.png"}
+    "Return": "placeholder.png",
+}

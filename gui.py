@@ -106,7 +106,7 @@ class gui(tk.Tk):
         self.bind("<Down>", self.frame_active_counts.update_treeview, add="+")
 
         # temporary deactivated
-        #self.bind("m", self.jump_to_frame)
+        # self.bind("m", self.jump_to_frame)
 
         for i in vehicle_definition.keys():
             self.bind(str(i), assign_vehicle_class, add="+")
@@ -212,8 +212,16 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             objectstorage.videoobject = load_video_and_frame()
 
-        self.frame_active_counts.button_count.configure(command=lambda: self.frame_active_counts.button_count_switch(self.frame_sections.button_line))
-        self.frame_sections.button_line.configure(command=lambda: self.frame_sections.button_line_switch(self.frame_active_counts.button_count))  
+        self.frame_active_counts.button_count.configure(
+            command=lambda: self.frame_active_counts.button_count_switch(
+                self.frame_sections.button_line
+            )
+        )
+        self.frame_sections.button_line.configure(
+            command=lambda: self.frame_sections.button_line_switch(
+                self.frame_active_counts.button_count
+            )
+        )
 
     def add_canvas_frame(self):
         np_image = objectstorage.videoobject.get_frame(np_image=True)
@@ -259,7 +267,14 @@ class gui(tk.Tk):
     def undo_active_count_coords(self, event):
         if not objectstorage.active_countings:
             return
-        if len(objectstorage.active_countings[objectstorage.active_countings_index].Coordinates) > 1:
+        if (
+            len(
+                objectstorage.active_countings[
+                    objectstorage.active_countings_index
+                ].Coordinates
+            )
+            > 1
+        ):
             active_count = objectstorage.active_countings[
                 objectstorage.active_countings_index
             ]
@@ -281,7 +296,7 @@ def main():  # sourcery skip: remove-redundant-if
     # # else:
     # #     use_test_version = None
 
-    #objectstorage.use_test_version = use_test_version
+    # objectstorage.use_test_version = use_test_version
     objectstorage.use_test_version = None
 
     app = gui()

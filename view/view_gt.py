@@ -74,12 +74,12 @@ class FrameGT(tk.LabelFrame):
         curItem = self.tree_gt.focus()
         selected_object_id = self.tree_gt.item(curItem)["text"]
 
-
-        count = objectstorage.ground_truth[objectstorage.ground_truth["ID"] == selected_object_id]
+        count = objectstorage.ground_truth[
+            objectstorage.ground_truth["ID"] == selected_object_id
+        ]
 
         try:
             selected_frame = count["Crossed_Frames"].str[0]
-
 
             objectstorage.videoobject.current_frame = int(selected_frame)
 
@@ -113,13 +113,14 @@ class FrameGT(tk.LabelFrame):
 
             self.tree_gt.delete(grount_truth_object)
 
-#           del objectstorage.eventbased_dictionary[object_id]
+            #           del objectstorage.eventbased_dictionary[object_id]
 
             for key in objectstorage.eventbased_dictionary.copy():
                 if objectstorage.eventbased_dictionary[key]["TrackID"] == object_id:
                     del objectstorage.eventbased_dictionary[key]
-            
-            objectstorage.ground_truth =  objectstorage.ground_truth[objectstorage.ground_truth["ID"] != object_id]
 
-           
+            objectstorage.ground_truth = objectstorage.ground_truth[
+                objectstorage.ground_truth["ID"] != object_id
+            ]
+
         manipulate_image(objectstorage.videoobject.np_image.copy())

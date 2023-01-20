@@ -1,4 +1,3 @@
-from datetime import datetime
 import re
 import sys
 import time
@@ -30,7 +29,10 @@ def load_video_and_frame():
         return
 
     # opens dialog to load video file
-    video_source = "C:/Users/Goerner/Desktop/code/OpenTrafficCam/OTAnalytics/tests/data/input/radeberg_FR20_2020-02-20_12-00-00.mp4"
+    video_source = (
+        "C:/Users/Goerner/Desktop/code/OpenTrafficCam/OTAnalytics/tests/"
+        "data/input/radeberg_FR20_2020-02-20_12-00-00.mp4"
+    )
     filepath = video_source
     return Video(filepath)
 
@@ -252,9 +254,9 @@ class Video(FileVideoStream):
         Returns:
             array: array of current image
         """
-        #if the frame changes ==> drawn but not safed sections gets deleted
-        objectstorage.maincanvas.points = [(0,0),(0,0)]
-        
+        # if the frame changes ==> drawn but not safed sections gets deleted
+        objectstorage.maincanvas.points = [(0, 0), (0, 0)]
+
         self.stream.set(1, self.current_frame)
 
         ret, frame = self.stream.read()
