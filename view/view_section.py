@@ -22,8 +22,7 @@ class FrameSection(tk.LabelFrame):
             pady=10,
         )
 
-
-        image1 = Image.open("placeholder.png")
+        image1 = Image.open(Path("assets", "placeholder.png"))
         img = image1.resize((80, 80))
         self.test = ImageTk.PhotoImage(img)
         
@@ -77,7 +76,7 @@ class FrameSection(tk.LabelFrame):
 
     def display_chosen_vhv_class(self,event):
         picture_path = vehicle_picture_graph[event.keysym]
-        image1 = Image.open(picture_path)
+        image1 = Image.open(Path("assets", picture_path))
         img = image1.resize((80, 80))
         self.test = ImageTk.PhotoImage(img)
         self.control_label1.configure(image=self.test)
