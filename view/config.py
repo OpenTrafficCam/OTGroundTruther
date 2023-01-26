@@ -1,7 +1,7 @@
 import platform
 
 OS: str = platform.system()
-"""OS OTVision is currently running on"""
+"""OS OTGroundTruther is currently running on"""
 
 ON_WINDOWS: bool = OS == "Windows"
 """Wether OS is Windows or not"""
