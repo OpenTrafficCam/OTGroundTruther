@@ -14,4 +14,3 @@ def assign_vehicle_class(event):
         f"assigning Class {vehicle_definition[event.keysym]} to count: "
         + str(active_count.ID)
     )
-    

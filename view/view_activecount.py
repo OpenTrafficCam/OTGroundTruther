@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+
 import helpers.filehelper.objectstorage as objectstorage
 
 
@@ -30,7 +31,7 @@ class FrameActiveCounts(tk.LabelFrame):
         self.tree_active_countings["columns"] = tuple(
             {k: v for k, v in tree_files_cols.items() if k != "#0"}.keys()
         )
-        self.tree_active_countings.column("#0",  anchor="center", width=30)
+        self.tree_active_countings.column("#0", anchor="center", width=30)
         self.tree_active_countings.heading(
             "#0", text=tree_files_cols["#0"], anchor="center"
         )
@@ -52,13 +53,17 @@ class FrameActiveCounts(tk.LabelFrame):
             width=20,
             bg="green",
             text="Activate Counting",
-            )
+        )
         self.button_count.grid(row=0, column=1, padx=(10, 0))
 
     def insert_active_count_to_treeview(self, event):
         # insert latest item from activecount list
         # if button n (keysym = n) is pressed or there is no active count
-        if event.keysym_num == 120 or not objectstorage.config_dict["count_active"] and objectstorage.config_dict["gt_active"]:
+        if (
+            event.keysym_num == 120
+            or not objectstorage.config_dict["count_active"]
+            and objectstorage.config_dict["gt_active"]
+        ):
 
             objectstorage.config_dict["count_active"] = True
             latest_count = objectstorage.active_countings[-1]
@@ -89,7 +94,7 @@ class FrameActiveCounts(tk.LabelFrame):
             values = self.tree_active_countings.item(child, "text")
 
             if int(count_ID) == int(values):
-                
+
                 self.tree_active_countings.item(
                     child,
                     values=(
@@ -100,7 +105,9 @@ class FrameActiveCounts(tk.LabelFrame):
         # could be anywhere in code
 
         # highlights and selects treeview item
-        iid = self.tree_active_countings.get_children()[objectstorage.active_countings_index]
+        iid = self.tree_active_countings.get_children()[
+            objectstorage.active_countings_index
+        ]
         self.tree_active_countings.selection_set(iid)
 
     def delete_from_treeview(self, event):
@@ -126,15 +133,15 @@ class FrameActiveCounts(tk.LabelFrame):
         objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
             "gt_active"
         ]
-        objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
+        objectstorage.config_dict[
             "linedetector_toggle"
-        ]
+        ] = not objectstorage.config_dict["linedetector_toggle"]
         if objectstorage.config_dict["gt_active"]:
-            self.button_count.configure(bg='green')
-            opposite_button.configure(bg='red')
+            self.button_count.configure(bg="green")
+            opposite_button.configure(bg="red")
 
         else:
-            self.button_count.configure(bg='red')
-            opposite_button.configure(bg='green')
+            self.button_count.configure(bg="red")
+            opposite_button.configure(bg="green")
 
-        print("Adding to count: "+str(objectstorage.config_dict["gt_active"]))
+        print("Adding to count: " + str(objectstorage.config_dict["gt_active"]))

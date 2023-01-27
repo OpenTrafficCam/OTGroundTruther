@@ -1,12 +1,15 @@
-import tkinter.ttk as ttk
 import tkinter as tk
-from helpers.image_alteration import manipulate_image
-import helpers.filehelper.objectstorage as objectstorage
-import keyboard
-from helpers.section import dump_to_flowdictionary
-from helpers.filehelper.datamanagement import info_message
-from helpers.filehelper.config import vehicle_picture_graph
+import tkinter.ttk as ttk
+from pathlib import Path
+
 from PIL import Image, ImageTk
+
+import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.config import vehicle_picture_graph
+from helpers.filehelper.datamanagement import info_message
+from helpers.image_alteration import manipulate_image
+from helpers.section import dump_to_flowdictionary
+from view import config
 
 
 class FrameSection(tk.LabelFrame):
@@ -17,27 +20,34 @@ class FrameSection(tk.LabelFrame):
 
         # Files treeview
         self.tree_sections = ttk.Treeview(master=self.frame_tree, height=3)
-        self.tree_sections.pack(anchor=tk.W,
+        self.tree_sections.pack(
+            anchor=tk.W,
             padx=10,
             pady=10,
         )
 
-
-        image1 = Image.open("placeholder.png")
+        image1 = Image.open(Path("assets", "placeholder.png"))
         img = image1.resize((80, 80))
         self.test = ImageTk.PhotoImage(img)
-        
+
         self.control_label1 = tk.Label(master=self.frame_tree, image=self.test)
 
         self.control_label1.config(bg="white")
 
-        self.tree_sections.pack(in_=self.frame_tree , side=tk.LEFT, padx=5,
-            pady=10,)
-        self.control_label1.pack(in_=self.frame_tree, side=tk.RIGHT, padx=5,
-            pady=10,)
+        self.tree_sections.pack(
+            in_=self.frame_tree,
+            side=tk.LEFT,
+            padx=5,
+            pady=10,
+        )
+        self.control_label1.pack(
+            in_=self.frame_tree,
+            side=tk.RIGHT,
+            padx=5,
+            pady=10,
+        )
 
-
-        # TODO #11 cant prevent arrows from browsing through section treeview   
+        # TODO #11 cant prevent arrows from browsing through section treeview
 
         self.tree_sections.bind(
             "<<TreeviewSelect>>",
@@ -62,7 +72,6 @@ class FrameSection(tk.LabelFrame):
             width=12,
             bg="red",
             text="Add Line",
-            
         )
         self.button_line.grid(row=0, column=0, padx=(10, 10))
 
@@ -75,28 +84,30 @@ class FrameSection(tk.LabelFrame):
         )
         self.button_line_delete.grid(row=0, column=1, padx=(10, 10))
 
-    def display_chosen_vhv_class(self,event):
+    def display_chosen_vhv_class(self, event):
         picture_path = vehicle_picture_graph[event.keysym]
-        image1 = Image.open(picture_path)
+        image1 = Image.open(Path("assets", picture_path))
         img = image1.resize((80, 80))
         self.test = ImageTk.PhotoImage(img)
         self.control_label1.configure(image=self.test)
 
     def button_line_switch(self, opposite_button):
-        objectstorage.config_dict["linedetector_toggle"] = not objectstorage.config_dict[
+        objectstorage.config_dict[
             "linedetector_toggle"
-        ]
+        ] = not objectstorage.config_dict["linedetector_toggle"]
         objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
             "gt_active"
         ]
-        print("Drawing Section:"+ str(objectstorage.config_dict["linedetector_toggle"]))
+        print(
+            "Drawing Section:" + str(objectstorage.config_dict["linedetector_toggle"])
+        )
         if objectstorage.config_dict["linedetector_toggle"]:
-                self.button_line.configure(bg='green')
-                opposite_button.configure(bg='red')
+            self.button_line.configure(bg="green")
+            opposite_button.configure(bg="red")
 
         else:
-            self.button_line.configure(bg='red')
-            opposite_button.configure(bg='green')
+            self.button_line.configure(bg="red")
+            opposite_button.configure(bg="green")
 
     def add_section(self, entrywidget):
         """Saves created section to flowfile.
@@ -188,7 +199,7 @@ class FrameSection(tk.LabelFrame):
             self.new_detector_creation.geometry("%dx%d+%d+%d" % (250, 50, 850, 350))
 
             # removes hotkey so "enter" won't trigger
-            keyboard.remove_hotkey("enter")
+            config.RETURN_KEYBIND_IS_ENABLED = False
 
             detector_name_entry = tk.Entry(master=self.new_detector_creation)
 
@@ -210,10 +221,7 @@ class FrameSection(tk.LabelFrame):
 
     def on_close(self):
         # hotkeys
-        keyboard.add_hotkey(
-            "enter",
-            lambda: self.create_section_entry_window(),
-        )
+        config.RETURN_KEYBIND_IS_ENABLED = True
         self.new_detector_creation.destroy()
 
         manipulate_image(objectstorage.videoobject.np_image.copy())

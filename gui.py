@@ -1,27 +1,50 @@
-from view.canvas import CanvasFrame
 import tkinter as tk
-from helpers.video import load_video_and_frame
+
 import helpers.filehelper.objectstorage as objectstorage
-from helpers.image_alteration import manipulate_image
-from view.view_activecount import FrameActiveCounts
-from view.view_gt import FrameGT
+import view.config as config
 from helpers.count.count import initialize_new_count
 from helpers.count.count_manipulation import assign_vehicle_class
+from helpers.filehelper.config import vehicle_definition
 from helpers.filehelper.datamanagement import (
-    
     fill_eventbased_dictionary,
     fill_ground_truth,
+    load_event_dic_from_csv,
     load_flowfile,
+    quick_safe_to_csv,
     safe_eventbased_dataframe,
     save_flowfile,
-    quick_safe_to_csv,
-    load_event_dic_from_csv,
 )
-from view.view_section import FrameSection
-import keyboard
-from helpers.filehelper.config import vehicle_definition
+from helpers.image_alteration import manipulate_image
 from helpers.section import shapely_object
-from PIL import Image, ImageTk
+from helpers.video import load_video_and_frame
+from view.canvas import CanvasFrame
+from view.view_activecount import FrameActiveCounts
+from view.view_gt import FrameGT
+from view.view_section import FrameSection
+
+
+def handle_left_arrow_key_event(_):
+    rewind_video()
+
+
+def handle_right_arrow_key_event(_):
+    forward_video()
+
+
+def forward_video() -> None:
+    objectstorage.videoobject.current_frame += (
+        1 * objectstorage.videoobject.scroll_speed
+    )
+    objectstorage.videoobject.set_frame()
+    manipulate_image(objectstorage.videoobject.np_image.copy())
+
+
+def rewind_video() -> None:
+    objectstorage.videoobject.current_frame -= (
+        1 * objectstorage.videoobject.scroll_speed
+    )
+    objectstorage.videoobject.set_frame()
+    manipulate_image(objectstorage.videoobject.np_image.copy())
 
 
 class gui(tk.Tk):
@@ -31,15 +54,19 @@ class gui(tk.Tk):
         self.set_layout()
 
         # hotkeys
-        keyboard.add_hotkey(
-            "enter", lambda: self.frame_sections.create_section_entry_window()
+        self.bind(
+            "<Return>", lambda _: self.frame_sections.create_section_entry_window()
         )
+        config.RETURN_KEYBIND_IS_ENABLED = True
+
         if objectstorage.use_test_version is not None:
             self.add_canvas_frame()
-        self.bind("<MouseWheel>", self.mouse_scroll)
-        self.bind("<Button-2>",self.undo_active_count_coords)
-        self.bind("<Right>", self.arrow_key_scroll)
-        self.bind("<Left>", self.arrow_key_scroll)
+
+        self._init_mouse_scroll_keybind()
+
+        self.bind(config.MIDDLE_CLICK_EVENT, self.undo_active_count_coords)
+        self.bind("<Right>", handle_right_arrow_key_event)
+        self.bind("<Left>", handle_left_arrow_key_event)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
         # temporary deactivated
@@ -53,7 +80,7 @@ class gui(tk.Tk):
         self.bind("<Down>", self.frame_active_counts.update_treeview, add="+")
 
         # temporary deactivated
-        #self.bind("m", self.jump_to_frame)
+        # self.bind("m", self.jump_to_frame)
 
         for i in vehicle_definition.keys():
             self.bind(str(i), assign_vehicle_class, add="+")
@@ -70,24 +97,49 @@ class gui(tk.Tk):
 
         # bind functions to canvas // prevent circular import
         objectstorage.maincanvas.bind(
-            "<ButtonPress-1>",
-            lambda event: [
-                initialize_new_count(event),
-                self.frame_active_counts.insert_active_count_to_treeview(event),
-                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
-                objectstorage.maincanvas.click_receive_section_coordinates(event, 0),
-                self.frame_active_counts.update_treeview(event),
-            ],
+            config.LEFT_CLICK_EVENT, self.handle_left_click_event
         )
         objectstorage.maincanvas.bind(
-            "<ButtonPress-3>",
-            lambda event: [
-                initialize_new_count(event),
-                self.frame_active_counts.insert_active_count_to_treeview(event),
-                objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
-                self.frame_active_counts.update_treeview(event),
-            ],
+            config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+
+    def _init_mouse_scroll_keybind(self):
+        def windows_handler(event):
+            if event.delta > 0:
+                forward_video()
+            else:
+                rewind_video()
+
+        def macos_handler(event):
+            if event.delta > 0:
+                rewind_video()
+            else:
+                forward_video()
+
+        if config.ON_MAC:
+            self.bind("<MouseWheel>", macos_handler)
+        elif config.ON_WINDOWS:
+            self.bind("<MouseWheel>", windows_handler)
+        else:
+            self.bind("<Button-5>", lambda _: forward_video())  # scroll up
+            self.bind("<Button-4>", lambda _: rewind_video())  # scroll down
+
+    def handle_return_pressed_event(self, _):
+        if config.RETURN_KEYBIND_IS_ENABLED:
+            self.frame_sections.create_section_entry_window()
+
+    def handle_left_click_event(self, event):
+        initialize_new_count(event)
+        self.frame_active_counts.insert_active_count_to_treeview(event)
+        objectstorage.maincanvas.click_receive_vehicle_coordinates(event)
+        objectstorage.maincanvas.click_receive_section_coordinates(event, 0)
+        self.frame_active_counts.update_treeview(event)
+
+    def handle_right_click_event(self, event):
+        initialize_new_count(event),
+        self.frame_active_counts.insert_active_count_to_treeview(event),
+        objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
+        self.frame_active_counts.update_treeview(event),
 
     def jump_to_frame(self, event):
         if not objectstorage.active_countings:
@@ -109,39 +161,6 @@ class gui(tk.Tk):
         print("scrollspeed:" + str(objectstorage.videoobject.scroll_speed))
         if objectstorage.videoobject.scroll_speed > 1:
             objectstorage.videoobject.scroll_speed -= 1
-
-    def mouse_scroll(self, event):
-        if event.delta > 1:
-            objectstorage.videoobject.current_frame += (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        elif (
-            objectstorage.videoobject.current_frame
-            - 1 * objectstorage.videoobject.scroll_speed
-        ) >= 0:
-            objectstorage.videoobject.current_frame -= (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        objectstorage.videoobject.set_frame()
-
-        manipulate_image(objectstorage.videoobject.np_image.copy())
-
-    def arrow_key_scroll(self, event):
-
-        if event.keycode == 39:
-            objectstorage.videoobject.current_frame += (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        elif objectstorage.videoobject.current_frame > 0:
-            objectstorage.videoobject.current_frame -= (
-                1 * objectstorage.videoobject.scroll_speed
-            )
-
-        objectstorage.videoobject.set_frame()
-        manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def change_active_countings_index(self, event):
 
@@ -192,8 +211,16 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             objectstorage.videoobject = load_video_and_frame()
 
-        self.frame_active_counts.button_count.configure(command=lambda: self.frame_active_counts.button_count_switch(self.frame_sections.button_line))
-        self.frame_sections.button_line.configure(command=lambda: self.frame_sections.button_line_switch(self.frame_active_counts.button_count))  
+        self.frame_active_counts.button_count.configure(
+            command=lambda: self.frame_active_counts.button_count_switch(
+                self.frame_sections.button_line
+            )
+        )
+        self.frame_sections.button_line.configure(
+            command=lambda: self.frame_sections.button_line_switch(
+                self.frame_active_counts.button_count
+            )
+        )
 
     def add_canvas_frame(self):
         np_image = objectstorage.videoobject.get_frame(np_image=True)
@@ -239,7 +266,14 @@ class gui(tk.Tk):
     def undo_active_count_coords(self, event):
         if not objectstorage.active_countings:
             return
-        if len(objectstorage.active_countings[objectstorage.active_countings_index].Coordinates) > 1:
+        if (
+            len(
+                objectstorage.active_countings[
+                    objectstorage.active_countings_index
+                ].Coordinates
+            )
+            > 1
+        ):
             active_count = objectstorage.active_countings[
                 objectstorage.active_countings_index
             ]
@@ -261,7 +295,7 @@ def main():  # sourcery skip: remove-redundant-if
     # # else:
     # #     use_test_version = None
 
-    #objectstorage.use_test_version = use_test_version
+    # objectstorage.use_test_version = use_test_version
     objectstorage.use_test_version = None
 
     app = gui()
