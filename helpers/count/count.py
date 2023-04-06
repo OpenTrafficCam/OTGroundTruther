@@ -1,9 +1,15 @@
 import helpers.filehelper.objectstorage as objectstorage
 
+
 def initialize_new_count(event):
     """_summary_"""
-    # if pressed key is n or there are no active counts (for creating active count by mouseclick)
-    if event.keysym_num == 120 or not objectstorage.config_dict["count_active"] and objectstorage.config_dict["gt_active"]:
+    # if pressed key is n or there are no active counts
+    # (for creating active count by mouse click)
+    if (
+        event.keysym_num == 120
+        or not objectstorage.config_dict["count_active"]
+        and objectstorage.config_dict["gt_active"]
+    ):
 
         objectstorage.active_countings.append(current_count())
 
@@ -15,6 +21,7 @@ def initialize_new_count(event):
             )
         else:
             return
+
 
 class current_count:
     """_summary_
@@ -53,9 +60,8 @@ class current_count:
 
     def all_values_set(self):
 
-
         for key in self.counted_vehicle_information().keys():
-            if not(
+            if not (
                 objectstorage.active_countings[
                     objectstorage.active_countings_index
                 ].counted_vehicle_information()[key]
