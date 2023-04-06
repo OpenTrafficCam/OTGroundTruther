@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+helpers/filehelper/afterprocessing/click_evauation.py
