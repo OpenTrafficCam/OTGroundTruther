@@ -186,6 +186,8 @@ class Video(FileVideoStream):
         self.width = 800
         self.height = 600
 
+        
+
         self.scroll_speed = 1
 
         self.totalframecount = int(self.stream.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -203,6 +205,7 @@ class Video(FileVideoStream):
             self.x_resize_factor = self.width / self.videowidth
 
         else:
+            # if video has the same format as player, factors are 1
             self.x_resize_factor = 1
             self.y_resize_factor = 1
 

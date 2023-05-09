@@ -319,6 +319,11 @@ def save_flowfile():
         for detector in objectstorage.flow_dict["Detectors"]:
             del objectstorage.flow_dict["Detectors"][detector]["Geometry_line"]
 
+            objectstorage.flow_dict["Detectors"][detector]["start_x"] = int(objectstorage.flow_dict["Detectors"][detector]["start_x"] / objectstorage.videoobject.x_resize_factor)
+            objectstorage.flow_dict["Detectors"][detector]["start_y"] = int(objectstorage.flow_dict["Detectors"][detector]["start_y"] / objectstorage.videoobject.y_resize_factor)
+            objectstorage.flow_dict["Detectors"][detector]["end_x"] = int(objectstorage.flow_dict["Detectors"][detector]["end_x"] / objectstorage.videoobject.x_resize_factor)
+            objectstorage.flow_dict["Detectors"][detector]["end_y"] = int(objectstorage.flow_dict["Detectors"][detector]["end_y"] / objectstorage.videoobject.y_resize_factor)
+
         json.dump(objectstorage.flow_dict, file, indent=4)
     else:
         info_message("Warning", "Create Sections and Movements first!")

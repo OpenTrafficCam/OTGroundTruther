@@ -247,10 +247,16 @@ class gui(tk.Tk):
         objectstorage.flow_dict = load_flowfile()
 
         for detector in objectstorage.flow_dict["Detectors"]:
-            x1 = objectstorage.flow_dict["Detectors"][detector]["start_x"]
-            y1 = objectstorage.flow_dict["Detectors"][detector]["start_y"]
-            x2 = objectstorage.flow_dict["Detectors"][detector]["end_x"]
-            y2 = objectstorage.flow_dict["Detectors"][detector]["end_y"]
+            
+            x1 = int(objectstorage.flow_dict["Detectors"][detector]["start_x"] * objectstorage.videoobject.x_resize_factor)
+            y1 = int(objectstorage.flow_dict["Detectors"][detector]["start_y"] * objectstorage.videoobject.y_resize_factor)
+            x2 = int(objectstorage.flow_dict["Detectors"][detector]["end_x"] * objectstorage.videoobject.x_resize_factor)
+            y2 = int(objectstorage.flow_dict["Detectors"][detector]["end_y"] * objectstorage.videoobject.y_resize_factor)
+
+            objectstorage.flow_dict["Detectors"][detector]["start_x"] = x1
+            objectstorage.flow_dict["Detectors"][detector]["start_y"] = y1
+            objectstorage.flow_dict["Detectors"][detector]["end_x"] = x2
+            objectstorage.flow_dict["Detectors"][detector]["end_y"] = y2
 
             # when imported calculates the shapelyobjects fron detector coords
             objectstorage.flow_dict["Detectors"][detector][
