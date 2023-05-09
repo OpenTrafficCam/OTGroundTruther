@@ -185,8 +185,7 @@ class Video(FileVideoStream):
 
         self.width = 800
         self.height = 600
-
-        
+       
 
         self.scroll_speed = 1
 
