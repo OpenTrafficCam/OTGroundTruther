@@ -32,6 +32,8 @@ quicksafe_filepath_event = None
 
 flow_dict = {"Detectors": {}, "Movements": {}}
 
+flow_dict = {"sections": [{}], "Movements": {}}
+
 config_dict = {
     "linedetector_toggle": False,
     "polygondetector_toggle": False,

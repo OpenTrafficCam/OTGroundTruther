@@ -51,6 +51,34 @@ def draw_ellipse_around_section(np_image, p0, p1):
     return np_image
 
 
+# def dump_to_flowdictionary(detector_name):
+#     """Saves sections to flowdictionary.
+
+#     Args:
+#         canvas (tkinter.canvas): Cancvas that hand out clicked coordinates.
+#         flow_dict (dictionary): Dictionary with sections and movements.
+#         detector_name (String): Entrywidgetinput, functions as key of dictionary.
+#     """
+#     if objectstorage.config_dict["linedetector_toggle"] is True:
+
+#         x1 = objectstorage.maincanvas.points[0][0]
+#         y1 = objectstorage.maincanvas.points[0][1]
+#         x2 = objectstorage.maincanvas.points[1][0]
+#         y2 = objectstorage.maincanvas.points[1][1]
+
+#         objectstorage.flow_dict["Detectors"][detector_name] = {
+#             "type": "line",
+#             "start_x": x1,
+#             "start_y": y1,
+#             "end_x": x2,
+#             "end_y": y2,
+#             "color": (200, 125, 125, 255),
+#             "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
+#             # USE REAL CALCULATION FOR POLYGON
+#             # "Geometry_polygon": shapely_object(x1, y1, x2, y2),
+#         }
+
+
 def dump_to_flowdictionary(detector_name):
     """Saves sections to flowdictionary.
 
@@ -66,17 +94,21 @@ def dump_to_flowdictionary(detector_name):
         x2 = objectstorage.maincanvas.points[1][0]
         y2 = objectstorage.maincanvas.points[1][1]
 
-        objectstorage.flow_dict["Detectors"][detector_name] = {
-            "type": "line",
-            "start_x": x1,
-            "start_y": y1,
-            "end_x": x2,
-            "end_y": y2,
-            "color": (200, 125, 125, 255),
-            "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
-            # USE REAL CALCULATION FOR POLYGON
-            # "Geometry_polygon": shapely_object(x1, y1, x2, y2),
-        }
+        objectstorage.flow_dict["sections"] = [{"id": detector_name, "type": "line",
+                                                "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                                                "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)}]
+
+        # = {
+        #     "type": "line",
+        #     "start_x": x1,
+        #     "start_y": y1,
+        #     "end_x": x2,
+        #     "end_y": y2,
+        #     "color": (200, 125, 125, 255),
+        #     "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
+        #     # USE REAL CALCULATION FOR POLYGON
+        #     # "Geometry_polygon": shapely_object(x1, y1, x2, y2),
+        # }
 
 
 def shapely_object(x1, y1, x2, y2, linestring=False, buffer=50):

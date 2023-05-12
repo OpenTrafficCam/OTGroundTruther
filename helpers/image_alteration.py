@@ -125,15 +125,15 @@ def draw_detectors_from_dict(np_image):
     Returns:
         np_image (numpy_array): returns manipulated image"""
 
-    if objectstorage.flow_dict["Detectors"]:
+    if objectstorage.flow_dict["sections"][0]:
 
-        for detector in objectstorage.flow_dict["Detectors"]:
-            if objectstorage.flow_dict["Detectors"][detector]["type"] == "line":
-                start_x = objectstorage.flow_dict["Detectors"][detector]["start_x"]
-                start_y = objectstorage.flow_dict["Detectors"][detector]["start_y"]
-                end_x = objectstorage.flow_dict["Detectors"][detector]["end_x"]
-                end_y = objectstorage.flow_dict["Detectors"][detector]["end_y"]
-                color = objectstorage.flow_dict["Detectors"][detector]["color"]
+        for detector in objectstorage.flow_dict["sections"]:
+            if detector["type"] == "line":
+                start_x = detector["coordinates"][0]["x"]
+                start_y = detector["coordinates"][0]["y"]
+                end_x = detector["coordinates"][1]["x"]
+                end_y = detector["coordinates"][1]["y"]
+                color = (200, 125, 125, 255)
 
                 np_image = cv2.line(
                     np_image, (start_x, start_y), (end_x, end_y), color, 3

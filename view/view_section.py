@@ -120,18 +120,20 @@ class FrameSection(tk.LabelFrame):
 
         detector_name = entrywidget.get()
 
-        if detector_name in objectstorage.flow_dict["Detectors"].keys():
-            tk.messagebox.showinfo(
-                title="Warning", message="Sectionname already exists!"
-            )
+        for detector in objectstorage.flow_dict["sections"]:
+            if objectstorage.flow_dict["sections"][0]:
+                if detector["id"] == detector_name:
 
-        else:
+                    tk.messagebox.showinfo(
+                        title="Warning", message="Sectionname already exists!"
+                    )
+                return
 
-            dump_to_flowdictionary(detector_name)
+        dump_to_flowdictionary(detector_name)
 
-            self.tree_sections.insert(parent="", index="end", text=detector_name)
+        self.tree_sections.insert(parent="", index="end", text=detector_name)
 
-            self.on_close(),
+        self.on_close(),
 
     def delete_section(self):
 
