@@ -3,10 +3,10 @@ import cv2
 import os
 import re
 
-PATH__LOAD_FLOWFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Sections\Knotenpunkte\Aachen_15.otflow"
-PATH__SAFE_FLOWFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Sections\updated_sections\Aachen_15.otflow"
+PATH__LOAD_FLOWFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Sections\Querschnitte\TUD_Dresden_Alaunstr_Cam3.otflow"
+PATH__SAFE_FLOWFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Sections\updated_sections\TUD_Dresden_Alaunstr_Cam3.otflow"
 
-PATH_VIDEOFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Videos\Aachen\Aachen_OTCamera15_FR20_2022-11-15_15-00-00.mp4"
+PATH_VIDEOFILE = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\Videos\TUD_Dresden\TUD_Dresden_Alaunstr_cam1_2022-08-03_15-15-00.mp4"
 
 file_name_with_extension = os.path.basename(PATH_VIDEOFILE)
 file_name_without_extension, file_extension = os.path.splitext(file_name_with_extension)
@@ -65,7 +65,7 @@ new_flow_dict = {}
 #defined metadatadic
 meta_data_dict = {"metadata":{"software": "OTGroundTruther",
 		 "version" : "0.1.0",
-		 "video"   : {"name": city_otcamera,
+		 "video"   : {"name": "TUD_Dresden_Alaunstr_Cam3",
 		 	      "width"   : videowidth,
 			      "height"  : videoheight,
 		}}}
