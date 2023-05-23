@@ -311,20 +311,30 @@ def save_flowfile():
     Args:
         flow_dict (dictionary): Dictionary with sections and movements.
     """
-    if objectstorage.flow_dict["Detectors"]:
+    if objectstorage.flow_dict["sections"]:
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
+        flow_dic_for_saving = {"sections": [], "Movements": {}}
+
         # delete shapeley objects because they cant be safed
-        for detector in objectstorage.flow_dict["Detectors"]:
-            del objectstorage.flow_dict["Detectors"][detector]["Geometry_line"]
+        for detector in objectstorage.flow_dict["sections"]:
+            del detector["Geometry_line"]
 
-            objectstorage.flow_dict["Detectors"][detector]["start_x"] = int(objectstorage.flow_dict["Detectors"][detector]["start_x"] / objectstorage.videoobject.x_resize_factor)
-            objectstorage.flow_dict["Detectors"][detector]["start_y"] = int(objectstorage.flow_dict["Detectors"][detector]["start_y"] / objectstorage.videoobject.y_resize_factor)
-            objectstorage.flow_dict["Detectors"][detector]["end_x"] = int(objectstorage.flow_dict["Detectors"][detector]["end_x"] / objectstorage.videoobject.x_resize_factor)
-            objectstorage.flow_dict["Detectors"][detector]["end_y"] = int(objectstorage.flow_dict["Detectors"][detector]["end_y"] / objectstorage.videoobject.y_resize_factor)
+            x1 = int(
+                detector["coordinates"][0]["x"] / objectstorage.videoobject.x_resize_factor)
+            y1 = int(
+                detector["coordinates"][0]["y"] / objectstorage.videoobject.y_resize_factor)
+            x2 = int(
+                detector["coordinates"][1]["x"] / objectstorage.videoobject.x_resize_factor)
+            y2 = int(
+                detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
 
-        json.dump(objectstorage.flow_dict, file, indent=4)
+            flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
+                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                                                    "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
+
+        json.dump(flow_dic_for_saving, file)
     else:
         info_message("Warning", "Create Sections and Movements first!")
 

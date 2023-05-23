@@ -94,21 +94,11 @@ def dump_to_flowdictionary(detector_name):
         x2 = objectstorage.maincanvas.points[1][0]
         y2 = objectstorage.maincanvas.points[1][1]
 
-        objectstorage.flow_dict["sections"] = [{"id": detector_name, "type": "line",
-                                                "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                                "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)}]
+        print(objectstorage.flow_dict)
 
-        # = {
-        #     "type": "line",
-        #     "start_x": x1,
-        #     "start_y": y1,
-        #     "end_x": x2,
-        #     "end_y": y2,
-        #     "color": (200, 125, 125, 255),
-        #     "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True),
-        #     # USE REAL CALCULATION FOR POLYGON
-        #     # "Geometry_polygon": shapely_object(x1, y1, x2, y2),
-        # }
+        objectstorage.flow_dict["sections"].append({"id": detector_name, "type": "line",
+                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                                                    "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)})
 
 
 def shapely_object(x1, y1, x2, y2, linestring=False, buffer=50):

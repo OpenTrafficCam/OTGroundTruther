@@ -120,14 +120,17 @@ class FrameSection(tk.LabelFrame):
 
         detector_name = entrywidget.get()
 
-        for detector in objectstorage.flow_dict["sections"]:
-            if objectstorage.flow_dict["sections"][0]:
+        if objectstorage.flow_dict:
+
+            for detector in objectstorage.flow_dict["sections"]:
+
+                print("test")
                 if detector["id"] == detector_name:
 
                     tk.messagebox.showinfo(
                         title="Warning", message="Sectionname already exists!"
                     )
-                return
+                    return
 
         dump_to_flowdictionary(detector_name)
 
