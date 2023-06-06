@@ -151,11 +151,37 @@ class FrameSection(tk.LabelFrame):
 
             detector_name = self.tree_sections.item(sectionitem, "text")
 
+            section_dic = [d for d in objectstorage.flow_dict["Sections"]
+                           if d.get("id") == detector_name]
+
+            print(section_dic)
+
             self.tree_sections.delete(sectionitem)
 
-            del objectstorage.flow_dict["Detectors"][detector_name]
+            objectstorage.flow_dict["Sections"].remove(section_dic[0])
+
+            # del objectstorage.flow_dict["Detectors"][detector_name]
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    # def delete_section(self):
+
+    #     itemlist = list(self.tree_sections.selection())
+
+    #     if not itemlist:
+    #         info_message("Warning", "Please select detector you wish to delete!")
+
+    #         return
+
+    #     for sectionitem in itemlist:
+
+    #         detector_name = self.tree_sections.item(sectionitem, "text")
+
+    #         self.tree_sections.delete(sectionitem)
+
+    #         del objectstorage.flow_dict["Detectors"][detector_name]
+
+    #         manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def tree_section_selection(self, event):
         """Re draws detectors, where the selected detectors has different color

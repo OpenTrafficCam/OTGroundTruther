@@ -268,7 +268,7 @@ class gui(tk.Tk):
                                       "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)})
 
             self.frame_sections.tree_sections.insert(
-                parent="", index="end", text=detector
+                parent="", index="end", text=detector["id"]
             )
         objectstorage.flow_dict["Sections"] = imported_sections
         print("finished")
@@ -325,7 +325,7 @@ class gui(tk.Tk):
             del active_count.Frames[-1]
             del active_count.Gates[-1]
 
-            print("Last rightclick deletet")
+            print("Last rightclick deleted")
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
 
