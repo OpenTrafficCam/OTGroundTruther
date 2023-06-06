@@ -122,7 +122,7 @@ class FrameSection(tk.LabelFrame):
 
         if objectstorage.flow_dict:
 
-            for detector in objectstorage.flow_dict["sections"]:
+            for detector in objectstorage.flow_dict["Sections"]:
 
                 print("test")
                 if detector["id"] == detector_name:

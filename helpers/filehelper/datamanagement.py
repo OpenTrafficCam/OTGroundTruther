@@ -283,18 +283,36 @@ def quick_safe_to_csv(event):
         info_message("Warning", "Safe events first to set filepath!")
 
 
+# def load_flowfile():
+#     """Loads flow file.
+
+#     Returns:
+#         json: Return json file to read from.
+#     """
+
+#     if (
+#         not objectstorage.flow_dict["Detectors"]
+#         and not objectstorage.flow_dict["Movements"]
+#     ):
+#         filepath = filedialog.askopenfile(filetypes=[("Detectors", "*.OTflow")])
+#         files = open(filepath.name, "r")
+#         files = files.read()
+
+#         return json.loads(files)
+
+#     else:
+#         info_message("Warning", "Clear existing flowfile first!")
+
+
 def load_flowfile():
     """Loads flow file.
 
     Returns:
         json: Return json file to read from.
     """
-
     if (
-        not objectstorage.flow_dict["Detectors"]
-        and not objectstorage.flow_dict["Movements"]
-    ):
-        filepath = filedialog.askopenfile(filetypes=[("Detectors", "*.OTflow")])
+            not objectstorage.flow_dict["Sections"]):
+        filepath = filedialog.askopenfile(filetypes=[("Sections", "*.OTflow")])
         files = open(filepath.name, "r")
         files = files.read()
 
@@ -311,14 +329,14 @@ def save_flowfile():
     Args:
         flow_dict (dictionary): Dictionary with sections and movements.
     """
-    if objectstorage.flow_dict["sections"]:
+    if objectstorage.flow_dict["Sections"]:
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
-        flow_dic_for_saving = {"sections": [], "Movements": {}}
+        flow_dic_for_saving = {"Sections": [], "Movements": {}}
 
         # delete shapeley objects because they cant be safed
-        for detector in objectstorage.flow_dict["sections"]:
+        for detector in objectstorage.flow_dict["Sections"]:
             del detector["Geometry_line"]
 
             x1 = int(
@@ -330,7 +348,7 @@ def save_flowfile():
             y2 = int(
                 detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
 
-            flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
+            flow_dic_for_saving["Sections"].append({"id": detector["id"], "type": "line",
                                                     "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
                                                     "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
 
