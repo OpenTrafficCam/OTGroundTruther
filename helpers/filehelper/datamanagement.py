@@ -230,7 +230,9 @@ def dic_to_gt_dataframe():
             ground_truth_dic[id]["Crossed_Coordinates"].insert(
                 0,
                 (
+                    # hier muss die umrechnung mit x faktor geschehen
                     objectstorage.eventbased_dictionary[event]["X"],
+                    # hier muss die umrechnung mit y faktor geschehen
                     objectstorage.eventbased_dictionary[event]["Y"],
                 ),
             )
@@ -244,7 +246,9 @@ def dic_to_gt_dataframe():
             )
             ground_truth_dic[id]["Crossed_Coordinates"].append(
                 (
+                    # hier muss die umrechnung mit x faktor geschehen
                     objectstorage.eventbased_dictionary[event]["X"],
+                    # hier muss die umrechnung mit y faktor geschehen
                     objectstorage.eventbased_dictionary[event]["Y"],
                 )
             )
