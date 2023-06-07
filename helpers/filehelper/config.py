@@ -33,3 +33,11 @@ vehicle_picture_graph = {
     "8": "tram_train.png",
     "Return": "placeholder.png",
 }
+
+# defined metadatadic
+meta_data_dict = {"metadata": {"software": "OTGroundTruther",
+                               "version": "0.1.0",
+                               "video": {"name": None,
+                                         "width": None,
+                                         "height": None,
+                                         }}}

@@ -6,6 +6,7 @@ import pandas as pd
 
 import helpers.filehelper.objectstorage as objectstorage
 from helpers.count.count import current_count
+from helpers.filehelper.config import meta_data_dict
 
 
 def fill_ground_truth(event):
@@ -337,7 +338,7 @@ def save_flowfile():
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
-        flow_dic_for_saving = {"Sections": [], "Movements": {}}
+        flow_dic_for_saving = {"metadata": None, "Sections": []}
 
         # delete shapeley objects because they cant be safed
         for detector in objectstorage.flow_dict["Sections"]:
@@ -352,13 +353,27 @@ def save_flowfile():
             y2 = int(
                 detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
 
+            # add altered sections to new section dic for safing
             flow_dic_for_saving["Sections"].append({"id": detector["id"], "type": "line",
                                                     "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
                                                     "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
 
+        flow_dic_for_saving = add_meta_data(flow_dic_for_saving)
+
         json.dump(flow_dic_for_saving, file)
     else:
         info_message("Warning", "Create Sections and Movements first!")
+
+
+def add_meta_data(flow_dic):
+    # adds meta data dic
+    flow_dic["metadata"] = meta_data_dict["metadata"]
+    flow_dic["metadata"]["video"]["name"] = objectstorage.videoobject.filename.split(".")[
+        0]
+    flow_dic["metadata"]["video"]["width"] = objectstorage.videoobject.videowidth
+    flow_dic["metadata"]["video"]["height"] = objectstorage.videoobject.videoheight
+
+    return flow_dic
 
 
 def info_message(title, text):
