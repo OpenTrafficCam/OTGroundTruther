@@ -96,7 +96,7 @@ def dump_to_flowdictionary(detector_name):
 
         print(objectstorage.flow_dict)
 
-        objectstorage.flow_dict["Sections"].append({"id": detector_name, "type": "line",
+        objectstorage.flow_dict["sections"].append({"id": detector_name, "type": "line",
                                                     "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
                                                     "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)})
 

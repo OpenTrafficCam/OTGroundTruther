@@ -251,7 +251,7 @@ class gui(tk.Tk):
         # [d for d in dictionaries if d.get(key) == value]
         imported_sections = []
 
-        for detector in objectstorage.flow_dict["Sections"]:
+        for detector in objectstorage.flow_dict["sections"]:
             print(detector)
             print("----------------")
             x1 = int(
@@ -270,7 +270,7 @@ class gui(tk.Tk):
             self.frame_sections.tree_sections.insert(
                 parent="", index="end", text=detector["id"]
             )
-        objectstorage.flow_dict["Sections"] = imported_sections
+        objectstorage.flow_dict["sections"] = imported_sections
         print("finished")
 
         manipulate_image(objectstorage.videoobject.np_image.copy())

@@ -125,9 +125,9 @@ def draw_detectors_from_dict(np_image):
     Returns:
         np_image (numpy_array): returns manipulated image"""
 
-    if objectstorage.flow_dict["Sections"]:
+    if objectstorage.flow_dict["sections"]:
 
-        for detector in objectstorage.flow_dict["Sections"]:
+        for detector in objectstorage.flow_dict["sections"]:
             if detector["type"] == "line":
                 start_x = detector["coordinates"][0]["x"]
                 start_y = detector["coordinates"][0]["y"]

@@ -122,7 +122,7 @@ class FrameSection(tk.LabelFrame):
 
         if objectstorage.flow_dict:
 
-            for detector in objectstorage.flow_dict["Sections"]:
+            for detector in objectstorage.flow_dict["sections"]:
 
                 print("test")
                 if detector["id"] == detector_name:
@@ -151,14 +151,14 @@ class FrameSection(tk.LabelFrame):
 
             detector_name = self.tree_sections.item(sectionitem, "text")
 
-            section_dic = [d for d in objectstorage.flow_dict["Sections"]
+            section_dic = [d for d in objectstorage.flow_dict["sections"]
                            if d.get("id") == detector_name]
 
             print(section_dic)
 
             self.tree_sections.delete(sectionitem)
 
-            objectstorage.flow_dict["Sections"].remove(section_dic[0])
+            objectstorage.flow_dict["sections"].remove(section_dic[0])
 
             # del objectstorage.flow_dict["Detectors"][detector_name]
 

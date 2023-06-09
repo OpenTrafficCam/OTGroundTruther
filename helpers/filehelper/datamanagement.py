@@ -316,8 +316,8 @@ def load_flowfile():
         json: Return json file to read from.
     """
     if (
-            not objectstorage.flow_dict["Sections"]):
-        filepath = filedialog.askopenfile(filetypes=[("Sections", "*.OTflow")])
+            not objectstorage.flow_dict["sections"]):
+        filepath = filedialog.askopenfile(filetypes=[("sections", "*.OTflow")])
         files = open(filepath.name, "r")
         files = files.read()
 
@@ -334,14 +334,14 @@ def save_flowfile():
     Args:
         flow_dict (dictionary): Dictionary with sections and movements.
     """
-    if objectstorage.flow_dict["Sections"]:
+    if objectstorage.flow_dict["sections"]:
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
-        flow_dic_for_saving = {"metadata": None, "Sections": []}
+        flow_dic_for_saving = {"metadata": None, "sections": []}
 
         # delete shapeley objects because they cant be safed
-        for detector in objectstorage.flow_dict["Sections"]:
+        for detector in objectstorage.flow_dict["sections"]:
             del detector["Geometry_line"]
 
             x1 = int(
@@ -354,7 +354,7 @@ def save_flowfile():
                 detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
 
             # add altered sections to new section dic for safing
-            flow_dic_for_saving["Sections"].append({"id": detector["id"], "type": "line",
+            flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
                                                     "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
                                                     "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
 
@@ -362,7 +362,7 @@ def save_flowfile():
 
         json.dump(flow_dic_for_saving, file)
     else:
-        info_message("Warning", "Create Sections and Movements first!")
+        info_message("Warning", "Create sections and Movements first!")
 
 
 def add_meta_data(flow_dic):

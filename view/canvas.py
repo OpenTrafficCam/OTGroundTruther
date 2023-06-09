@@ -78,8 +78,8 @@ class OtcCanvas(tk.Canvas):
         """depending on left or right mousclick and if click is in section
         coorindates get added, reseted or initialized
         """
-        if objectstorage.flow_dict["Sections"]:
-            for detector in objectstorage.flow_dict["Sections"]:
+        if objectstorage.flow_dict["sections"]:
+            for detector in objectstorage.flow_dict["sections"]:
                 p0 = (
                     detector["coordinates"][0]["x"],
                     detector["coordinates"][0]["y"],
