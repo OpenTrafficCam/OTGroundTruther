@@ -242,32 +242,70 @@ class gui(tk.Tk):
             ]
             self.frame_active_counts.tree_active_countings.selection_set(iid)
 
-    def import_flowfile(self):
+    def import_flowfile(self):  # new function for importing
         """Calls load_flowfile-function and inserts view.sections to listboxwidget."""
         objectstorage.flow_dict = load_flowfile()
 
-        for detector in objectstorage.flow_dict["Detectors"]:
-            
-            x1 = int(objectstorage.flow_dict["Detectors"][detector]["start_x"] * objectstorage.videoobject.x_resize_factor)
-            y1 = int(objectstorage.flow_dict["Detectors"][detector]["start_y"] * objectstorage.videoobject.y_resize_factor)
-            x2 = int(objectstorage.flow_dict["Detectors"][detector]["end_x"] * objectstorage.videoobject.x_resize_factor)
-            y2 = int(objectstorage.flow_dict["Detectors"][detector]["end_y"] * objectstorage.videoobject.y_resize_factor)
+        # create a new list of dictionaries ro insert imported section
+        # better workaround ==> get dic by key value pair(i.g. section id) with listcomprehension and change value
+        # [d for d in dictionaries if d.get(key) == value]
+        imported_sections = []
 
-            objectstorage.flow_dict["Detectors"][detector]["start_x"] = x1
-            objectstorage.flow_dict["Detectors"][detector]["start_y"] = y1
-            objectstorage.flow_dict["Detectors"][detector]["end_x"] = x2
-            objectstorage.flow_dict["Detectors"][detector]["end_y"] = y2
+        for detector in objectstorage.flow_dict["sections"]:
+            print(detector)
+            print("----------------")
+            x1 = int(
+                detector["coordinates"][0]["x"] * objectstorage.videoobject.x_resize_factor)
+            y1 = int(
+                detector["coordinates"][0]["y"] * objectstorage.videoobject.y_resize_factor)
+            x2 = int(
+                detector["coordinates"][1]["x"] * objectstorage.videoobject.x_resize_factor)
+            y2 = int(
+                detector["coordinates"][1]["y"] * objectstorage.videoobject.y_resize_factor)
 
-            # when imported calculates the shapelyobjects fron detector coords
-            objectstorage.flow_dict["Detectors"][detector][
-                "Geometry_line"
-            ] = shapely_object(x1, y1, x2, y2, linestring=True)
+            imported_sections.append({"id": detector["id"], "type": "line",
+                                      "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                                      "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}, "Geometry_line": shapely_object(x1, y1, x2, y2, linestring=True)})
 
             self.frame_sections.tree_sections.insert(
-                parent="", index="end", text=detector
+                parent="", index="end", text=detector["id"]
             )
+        objectstorage.flow_dict["sections"] = imported_sections
+        print("finished")
 
         manipulate_image(objectstorage.videoobject.np_image.copy())
+
+    # def import_flowfile(self):
+    #     """Calls load_flowfile-function and inserts view.sections to listboxwidget."""
+    #     objectstorage.flow_dict = load_flowfile()
+    #     print(objectstorage.flow_dict)
+
+    #     for detector in objectstorage.flow_dict["Detectors"]:
+
+    #         x1 = int(objectstorage.flow_dict["Detectors"][detector]
+    #                  ["start_x"] * objectstorage.videoobject.x_resize_factor)
+    #         y1 = int(objectstorage.flow_dict["Detectors"][detector]
+    #                  ["start_y"] * objectstorage.videoobject.y_resize_factor)
+    #         x2 = int(objectstorage.flow_dict["Detectors"][detector]
+    #                  ["end_x"] * objectstorage.videoobject.x_resize_factor)
+    #         y2 = int(objectstorage.flow_dict["Detectors"][detector]
+    #                  ["end_y"] * objectstorage.videoobject.y_resize_factor)
+
+    #         objectstorage.flow_dict["Detectors"][detector]["start_x"] = x1
+    #         objectstorage.flow_dict["Detectors"][detector]["start_y"] = y1
+    #         objectstorage.flow_dict["Detectors"][detector]["end_x"] = x2
+    #         objectstorage.flow_dict["Detectors"][detector]["end_y"] = y2
+
+    #         # when imported calculates the shapelyobjects fron detector coords
+    #         objectstorage.flow_dict["Detectors"][detector][
+    #             "Geometry_line"
+    #         ] = shapely_object(x1, y1, x2, y2, linestring=True)
+
+    #         self.frame_sections.tree_sections.insert(
+    #             parent="", index="end", text=detector
+    #         )
+
+    #     manipulate_image(objectstorage.videoobject.np_image.copy())
 
     def undo_active_count_coords(self, event):
         if not objectstorage.active_countings:
@@ -287,7 +325,7 @@ class gui(tk.Tk):
             del active_count.Frames[-1]
             del active_count.Gates[-1]
 
-            print("Last rightclick deletet")
+            print("Last rightclick deleted")
 
             manipulate_image(objectstorage.videoobject.np_image.copy())
 

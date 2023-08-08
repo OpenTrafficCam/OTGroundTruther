@@ -78,99 +78,100 @@ class OtcCanvas(tk.Canvas):
         """depending on left or right mousclick and if click is in section
         coorindates get added, reseted or initialized
         """
-        for gate in objectstorage.flow_dict["Detectors"]:
-            p0 = (
-                objectstorage.flow_dict["Detectors"][gate]["start_x"],
-                objectstorage.flow_dict["Detectors"][gate]["start_y"],
-            )
-            p1 = (
-                objectstorage.flow_dict["Detectors"][gate]["end_x"],
-                objectstorage.flow_dict["Detectors"][gate]["end_y"],
-            )
-            middle_point_x = (p0[0] + p1[0]) / 2
-            middle_point_y = (p0[1] + p1[1]) / 2
-            x = self.coordinateX - middle_point_x
-            # mirror the y-values because the y-axis in the frame is mirrored
-            y = -self.coordinateY + middle_point_y
-            radian = atan2(p1[1] - p0[1], p0[0] - p1[0])
+        if objectstorage.flow_dict["sections"]:
+            for detector in objectstorage.flow_dict["sections"]:
+                p0 = (
+                    detector["coordinates"][0]["x"],
+                    detector["coordinates"][0]["y"],
+                )
+                p1 = (
+                    detector["coordinates"][1]["x"],
+                    detector["coordinates"][1]["y"],
+                )
+                middle_point_x = (p0[0] + p1[0]) / 2
+                middle_point_y = (p0[1] + p1[1]) / 2
+                x = self.coordinateX - middle_point_x
+                # mirror the y-values because the y-axis in the frame is mirrored
+                y = -self.coordinateY + middle_point_y
+                radian = atan2(p1[1] - p0[1], p0[0] - p1[0])
 
-            a = dist(p0, p1) / 2
-            b = a * 0.15
-            # turned ellipse equation
+                a = dist(p0, p1) / 2
+                b = a * 0.15
+                # turned ellipse equation
 
-            if (x * np.cos(radian) + y * np.sin(radian)) ** 2 / a**2 + (
-                x * np.sin(radian) - y * np.cos(radian)
-            ) ** 2 / b**2 <= 1:
+                if (x * np.cos(radian) + y * np.sin(radian)) ** 2 / a**2 + (
+                    x * np.sin(radian) - y * np.cos(radian)
+                ) ** 2 / b**2 <= 1:
 
-                print(f"Coordinate in the gate: {gate}")
+                    print(f"Coordinate in the gate: {detector}")
 
-                if event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates
-                    and objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates[-1]
-                    != gate
-                ):
-                    # append on right click
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates.append(gate)
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Coordinates.append((self.coordinateX, self.coordinateY))
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Frames.append(objectstorage.videoobject.current_frame)
+                    if event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates
+                        and objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates[-1]
+                        != detector
+                    ):
+                        # append on right click
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates.append(detector)
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Coordinates.append((self.coordinateX, self.coordinateY))
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Frames.append(objectstorage.videoobject.current_frame)
 
-                    break
-                elif event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates
-                    and objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates[-1]
-                    == gate
-                ):
-                    # create on left click
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Coordinates[-1] = (
-                        self.coordinateX,
-                        self.coordinateY,
-                    )
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Frames[-1] = objectstorage.videoobject.current_frame
-                elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates = [gate]
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Coordinates = [
-                        (
+                        break
+                    elif event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates
+                        and objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates[-1]
+                        == detector
+                    ):
+                        # create on left click
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Coordinates[-1] = (
                             self.coordinateX,
                             self.coordinateY,
                         )
-                    ]
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Frames[-1] = objectstorage.videoobject.current_frame
+                    elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Gates = [detector]
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Coordinates = [
+                            (
+                                self.coordinateX,
+                                self.coordinateY,
+                            )
+                        ]
+                        objectstorage.active_countings[
+                            objectstorage.active_countings_index
+                        ].Frames = [objectstorage.videoobject.current_frame]
+                        break
+                # delete if not clicked in section
+                elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
                     objectstorage.active_countings[
                         objectstorage.active_countings_index
-                    ].Frames = [objectstorage.videoobject.current_frame]
-                    break
-            # delete if not clicked in section
-            elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
-                objectstorage.active_countings[
-                    objectstorage.active_countings_index
-                ].Gates = []
-                objectstorage.active_countings[
-                    objectstorage.active_countings_index
-                ].Coordinates = []
-                objectstorage.active_countings[
-                    objectstorage.active_countings_index
-                ].Frames = []
+                    ].Gates = []
+                    objectstorage.active_countings[
+                        objectstorage.active_countings_index
+                    ].Coordinates = []
+                    objectstorage.active_countings[
+                        objectstorage.active_countings_index
+                    ].Frames = []
 
 
 class CanvasFrame(tk.Frame):
