@@ -15,10 +15,15 @@ def draw_section_line(np_image):
     Returns:
         _type_: _description_
     """
+
     return cv2.line(
         np_image,
-        objectstorage.maincanvas.points[0],
-        objectstorage.maincanvas.points[1],
+        (int(objectstorage.maincanvas.points[0][0] * objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[0][1] *
+         objectstorage.videoobject.y_resize_factor)),
+
+        (int(objectstorage.maincanvas.points[1][0] *
+         objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[1][1] *
+         objectstorage.videoobject.y_resize_factor)),
         (200, 125, 125, 255),
         3,
     )
