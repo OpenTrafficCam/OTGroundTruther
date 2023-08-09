@@ -15,10 +15,15 @@ def draw_section_line(np_image):
     Returns:
         _type_: _description_
     """
+
     return cv2.line(
         np_image,
-        objectstorage.maincanvas.points[0],
-        objectstorage.maincanvas.points[1],
+        (int(objectstorage.maincanvas.points[0][0] * objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[0][1] *
+         objectstorage.videoobject.y_resize_factor)),
+
+        (int(objectstorage.maincanvas.points[1][0] *
+         objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[1][1] *
+         objectstorage.videoobject.y_resize_factor)),
         (200, 125, 125, 255),
         3,
     )
@@ -89,6 +94,7 @@ def dump_to_flowdictionary(detector_name):
     """
     if objectstorage.config_dict["linedetector_toggle"] is True:
 
+        # original videocoordinates
         x1 = objectstorage.maincanvas.points[0][0]
         y1 = objectstorage.maincanvas.points[0][1]
         x2 = objectstorage.maincanvas.points[1][0]

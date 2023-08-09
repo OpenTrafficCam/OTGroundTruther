@@ -38,8 +38,10 @@ class OtcCanvas(tk.Canvas):
         """
         if config_dict["linedetector_toggle"]:
             #  uses mouseevents to get coordinates (left button)
-            self.coordinateX = int(self.canvasx(event.x))
-            self.coordinateY = int(self.canvasy(event.y))
+            self.coordinateX = int(self.canvasx(event.x) /
+                                   objectstorage.videoobject.x_resize_factor)
+            self.coordinateY = int(self.canvasy(event.y) /
+                                   objectstorage.videoobject.y_resize_factor)
 
             self.points[list_index] = (
                 self.coordinateX,
@@ -67,8 +69,10 @@ class OtcCanvas(tk.Canvas):
         #     return
         if config_dict["gt_active"]:
 
-            self.coordinateX = int(self.canvasx(event.x))
-            self.coordinateY = int(self.canvasy(event.y))
+            self.coordinateX = int(self.canvasx(event.x) /
+                                   objectstorage.videoobject.x_resize_factor)
+            self.coordinateY = int(self.canvasy(event.y) /
+                                   objectstorage.videoobject.y_resize_factor)
 
         self.assign_information(event)
 
