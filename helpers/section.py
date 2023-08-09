@@ -94,6 +94,7 @@ def dump_to_flowdictionary(detector_name):
     """
     if objectstorage.config_dict["linedetector_toggle"] is True:
 
+        # original videocoordinates
         x1 = objectstorage.maincanvas.points[0][0]
         y1 = objectstorage.maincanvas.points[0][1]
         x2 = objectstorage.maincanvas.points[1][0]

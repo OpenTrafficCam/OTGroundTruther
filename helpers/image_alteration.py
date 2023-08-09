@@ -194,8 +194,7 @@ def draw_tag_around_start_coordinate(np_image):
         # draw line when count has two coordinates
         if len(active_count.Coordinates) > 1:
             for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
-                print(coordinate_start)
-                print(type(coordinate_start))
+
                 np_image = cv2.arrowedLine(
                     np_image,
                     (int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
