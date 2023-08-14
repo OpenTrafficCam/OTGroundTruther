@@ -5,6 +5,7 @@ from more_itertools import pairwise
 from PIL import Image, ImageTk
 
 import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.config import vehicle_abbreviation
 from helpers.section import draw_ellipse_around_section, draw_section_line
 
 
@@ -81,6 +82,7 @@ def draw_finished_counts(np_image):
         try:
             coordinates = row["Crossed_Coordinates"]
             track_id = row["ID"]
+            track_class = row["Class"]
 
             np_image = cv2.circle(
                 np_image,
@@ -109,7 +111,7 @@ def draw_finished_counts(np_image):
                 cv2.LINE_AA,
                 False,
             )
-            # draw line if track consists of more than one coordinate
+            # draw line if track consists of more than one coordinate and name of the class
             if len(coordinates) > 1:
                 for coordinate_start, coordinate_end in pairwise(coordinates):
                     np_image = cv2.arrowedLine(
@@ -121,6 +123,24 @@ def draw_finished_counts(np_image):
                         (255, 185, 15, 255),
                         1,
                     )
+                    np_image = cv2.putText(
+                        np_image,
+                        str(track_id) + "-"+vehicle_abbreviation[track_class],
+                        (
+                            int((coordinate_start[0] + coordinate_end[0])/2*
+                                objectstorage.videoobject.x_resize_factor),
+                            int((coordinate_start[1] + coordinate_end[1])/2*
+                                objectstorage.videoobject.y_resize_factor),
+                        ),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.4,
+                        (255, 185, 15, 255),
+                        1,
+                        cv2.LINE_AA,
+                        False,
+                    )
+                
+                
         except Exception:
             continue
     return np_image
