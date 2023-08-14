@@ -16,6 +16,23 @@ vehicle_definition = {
     "8": "Schienenfahrzeug",
 }
 
+vehicle_abbreviation = {
+    "Pkw ohne Anhänger": "Pkw",
+    "Fahrrad ohne Anhänger": "Fahrrad",
+    "Person": "Person",
+    "Bus": "Bus",
+    "Lkw ohne Anhänger": "Lkw",
+    "Lkw mit Anhänger": "Lkw mA",
+    "Pkw mit Anhänger": "Pkw mA",
+    "Lieferwagen ohne Anhänger": "Lieferw.",
+    "Lieferwagen mit Anhänger": "Lieferw. mA",
+    "Motorisierte Zweiräder": "MZweirad",
+    "Scooter": "Scooter",
+    "Lastenrad": "Lastenrad",
+    "Fahrrad mit Anhänger": "Fahrrad mA",
+    "Schienenfahrzeug": "Schienenfzg.",
+}
+
 vehicle_picture_graph = {
     "p": "car.png",
     "b": "cyclist.png",
