@@ -109,7 +109,7 @@ class OtcCanvas(tk.Canvas):
 
                     print(f"Coordinate in the gate: {detector}")
 
-                    if event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
+                    if bool(
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Gates
@@ -118,7 +118,7 @@ class OtcCanvas(tk.Canvas):
                         ].Gates[-1]
                         != detector
                     ):
-                        # append on right click
+                        # append new coordinates
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Gates.append(detector)
@@ -130,7 +130,9 @@ class OtcCanvas(tk.Canvas):
                         ].Frames.append(objectstorage.videoobject.current_frame)
 
                         break
-                    elif event.num == config.RIGHT_CLICK_EVENT_NUMBER and bool(
+                    # change coordinates to new one, 
+                    # if clicked in the same section as last one
+                    elif bool(
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Gates
@@ -139,7 +141,7 @@ class OtcCanvas(tk.Canvas):
                         ].Gates[-1]
                         == detector
                     ):
-                        # create on left click
+                        
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Coordinates[-1] = (
@@ -149,7 +151,8 @@ class OtcCanvas(tk.Canvas):
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Frames[-1] = objectstorage.videoobject.current_frame
-                    elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
+                    # start new count, if there is no activ counting (gates list -> empty)
+                    else:
                         objectstorage.active_countings[
                             objectstorage.active_countings_index
                         ].Gates = [detector]
@@ -166,16 +169,16 @@ class OtcCanvas(tk.Canvas):
                         ].Frames = [objectstorage.videoobject.current_frame]
                         break
                 # delete if not clicked in section
-                elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Gates = []
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Coordinates = []
-                    objectstorage.active_countings[
-                        objectstorage.active_countings_index
-                    ].Frames = []
+                # elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
+                #     objectstorage.active_countings[
+                #         objectstorage.active_countings_index
+                #     ].Gates = []
+                #     objectstorage.active_countings[
+                #         objectstorage.active_countings_index
+                #     ].Coordinates = []
+                #     objectstorage.active_countings[
+                #         objectstorage.active_countings_index
+                #     ].Frames = []
 
 
 class CanvasFrame(tk.Frame):

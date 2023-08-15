@@ -93,6 +93,7 @@ class gui(tk.Tk):
         self.bind("<Return>", fill_ground_truth, add="+")
         self.bind("<Return>", self.frame_sections.display_chosen_vhv_class, add="+")
         self.bind("<Return>", self.reset_index, add="+")
+
         self.bind("<F5>", quick_safe_to_csv)
 
         # bind functions to canvas // prevent circular import
@@ -135,11 +136,16 @@ class gui(tk.Tk):
         objectstorage.maincanvas.click_receive_section_coordinates(event, 0)
         self.frame_active_counts.update_treeview(event)
 
+    # for finish the actual count
     def handle_right_click_event(self, event):
-        initialize_new_count(event),
-        self.frame_active_counts.insert_active_count_to_treeview(event),
-        objectstorage.maincanvas.click_receive_vehicle_coordinates(event),
-        self.frame_active_counts.update_treeview(event),
+        self.frame_sections.create_section_entry_window()
+
+        self.frame_active_counts.delete_from_treeview(event=event)
+        self.frame_gt.insert_to_gt_treeview(event=event)
+        fill_eventbased_dictionary(event=event)
+        fill_ground_truth(event=event)
+        self.frame_sections.display_chosen_vhv_class(event=event, keyboard=False)
+        self.reset_index(event=event)
 
     def jump_to_frame(self, event):
         if not objectstorage.active_countings:
