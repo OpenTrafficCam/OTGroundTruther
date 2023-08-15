@@ -84,11 +84,14 @@ class FrameSection(tk.LabelFrame):
         )
         self.button_line_delete.grid(row=0, column=1, padx=(10, 10))
 
-    def display_chosen_vhv_class(self, event, keyboard=True):
-        if keyboard:
-            picture_path = vehicle_picture_graph[event.keysym]
-        else:
-            picture_path = vehicle_picture_graph["Return"]
+    def display_chosen_vhv_class(self, event):
+        self.display_class_image(event.keysym)
+    
+    def reset_shown_vhv_class(self):
+        self.display_class_image("reset")
+    
+    def display_class_image(self, key):
+        picture_path = vehicle_picture_graph[key]
         image1 = Image.open(Path("assets", picture_path))
         img = image1.resize((80, 80))
         self.test = ImageTk.PhotoImage(img)

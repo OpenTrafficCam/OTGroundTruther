@@ -48,7 +48,7 @@ vehicle_picture_graph = {
     "c": "cargo_cyclist.png",
     "B": "cyclist-trailer.png",
     "8": "tram_train.png",
-    "Return": "placeholder.png",
+    "reset": "placeholder.png",
 }
 
 # defined metadatadic

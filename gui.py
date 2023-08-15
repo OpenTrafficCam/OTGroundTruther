@@ -11,6 +11,7 @@ from helpers.filehelper.datamanagement import (
     load_event_dic_from_csv,
     load_flowfile,
     quick_safe_to_csv,
+    reset_active_count,
     safe_eventbased_dataframe,
     save_flowfile,
 )
@@ -54,9 +55,6 @@ class gui(tk.Tk):
         self.set_layout()
 
         # hotkeys
-        self.bind(
-            "<Return>", lambda _: self.frame_sections.create_section_entry_window()
-        )
         config.RETURN_KEYBIND_IS_ENABLED = True
 
         if objectstorage.use_test_version is not None:
@@ -69,11 +67,7 @@ class gui(tk.Tk):
         self.bind("<Left>", handle_left_arrow_key_event)
         self.bind("+", self.change_scroll_up)
         self.bind("-", self.change_scroll_down)
-        # temporary deactivated
-        self.bind("x", initialize_new_count, add="+")
-        self.bind(
-            "x", self.frame_active_counts.insert_active_count_to_treeview, add="+"
-        )
+
         self.bind("<Up>", self.change_active_countings_index, add="+")
         self.bind("<Down>", self.change_active_countings_index, add="+")
         self.bind("<Up>", self.frame_active_counts.update_treeview, add="+")
@@ -83,16 +77,12 @@ class gui(tk.Tk):
         # self.bind("m", self.jump_to_frame)
 
         for i in vehicle_definition.keys():
-            self.bind(str(i), assign_vehicle_class, add="+")
-            self.bind(str(i), self.frame_sections.display_chosen_vhv_class, add="+")
-            self.bind(str(i), self.frame_active_counts.update_treeview, add="+")
+            self.bind(str(i), self._vehicle_call_key_pressed)
 
-        self.bind("<Return>", self.frame_active_counts.delete_from_treeview, add="+")
-        self.bind("<Return>", self.frame_gt.insert_to_gt_treeview, add="+")
-        self.bind("<Return>", fill_eventbased_dictionary, add="+")
-        self.bind("<Return>", fill_ground_truth, add="+")
-        self.bind("<Return>", self.frame_sections.display_chosen_vhv_class, add="+")
-        self.bind("<Return>", self.reset_index, add="+")
+        self.bind("<Return>", self.handle_right_click_event)
+
+
+        self.bind("<Escape>", self.cancel_active_count)
 
         self.bind("<F5>", quick_safe_to_csv)
 
@@ -103,6 +93,11 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+    def _vehicle_call_key_pressed(self, event):
+        assign_vehicle_class(event)
+        self.frame_sections.display_chosen_vhv_class(event)
+        self.frame_active_counts.update_treeview(event)
+        objectstorage.maincanvas.update_image()
 
     def _init_mouse_scroll_keybind(self):
         def windows_handler(event):
@@ -140,12 +135,20 @@ class gui(tk.Tk):
     def handle_right_click_event(self, event):
         self.frame_sections.create_section_entry_window()
 
-        self.frame_active_counts.delete_from_treeview(event=event)
+        self.frame_active_counts.delete_from_treeview(event=event, reset=False)
         self.frame_gt.insert_to_gt_treeview(event=event)
         fill_eventbased_dictionary(event=event)
         fill_ground_truth(event=event)
-        self.frame_sections.display_chosen_vhv_class(event=event, keyboard=False)
+        self.frame_sections.reset_shown_vhv_class()
         self.reset_index(event=event)
+        objectstorage.maincanvas.update_image()
+
+    def cancel_active_count(self, event):
+        self.frame_active_counts.delete_from_treeview(event=event, reset=True)
+        self.frame_sections.reset_shown_vhv_class()
+        reset_active_count()
+        self.reset_index(event=event)
+        objectstorage.maincanvas.update_image()
 
     def jump_to_frame(self, event):
         if not objectstorage.active_countings:
