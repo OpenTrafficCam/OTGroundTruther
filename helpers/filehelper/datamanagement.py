@@ -25,17 +25,21 @@ def fill_ground_truth(event):
         # change 0 to active_count_index
         # appends dataframe with values from dictionary
 
-        objectstorage.ground_truth = pd.concat(
-            [
-                objectstorage.ground_truth,
-                pd.DataFrame(objectstorage.active_countings[
-                    objectstorage.active_countings_index
-                ].counted_vehicle_information())
-            ],
+        # objectstorage.ground_truth = pd.concat(
+        #     [
+        #         objectstorage.ground_truth,
+        #         pd.DataFrame(objectstorage.active_countings[
+        #             objectstorage.active_countings_index
+        #         ].counted_vehicle_information())
+        #     ],
+        #     ignore_index=True,
+        # )
+        objectstorage.ground_truth = objectstorage.ground_truth.append(
+            objectstorage.active_countings[
+                objectstorage.active_countings_index
+            ].counted_vehicle_information(),
             ignore_index=True,
         )
-        print("objectstorage.ground_truth")
-        print(objectstorage.ground_truth)
 
         # delete finished object from active-list
         del objectstorage.active_countings[objectstorage.active_countings_index]

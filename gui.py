@@ -235,9 +235,6 @@ class gui(tk.Tk):
         objectstorage.active_countings_index = 0
 
         if objectstorage.active_countings:
-            print("gui")
-            print(objectstorage.active_countings_index)
-            print(self.tree_active_countings.get_children())
             iid = self.frame_active_counts.tree_active_countings.get_children()[
                 objectstorage.active_countings_index
             ]
