@@ -40,15 +40,14 @@ def fill_ground_truth(event):
             ].counted_vehicle_information(),
             ignore_index=True,
         )
-
-        # delete finished object from active-list
-        del objectstorage.active_countings[objectstorage.active_countings_index]
-
-        # if last active count is finished make active makeable via mouse click
-        if not objectstorage.active_countings:
-            objectstorage.config_dict["count_active"] = False
-
+        
+        reset_active_count()
+        
         print(objectstorage.ground_truth)
+
+def reset_active_count():
+    del objectstorage.active_countings[objectstorage.active_countings_index]
+    objectstorage.config_dict["count_active"] = False
 
 
 def fill_eventbased_dictionary(event):

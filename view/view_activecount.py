@@ -110,13 +110,13 @@ class FrameActiveCounts(tk.LabelFrame):
         ]
         self.tree_active_countings.selection_set(iid)
 
-    def delete_from_treeview(self, event):
+    def delete_from_treeview(self, event, reset):
         # make selectable
         if (
             objectstorage.active_countings
-            and objectstorage.active_countings[
+            and (objectstorage.active_countings[
                 objectstorage.active_countings_index
-            ].all_values_set()
+            ].all_values_set() or reset)
         ):
             count_ID = objectstorage.active_countings[
                 objectstorage.active_countings_index

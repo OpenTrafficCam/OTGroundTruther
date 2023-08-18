@@ -6,8 +6,7 @@ def initialize_new_count(event):
     # if pressed key is n or there are no active counts
     # (for creating active count by mouse click)
     if (
-        event.keysym_num == 120
-        or not objectstorage.config_dict["count_active"]
+        (not objectstorage.config_dict["count_active"])
         and objectstorage.config_dict["gt_active"]
     ):
 
