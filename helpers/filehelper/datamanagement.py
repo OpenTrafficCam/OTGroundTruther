@@ -25,12 +25,17 @@ def fill_ground_truth(event):
         # change 0 to active_count_index
         # appends dataframe with values from dictionary
 
-        objectstorage.ground_truth = objectstorage.ground_truth.append(
-            objectstorage.active_countings[
-                objectstorage.active_countings_index
-            ].counted_vehicle_information(),
+        objectstorage.ground_truth = pd.concat(
+            [
+                objectstorage.ground_truth,
+                pd.DataFrame(objectstorage.active_countings[
+                    objectstorage.active_countings_index
+                ].counted_vehicle_information())
+            ],
             ignore_index=True,
         )
+        print("objectstorage.ground_truth")
+        print(objectstorage.ground_truth)
 
         # delete finished object from active-list
         del objectstorage.active_countings[objectstorage.active_countings_index]
@@ -338,25 +343,9 @@ def save_flowfile():
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
-        flow_dic_for_saving = {"metadata": None, "sections": []}
+        flow_dic_for_saving = {"metadata": None, "sections": [], "flows": []}
 
-        # delete shapeley objects because they cant be safed
-        for detector in objectstorage.flow_dict["sections"]:
-            del detector["Geometry_line"]
-
-            x1 = int(
-                detector["coordinates"][0]["x"] / objectstorage.videoobject.x_resize_factor)
-            y1 = int(
-                detector["coordinates"][0]["y"] / objectstorage.videoobject.y_resize_factor)
-            x2 = int(
-                detector["coordinates"][1]["x"] / objectstorage.videoobject.x_resize_factor)
-            y2 = int(
-                detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
-
-            # add altered sections to new section dic for safing
-            flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
-                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                                    "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
+        flow_dic_for_saving = add_detector_information(flow_dic_for_saving)
 
         flow_dic_for_saving = add_meta_data(flow_dic_for_saving)
 
@@ -364,6 +353,21 @@ def save_flowfile():
     else:
         info_message("Warning", "Create sections and Movements first!")
 
+def add_detector_information(flow_dic_for_saving):
+    for detector in objectstorage.flow_dict["sections"]:
+        coordinates_list = []
+        for i in range(len(detector["coordinates"])):
+            x = int(
+                    detector["coordinates"][i]["x"] / objectstorage.videoobject.x_resize_factor)
+            y = int(
+                    detector["coordinates"][i]["y"] / objectstorage.videoobject.y_resize_factor)
+            coordinates_list.append({"x": x, "y": y})
+
+            # add altered sections to new section dic for safing
+        flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
+                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                                                    "coordinates": coordinates_list, "plugin_data": {}})
+    return flow_dic_for_saving
 
 def add_meta_data(flow_dic):
     # adds meta data dic

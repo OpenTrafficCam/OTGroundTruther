@@ -105,6 +105,9 @@ class FrameActiveCounts(tk.LabelFrame):
         # could be anywhere in code
 
         # highlights and selects treeview item
+        print("view activecount")
+        print(objectstorage.active_countings_index)
+        print(self.tree_active_countings.get_children())
         iid = self.tree_active_countings.get_children()[
             objectstorage.active_countings_index
         ]

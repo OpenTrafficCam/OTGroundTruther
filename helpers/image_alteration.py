@@ -64,85 +64,82 @@ def draw_finished_counts(np_image):
         return np_image
 
     current_frame = objectstorage.videoobject.current_frame
+    print("daw finished objectstorage.ground_truth")
+    print(objectstorage.ground_truth)
+    # objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth[
+    #     "Crossed_Frames"
+    # ].str[0]
+    # objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth[
+    #     "Crossed_Frames"
+    # ].str[-1]
 
-    objectstorage.ground_truth["First_Frame"] = objectstorage.ground_truth[
-        "Crossed_Frames"
-    ].str[0]
-    objectstorage.ground_truth["Last_Frame"] = objectstorage.ground_truth[
-        "Crossed_Frames"
-    ].str[-1]
+    # # dataframe faster than looping through dictionary
+    # df_subset = objectstorage.ground_truth.loc[
+    #     (objectstorage.ground_truth["First_Frame"] <= current_frame)
+    #     & (objectstorage.ground_truth["Last_Frame"] >= current_frame)
+    # ]
 
-    # dataframe faster than looping through dictionary
-    df_subset = objectstorage.ground_truth.loc[
-        (objectstorage.ground_truth["First_Frame"] <= current_frame)
-        & (objectstorage.ground_truth["Last_Frame"] >= current_frame)
-    ]
+    for index, row in objectstorage.ground_truth.iterrows():
+        coordinates = row["Crossed_Coordinates"]
+        track_id = row["ID"]
+        track_class = row["Class"]
 
-    for index, row in df_subset.iterrows():
-        try:
-            coordinates = row["Crossed_Coordinates"]
-            track_id = row["ID"]
-            track_class = row["Class"]
-
-            np_image = cv2.circle(
-                np_image,
-                (
-                    int(coordinates[0][0] *
-                        objectstorage.videoobject.x_resize_factor),
-                    int(coordinates[0][1] *
-                        objectstorage.videoobject.y_resize_factor),
-                ),
-                5,
-                (0, 255, 255, 255),
-            )
-            np_image = cv2.putText(
-                np_image,
-                str(track_id),
-                (
-                    int(coordinates[0][0] *
-                        objectstorage.videoobject.x_resize_factor),
-                    int(coordinates[0][1] *
-                        objectstorage.videoobject.y_resize_factor),
-                ),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 255, 255),
-                1,
-                cv2.LINE_AA,
-                False,
-            )
-            # draw line if track consists of more than one coordinate and name of the class
-            if len(coordinates) > 1:
-                for coordinate_start, coordinate_end in pairwise(coordinates):
-                    np_image = cv2.arrowedLine(
-                        np_image,
-                        (int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
-                         int(coordinate_start[1] * objectstorage.videoobject.y_resize_factor)),
-                        (int(coordinate_end[0] * objectstorage.videoobject.x_resize_factor),
-                         int(coordinate_end[1] * objectstorage.videoobject.y_resize_factor)),
-                        (255, 185, 15, 255),
-                        1,
-                    )
-                    np_image = cv2.putText(
-                        np_image,
-                        str(track_id) + "-"+vehicle_abbreviation[track_class],
-                        (
-                            int((coordinate_start[0] + coordinate_end[0])/2*
-                                objectstorage.videoobject.x_resize_factor),
-                            int((coordinate_start[1] + coordinate_end[1])/2*
-                                objectstorage.videoobject.y_resize_factor),
-                        ),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4,
-                        (255, 185, 15, 255),
-                        1,
-                        cv2.LINE_AA,
-                        False,
-                    )
+        np_image = cv2.circle(
+            np_image,
+            (
+                int(coordinates[0][0] *
+                    objectstorage.videoobject.x_resize_factor),
+                int(coordinates[0][1] *
+                    objectstorage.videoobject.y_resize_factor),
+            ),
+            5,
+            (0, 255, 255, 255),
+        )
+        np_image = cv2.putText(
+            np_image,
+            str(track_id),
+            (
+                int(coordinates[0][0] *
+                    objectstorage.videoobject.x_resize_factor),
+                int(coordinates[0][1] *
+                    objectstorage.videoobject.y_resize_factor),
+            ),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 255, 255),
+            1,
+            cv2.LINE_AA,
+            False,
+        )
+        # draw line if track consists of more than one coordinate and name of the class
+        if len(coordinates) > 1:
+            for coordinate_start, coordinate_end in pairwise(coordinates):
+                np_image = cv2.arrowedLine(
+                    np_image,
+                    (int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
+                        int(coordinate_start[1] * objectstorage.videoobject.y_resize_factor)),
+                    (int(coordinate_end[0] * objectstorage.videoobject.x_resize_factor),
+                        int(coordinate_end[1] * objectstorage.videoobject.y_resize_factor)),
+                    (255, 185, 15, 255),
+                    1,
+                )
+                np_image = cv2.putText(
+                    np_image,
+                    str(track_id) + "-"+vehicle_abbreviation[track_class],
+                    (
+                        int((coordinate_start[0] + coordinate_end[0])/2*
+                            objectstorage.videoobject.x_resize_factor),
+                        int((coordinate_start[1] + coordinate_end[1])/2*
+                            objectstorage.videoobject.y_resize_factor),
+                    ),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    (255, 185, 15, 255),
+                    1,
+                    cv2.LINE_AA,
+                    False,
+                )
                 
-                
-        except Exception:
-            continue
     return np_image
 
 
@@ -158,15 +155,15 @@ def draw_detectors_from_dict(np_image):
     if objectstorage.flow_dict["sections"]:
 
         for detector in objectstorage.flow_dict["sections"]:
-            if detector["type"] == "line":
+            for i in range(len(detector["coordinates"])-1):
                 # resize to videowidth and height
-                start_x = int(detector["coordinates"][0]["x"] *
+                start_x = int(detector["coordinates"][i]["x"] *
                               objectstorage.videoobject.x_resize_factor)
-                start_y = int(detector["coordinates"][0]["y"] *
+                start_y = int(detector["coordinates"][i]["y"] *
                               objectstorage.videoobject.y_resize_factor)
-                end_x = int(detector["coordinates"][1]["x"] *
+                end_x = int(detector["coordinates"][i+1]["x"] *
                             objectstorage.videoobject.x_resize_factor)
-                end_y = int(detector["coordinates"][1]["y"] *
+                end_y = int(detector["coordinates"][i+1]["y"] *
                             objectstorage.videoobject.y_resize_factor)
                 color = (200, 125, 125, 255)
 
