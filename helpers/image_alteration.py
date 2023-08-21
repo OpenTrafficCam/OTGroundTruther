@@ -85,7 +85,7 @@ def draw_finished_counts(np_image):
         & (objectstorage.ground_truth["Last_Frame"] >= current_frame)
     ]
 
-    for index, row in objectstorage.ground_truth.iterrows():
+    for index, row in df_subset.iterrows():
         coordinates = row["Crossed_Coordinates"]
         track_id = row["ID"]
         track_class = row["Class"]
