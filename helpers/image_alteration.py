@@ -14,21 +14,28 @@ def manipulate_image(np_image=None):
         np_image = objectstorage.videoobject.np_image.copy()
 
     if objectstorage.config_dict["linedetector_toggle"]:
-
         np_image = draw_section_line(np_image)
         np_image = draw_ellipse_around_section(
             np_image,
             p0=(
-                (objectstorage.maincanvas.points[0][0] *
-                    objectstorage.videoobject.x_resize_factor),
-                (objectstorage.maincanvas.points[0][1] *
-                    objectstorage.videoobject.y_resize_factor),
+                (
+                    objectstorage.maincanvas.points[0][0]
+                    * objectstorage.videoobject.x_resize_factor
+                ),
+                (
+                    objectstorage.maincanvas.points[0][1]
+                    * objectstorage.videoobject.y_resize_factor
+                ),
             ),
             p1=(
-                (objectstorage.maincanvas.points[1][0] *
-                    objectstorage.videoobject.x_resize_factor),
-                (objectstorage.maincanvas.points[1][1] *
-                    objectstorage.videoobject.y_resize_factor),
+                (
+                    objectstorage.maincanvas.points[1][0]
+                    * objectstorage.videoobject.x_resize_factor
+                ),
+                (
+                    objectstorage.maincanvas.points[1][1]
+                    * objectstorage.videoobject.y_resize_factor
+                ),
             ),
         )
 
@@ -86,10 +93,8 @@ def draw_finished_counts(np_image):
         np_image = cv2.circle(
             np_image,
             (
-                int(coordinates[0][0] *
-                    objectstorage.videoobject.x_resize_factor),
-                int(coordinates[0][1] *
-                    objectstorage.videoobject.y_resize_factor),
+                int(coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
+                int(coordinates[0][1] * objectstorage.videoobject.y_resize_factor),
             ),
             5,
             (0, 255, 255, 255),
@@ -98,10 +103,8 @@ def draw_finished_counts(np_image):
             np_image,
             str(track_id),
             (
-                int(coordinates[0][0] *
-                    objectstorage.videoobject.x_resize_factor),
-                int(coordinates[0][1] *
-                    objectstorage.videoobject.y_resize_factor),
+                int(coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
+                int(coordinates[0][1] * objectstorage.videoobject.y_resize_factor),
             ),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
@@ -115,21 +118,43 @@ def draw_finished_counts(np_image):
             for coordinate_start, coordinate_end in pairwise(coordinates):
                 np_image = cv2.arrowedLine(
                     np_image,
-                    (int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
-                        int(coordinate_start[1] * objectstorage.videoobject.y_resize_factor)),
-                    (int(coordinate_end[0] * objectstorage.videoobject.x_resize_factor),
-                        int(coordinate_end[1] * objectstorage.videoobject.y_resize_factor)),
+                    (
+                        int(
+                            coordinate_start[0]
+                            * objectstorage.videoobject.x_resize_factor
+                        ),
+                        int(
+                            coordinate_start[1]
+                            * objectstorage.videoobject.y_resize_factor
+                        ),
+                    ),
+                    (
+                        int(
+                            coordinate_end[0]
+                            * objectstorage.videoobject.x_resize_factor
+                        ),
+                        int(
+                            coordinate_end[1]
+                            * objectstorage.videoobject.y_resize_factor
+                        ),
+                    ),
                     (255, 185, 15, 255),
                     1,
                 )
                 np_image = cv2.putText(
                     np_image,
-                    str(track_id) + "-"+vehicle_abbreviation[track_class],
+                    str(track_id) + "-" + vehicle_abbreviation[track_class],
                     (
-                        int((coordinate_start[0] + coordinate_end[0])/2*
-                            objectstorage.videoobject.x_resize_factor),
-                        int((coordinate_start[1] + coordinate_end[1])/2*
-                            objectstorage.videoobject.y_resize_factor),
+                        int(
+                            (coordinate_start[0] + coordinate_end[0])
+                            / 2
+                            * objectstorage.videoobject.x_resize_factor
+                        ),
+                        int(
+                            (coordinate_start[1] + coordinate_end[1])
+                            / 2
+                            * objectstorage.videoobject.y_resize_factor
+                        ),
                     ),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.4,
@@ -138,7 +163,7 @@ def draw_finished_counts(np_image):
                     cv2.LINE_AA,
                     False,
                 )
-                
+
     return np_image
 
 
@@ -152,18 +177,25 @@ def draw_detectors_from_dict(np_image):
         np_image (numpy_array): returns manipulated image"""
 
     if objectstorage.flow_dict["sections"]:
-
         for detector in objectstorage.flow_dict["sections"]:
-            for i in range(len(detector["coordinates"])-1):
+            for i in range(len(detector["coordinates"]) - 1):
                 # resize to videowidth and height
-                start_x = int(detector["coordinates"][i]["x"] *
-                              objectstorage.videoobject.x_resize_factor)
-                start_y = int(detector["coordinates"][i]["y"] *
-                              objectstorage.videoobject.y_resize_factor)
-                end_x = int(detector["coordinates"][i+1]["x"] *
-                            objectstorage.videoobject.x_resize_factor)
-                end_y = int(detector["coordinates"][i+1]["y"] *
-                            objectstorage.videoobject.y_resize_factor)
+                start_x = int(
+                    detector["coordinates"][i]["x"]
+                    * objectstorage.videoobject.x_resize_factor
+                )
+                start_y = int(
+                    detector["coordinates"][i]["y"]
+                    * objectstorage.videoobject.y_resize_factor
+                )
+                end_x = int(
+                    detector["coordinates"][i + 1]["x"]
+                    * objectstorage.videoobject.x_resize_factor
+                )
+                end_y = int(
+                    detector["coordinates"][i + 1]["y"]
+                    * objectstorage.videoobject.y_resize_factor
+                )
                 color = (200, 125, 125, 255)
 
                 np_image = cv2.line(
@@ -190,16 +222,32 @@ def draw_tag_around_start_coordinate(np_image):
         if active_count.Coordinates:
             np_image = cv2.circle(
                 np_image,
-                (int(active_count.Coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
-                 int(active_count.Coordinates[0][1] * objectstorage.videoobject.y_resize_factor)),
+                (
+                    int(
+                        active_count.Coordinates[0][0]
+                        * objectstorage.videoobject.x_resize_factor
+                    ),
+                    int(
+                        active_count.Coordinates[0][1]
+                        * objectstorage.videoobject.y_resize_factor
+                    ),
+                ),
                 5,
                 color,
             )
             np_image = cv2.putText(
                 np_image,
                 str(active_count.ID),
-                (int(active_count.Coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
-                 int(active_count.Coordinates[0][1] * objectstorage.videoobject.y_resize_factor)),
+                (
+                    int(
+                        active_count.Coordinates[0][0]
+                        * objectstorage.videoobject.x_resize_factor
+                    ),
+                    int(
+                        active_count.Coordinates[0][1]
+                        * objectstorage.videoobject.y_resize_factor
+                    ),
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.75,
                 color,
@@ -210,13 +258,28 @@ def draw_tag_around_start_coordinate(np_image):
         # draw line when count has two coordinates
         if len(active_count.Coordinates) > 1:
             for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
-
                 np_image = cv2.arrowedLine(
                     np_image,
-                    (int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
-                     int(coordinate_start[1] * objectstorage.videoobject.y_resize_factor)),
-                    (int(coordinate_end[0] * objectstorage.videoobject.x_resize_factor),
-                     int(coordinate_end[1] * objectstorage.videoobject.y_resize_factor)),
+                    (
+                        int(
+                            coordinate_start[0]
+                            * objectstorage.videoobject.x_resize_factor
+                        ),
+                        int(
+                            coordinate_start[1]
+                            * objectstorage.videoobject.y_resize_factor
+                        ),
+                    ),
+                    (
+                        int(
+                            coordinate_end[0]
+                            * objectstorage.videoobject.x_resize_factor
+                        ),
+                        int(
+                            coordinate_end[1]
+                            * objectstorage.videoobject.y_resize_factor
+                        ),
+                    ),
                     (254, 255, 0, 255),
                     1,
                 )

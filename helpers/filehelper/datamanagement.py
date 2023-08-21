@@ -40,10 +40,11 @@ def fill_ground_truth(event):
             ].counted_vehicle_information(),
             ignore_index=True,
         )
-        
+
         reset_active_count()
-        
+
         print(objectstorage.ground_truth)
+
 
 def reset_active_count():
     del objectstorage.active_countings[objectstorage.active_countings_index]
@@ -71,7 +72,6 @@ def fill_eventbased_dictionary(event):
         for crossed_gate, crossed_coordinate, crossed_frame in zip(
             active_count.Gates, active_count.Coordinates, active_count.Frames
         ):
-
             objectstorage.eventbased_dictionary_index += 1
 
             objectstorage.eventbased_dictionary[
@@ -214,7 +214,6 @@ def dic_to_gt_dataframe():
             objectstorage.eventbased_dictionary[event]["TrackID"]
             not in ground_truth_dic
         ):
-
             ground_truth_dic[objectstorage.eventbased_dictionary[event]["TrackID"]] = {
                 "Class": [],
                 "Crossed_Gates": [],
@@ -286,7 +285,6 @@ def safe_eventbased_dataframe():
 
 
 def quick_safe_to_csv(event):
-
     eventbased_dataframe = eventased_dictionary_to_dataframe()
 
     if objectstorage.quicksafe_filepath_event:
@@ -323,8 +321,7 @@ def load_flowfile():
     Returns:
         json: Return json file to read from.
     """
-    if (
-            not objectstorage.flow_dict["sections"]):
+    if not objectstorage.flow_dict["sections"]:
         filepath = filedialog.askopenfile(filetypes=[("sections", "*.OTflow")])
         files = open(filepath.name, "r")
         files = files.read()
@@ -356,27 +353,40 @@ def save_flowfile():
     else:
         info_message("Warning", "Create sections and Movements first!")
 
+
 def add_detector_information(flow_dic_for_saving):
     for detector in objectstorage.flow_dict["sections"]:
         coordinates_list = []
         for i in range(len(detector["coordinates"])):
             x = int(
-                    detector["coordinates"][i]["x"] / objectstorage.videoobject.x_resize_factor)
+                detector["coordinates"][i]["x"]
+                / objectstorage.videoobject.x_resize_factor
+            )
             y = int(
-                    detector["coordinates"][i]["y"] / objectstorage.videoobject.y_resize_factor)
+                detector["coordinates"][i]["y"]
+                / objectstorage.videoobject.y_resize_factor
+            )
             coordinates_list.append({"x": x, "y": y})
 
             # add altered sections to new section dic for safing
-        flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
-                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                                    "coordinates": coordinates_list, "plugin_data": {}})
+        flow_dic_for_saving["sections"].append(
+            {
+                "id": detector["id"],
+                "type": "line",
+                "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                "coordinates": coordinates_list,
+                "plugin_data": {},
+            }
+        )
     return flow_dic_for_saving
+
 
 def add_meta_data(flow_dic):
     # adds meta data dic
     flow_dic["metadata"] = meta_data_dict["metadata"]
-    flow_dic["metadata"]["video"]["name"] = objectstorage.videoobject.filename.split(".")[
-        0]
+    flow_dic["metadata"]["video"]["name"] = objectstorage.videoobject.filename.split(
+        "."
+    )[0]
     flow_dic["metadata"]["video"]["width"] = objectstorage.videoobject.videowidth
     flow_dic["metadata"]["video"]["height"] = objectstorage.videoobject.videoheight
 
@@ -384,5 +394,4 @@ def add_meta_data(flow_dic):
 
 
 def info_message(title, text):
-
     return messagebox.showinfo(title=title, message=text)

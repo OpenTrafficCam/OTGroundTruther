@@ -18,12 +18,26 @@ def draw_section_line(np_image):
 
     return cv2.line(
         np_image,
-        (int(objectstorage.maincanvas.points[0][0] * objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[0][1] *
-         objectstorage.videoobject.y_resize_factor)),
-
-        (int(objectstorage.maincanvas.points[1][0] *
-         objectstorage.videoobject.x_resize_factor), int(objectstorage.maincanvas.points[1][1] *
-         objectstorage.videoobject.y_resize_factor)),
+        (
+            int(
+                objectstorage.maincanvas.points[0][0]
+                * objectstorage.videoobject.x_resize_factor
+            ),
+            int(
+                objectstorage.maincanvas.points[0][1]
+                * objectstorage.videoobject.y_resize_factor
+            ),
+        ),
+        (
+            int(
+                objectstorage.maincanvas.points[1][0]
+                * objectstorage.videoobject.x_resize_factor
+            ),
+            int(
+                objectstorage.maincanvas.points[1][1]
+                * objectstorage.videoobject.y_resize_factor
+            ),
+        ),
         (200, 125, 125, 255),
         3,
     )
@@ -73,7 +87,12 @@ def dump_to_flowdictionary(detector_name):
 
         print(objectstorage.flow_dict)
 
-        objectstorage.flow_dict["sections"].append({"id": detector_name, "type": "line",
-                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                                    "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
-
+        objectstorage.flow_dict["sections"].append(
+            {
+                "id": detector_name,
+                "type": "line",
+                "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}],
+                "plugin_data": {},
+            }
+        )

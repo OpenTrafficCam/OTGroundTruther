@@ -80,7 +80,6 @@ class gui(tk.Tk):
 
         self.bind("<Return>", self.handle_right_click_event)
 
-
         self.bind("<Escape>", self.cancel_active_count)
 
         self.bind("<F5>", quick_safe_to_csv)
@@ -92,6 +91,7 @@ class gui(tk.Tk):
         objectstorage.maincanvas.bind(
             config.RIGHT_CLICK_EVENT, self.handle_right_click_event
         )
+
     def _vehicle_call_key_pressed(self, event):
         assign_vehicle_class(event)
         self.frame_sections.display_chosen_vhv_class(event)
@@ -171,7 +171,6 @@ class gui(tk.Tk):
             objectstorage.videoobject.scroll_speed -= 1
 
     def change_active_countings_index(self, event):
-
         if event.keycode in [38, 40] and len(objectstorage.active_countings) == 0:
             return
         elif (
@@ -240,7 +239,6 @@ class gui(tk.Tk):
         manipulate_image(np_image)
 
     def reset_index(self, event):
-
         objectstorage.active_countings_index = 0
 
         if objectstorage.active_countings:
@@ -268,15 +266,27 @@ class gui(tk.Tk):
             print("----------------")
             coordinates_list = []
             for coordinate in detector["coordinates"]:
-                coordinates_list.append({
-                    "x": int(
-                        coordinate["x"] * objectstorage.videoobject.x_resize_factor),
-                    "y": int(
-                        coordinate["y"] * objectstorage.videoobject.x_resize_factor)
-                })
-            imported_sections.append({"id": detector["id"], "type": "line",
-                                      "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                      "coordinates": coordinates_list, "plugin_data": {}})
+                coordinates_list.append(
+                    {
+                        "x": int(
+                            coordinate["x"] * objectstorage.videoobject.x_resize_factor
+                        ),
+                        "y": int(
+                            coordinate["y"] * objectstorage.videoobject.x_resize_factor
+                        ),
+                    }
+                )
+            imported_sections.append(
+                {
+                    "id": detector["id"],
+                    "type": "line",
+                    "relative_offset_coordinates": {
+                        "section-enter": {"x": 0.5, "y": 0.5}
+                    },
+                    "coordinates": coordinates_list,
+                    "plugin_data": {},
+                }
+            )
 
             self.frame_sections.tree_sections.insert(
                 parent="", index="end", text=detector["id"]

@@ -38,10 +38,12 @@ class OtcCanvas(tk.Canvas):
         """
         if config_dict["linedetector_toggle"]:
             #  uses mouseevents to get coordinates (left button)
-            self.coordinateX = int(self.canvasx(event.x) /
-                                   objectstorage.videoobject.x_resize_factor)
-            self.coordinateY = int(self.canvasy(event.y) /
-                                   objectstorage.videoobject.y_resize_factor)
+            self.coordinateX = int(
+                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
+            )
+            self.coordinateY = int(
+                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
+            )
 
             self.points[list_index] = (
                 self.coordinateX,
@@ -63,14 +65,15 @@ class OtcCanvas(tk.Canvas):
             return
 
         if config_dict["gt_active"]:
-
-            self.coordinateX = int(self.canvasx(event.x) /
-                                   objectstorage.videoobject.x_resize_factor)
-            self.coordinateY = int(self.canvasy(event.y) /
-                                   objectstorage.videoobject.y_resize_factor)
+            self.coordinateX = int(
+                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
+            )
+            self.coordinateY = int(
+                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
+            )
 
         self.assign_information(event)
-        
+
         self.update_image()
 
     def update_image(self):
@@ -83,14 +86,14 @@ class OtcCanvas(tk.Canvas):
         if objectstorage.flow_dict["sections"]:
             in_detector_ellipse = False
             for detector in objectstorage.flow_dict["sections"]:
-                for i in range(len(detector["coordinates"])-1):
+                for i in range(len(detector["coordinates"]) - 1):
                     p0 = (
                         detector["coordinates"][i]["x"],
                         detector["coordinates"][i]["y"],
                     )
                     p1 = (
-                        detector["coordinates"][i+1]["x"],
-                        detector["coordinates"][i+1]["y"],
+                        detector["coordinates"][i + 1]["x"],
+                        detector["coordinates"][i + 1]["y"],
                     )
                     middle_point_x = (p0[0] + p1[0]) / 2
                     middle_point_y = (p0[1] + p1[1]) / 2
@@ -106,10 +109,12 @@ class OtcCanvas(tk.Canvas):
                     if (x * np.cos(radian) + y * np.sin(radian)) ** 2 / a**2 + (
                         x * np.sin(radian) - y * np.cos(radian)
                     ) ** 2 / b**2 <= 1:
-
                         print(f"Coordinate in the gate: {detector}")
 
-                        if self._there_is_an_active_count() and not self._is_same_gate_as_before(detector):
+                        if (
+                            self._there_is_an_active_count()
+                            and not self._is_same_gate_as_before(detector)
+                        ):
                             # append new coordinates
                             objectstorage.active_countings[
                                 objectstorage.active_countings_index
@@ -121,9 +126,12 @@ class OtcCanvas(tk.Canvas):
                                 objectstorage.active_countings_index
                             ].Frames.append(objectstorage.videoobject.current_frame)
 
-                    # change coordinates to new one, 
-                    # if clicked in the same section as last one
-                        elif self._there_is_an_active_count() and self._is_same_gate_as_before(detector):
+                        # change coordinates to new one,
+                        # if clicked in the same section as last one
+                        elif (
+                            self._there_is_an_active_count()
+                            and self._is_same_gate_as_before(detector)
+                        ):
                             # create on left click
                             objectstorage.active_countings[
                                 objectstorage.active_countings_index
@@ -135,10 +143,9 @@ class OtcCanvas(tk.Canvas):
                                 objectstorage.active_countings_index
                             ].Frames[-1] = objectstorage.videoobject.current_frame
 
-                        
                         in_detector_ellipse = True
                         break
-                    
+
                     # delete if not clicked in section
                     elif event.num == config.LEFT_CLICK_EVENT_NUMBER:
                         objectstorage.active_countings[
@@ -156,14 +163,16 @@ class OtcCanvas(tk.Canvas):
 
     def _there_is_an_active_count(self):
         return objectstorage.active_countings[
-                            objectstorage.active_countings_index
-                        ].Gates
+            objectstorage.active_countings_index
+        ].Gates
 
     def _is_same_gate_as_before(self, detector):
-        return objectstorage.active_countings[
-            objectstorage.active_countings_index
-        ].Gates[-1] == detector
-
+        return (
+            objectstorage.active_countings[objectstorage.active_countings_index].Gates[
+                -1
+            ]
+            == detector
+        )
 
 
 class CanvasFrame(tk.Frame):
