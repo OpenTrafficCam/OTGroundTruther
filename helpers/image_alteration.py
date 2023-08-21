@@ -182,34 +182,38 @@ def draw_detectors_from_dict(np_image):
     if objectstorage.flow_dict["sections"]:
         for detector in objectstorage.flow_dict["sections"]:
             for i in range(len(detector["coordinates"]) - 1):
-                # resize to videowidth and height
-                start_x = int(
-                    detector["coordinates"][i]["x"]
-                    * objectstorage.videoobject.x_resize_factor
-                )
-                start_y = int(
-                    detector["coordinates"][i]["y"]
-                    * objectstorage.videoobject.y_resize_factor
-                )
-                end_x = int(
-                    detector["coordinates"][i + 1]["x"]
-                    * objectstorage.videoobject.x_resize_factor
-                )
-                end_y = int(
-                    detector["coordinates"][i + 1]["y"]
-                    * objectstorage.videoobject.y_resize_factor
-                )
+                p0_video, p1_video = _get_detector_video_coordinates(detector, i)
+                p0_canvas = _get_canvas_coordinate_for(p0_video)
+                p1_canvas = _get_canvas_coordinate_for(p1_video)
                 color = (200, 125, 125, 255)
 
-                np_image = cv2.line(
-                    np_image, (start_x, start_y), (end_x, end_y), color, 3
-                )
+                np_image = cv2.line(np_image, p0_canvas, p1_canvas, color, 3)
 
                 np_image = draw_ellipse_around_section(
-                    np_image, p0=(start_x, start_y), p1=(end_x, end_y)
+                    np_image, p0=p0_canvas, p1=p1_canvas
                 )
 
     return np_image
+
+
+def _get_detector_video_coordinates(detector, i):
+    p0_video = (
+        detector["coordinates"][i]["x"],
+        detector["coordinates"][i]["y"],
+    )
+    p1_video = (
+        detector["coordinates"][i + 1]["x"],
+        detector["coordinates"][i + 1]["y"],
+    )
+
+    return p0_video, p1_video
+
+
+def _get_canvas_coordinate_for(video_coordinate):
+    return (
+        int(video_coordinate[0] * objectstorage.videoobject.x_resize_factor),
+        int(video_coordinate[1] * objectstorage.videoobject.y_resize_factor),
+    )
 
 
 def draw_tag_around_start_coordinate(np_image):
