@@ -15,29 +15,17 @@ def manipulate_image(np_image=None):
 
     if objectstorage.config_dict["linedetector_toggle"]:
         np_image = draw_section_line(np_image)
-        np_image = draw_ellipse_around_section(
-            np_image,
-            p0=(
-                (
-                    objectstorage.maincanvas.points[0][0]
-                    * objectstorage.videoobject.x_resize_factor
-                ),
-                (
-                    objectstorage.maincanvas.points[0][1]
-                    * objectstorage.videoobject.y_resize_factor
-                ),
-            ),
-            p1=(
-                (
-                    objectstorage.maincanvas.points[1][0]
-                    * objectstorage.videoobject.x_resize_factor
-                ),
-                (
-                    objectstorage.maincanvas.points[1][1]
-                    * objectstorage.videoobject.y_resize_factor
-                ),
-            ),
+        p0_video = (
+            objectstorage.maincanvas.points[0][0],
+            objectstorage.maincanvas.points[0][1],
         )
+        p1_video = (
+            objectstorage.maincanvas.points[1][0],
+            objectstorage.maincanvas.points[1][1],
+        )
+        p0_canvas = _get_canvas_coordinate_for(p0_video)
+        p1_canvas = _get_canvas_coordinate_for(p1_video)
+        np_image = draw_ellipse_around_section(np_image, p0=p0_canvas, p1=p1_canvas)
 
     np_image = draw_detectors_from_dict(np_image)
 
@@ -90,37 +78,39 @@ def draw_finished_counts(np_image):
         track_id = row["ID"]
         track_class = row["Class"]
 
-        np_image = _draw_labelled_circle(coordinates, track_id, np_image)
+        p0_video = coordinates[0]
+        np_image = _draw_labelled_circle(np_image, p0_video, str(track_id))
 
         if len(coordinates) > 1:
-            for coordinate_start, coordinate_end in pairwise(coordinates):
-                np_image = _draw_labelled_arrow(
-                    track_id, track_class, coordinate_start, coordinate_end
+            text = f"{str(track_id)}-{vehicle_abbreviation[track_class]}"
+            for p0_video, p1_video in pairwise(coordinates):
+                np_image = _draw_arrow(
+                    np_image=np_image,
+                    p0_video=p0_video,
+                    p1_video=p1_video,
+                    label_text=text,
                 )
 
     return np_image
 
 
-def _draw_labelled_circle(coordinates, track_id, np_image):
-    np_image = cv2.circle(
-        np_image,
-        (
-            int(coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
-            int(coordinates[0][1] * objectstorage.videoobject.y_resize_factor),
-        ),
-        5,
-        (0, 255, 255, 255),
-    )
+def _draw_labelled_circle(
+    np_image,
+    point_video,
+    text,
+    radius=1,
+    color=(0, 255, 255, 255),
+    font_scale=1,
+):
+    point_canvas = _get_canvas_coordinate_for(point_video)
+    np_image = cv2.circle(np_image, point_canvas, radius, color)
     np_image = cv2.putText(
         np_image,
-        str(track_id),
-        (
-            int(coordinates[0][0] * objectstorage.videoobject.x_resize_factor),
-            int(coordinates[0][1] * objectstorage.videoobject.y_resize_factor),
-        ),
+        text,
+        point_canvas,
         cv2.FONT_HERSHEY_SIMPLEX,
-        1,
-        (0, 255, 255, 255),
+        font_scale,
+        color,
         1,
         cv2.LINE_AA,
         False,
@@ -128,44 +118,32 @@ def _draw_labelled_circle(coordinates, track_id, np_image):
     return np_image
 
 
-def _draw_labelled_arrow(
-    track_id, track_class, coordinate_start, coordinate_end, np_image
+def _draw_arrow(
+    np_image,
+    p0_video,
+    p1_video,
+    color=(255, 185, 15, 255),
+    label_text=None,
+    font_scale=1,
 ):
-    np_image = cv2.arrowedLine(
-        np_image,
-        (
-            int(coordinate_start[0] * objectstorage.videoobject.x_resize_factor),
-            int(coordinate_start[1] * objectstorage.videoobject.y_resize_factor),
-        ),
-        (
-            int(coordinate_end[0] * objectstorage.videoobject.x_resize_factor),
-            int(coordinate_end[1] * objectstorage.videoobject.y_resize_factor),
-        ),
-        (255, 185, 15, 255),
-        1,
-    )
-    np_image = cv2.putText(
-        np_image,
-        f"{str(track_id)}-{vehicle_abbreviation[track_class]}",
-        (
-            int(
-                (coordinate_start[0] + coordinate_end[0])
-                / 2
-                * objectstorage.videoobject.x_resize_factor
+    p0_canvas = _get_canvas_coordinate_for(p0_video)
+    p1_canvas = _get_canvas_coordinate_for(p1_video)
+    np_image = cv2.arrowedLine(np_image, p0_canvas, p1_canvas, color, 1)
+    if label_text is not None:
+        np_image = cv2.putText(
+            np_image,
+            label_text,
+            (
+                int((p0_canvas[0] + p1_canvas[0]) / 2),
+                int((p0_canvas[1] + p1_canvas[1]) / 2),
             ),
-            int(
-                (coordinate_start[1] + coordinate_end[1])
-                / 2
-                * objectstorage.videoobject.y_resize_factor
-            ),
-        ),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.4,
-        (255, 185, 15, 255),
-        1,
-        cv2.LINE_AA,
-        False,
-    )
+            cv2.FONT_HERSHEY_SIMPLEX,
+            font_scale,
+            color,
+            1,
+            cv2.LINE_AA,
+            False,
+        )
 
     return np_image
 
@@ -227,68 +205,23 @@ def draw_tag_around_start_coordinate(np_image):
             color = (124, 252, 0, 255)
 
         if active_count.Coordinates:
-            np_image = cv2.circle(
+            p0_video = active_count.Coordinates[0]
+            np_image = _draw_labelled_circle(
                 np_image,
-                (
-                    int(
-                        active_count.Coordinates[0][0]
-                        * objectstorage.videoobject.x_resize_factor
-                    ),
-                    int(
-                        active_count.Coordinates[0][1]
-                        * objectstorage.videoobject.y_resize_factor
-                    ),
-                ),
-                5,
-                color,
+                point_video=p0_video,
+                text=str(active_count.ID),
+                radius=5,
+                color=color,
+                font_scale=0.75,
             )
-            np_image = cv2.putText(
-                np_image,
-                str(active_count.ID),
-                (
-                    int(
-                        active_count.Coordinates[0][0]
-                        * objectstorage.videoobject.x_resize_factor
-                    ),
-                    int(
-                        active_count.Coordinates[0][1]
-                        * objectstorage.videoobject.y_resize_factor
-                    ),
-                ),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75,
-                color,
-                1,
-                cv2.LINE_AA,
-                False,
-            )
-        # draw line when count has two coordinates
+
         if len(active_count.Coordinates) > 1:
-            for coordinate_start, coordinate_end in pairwise(active_count.Coordinates):
-                np_image = cv2.arrowedLine(
-                    np_image,
-                    (
-                        int(
-                            coordinate_start[0]
-                            * objectstorage.videoobject.x_resize_factor
-                        ),
-                        int(
-                            coordinate_start[1]
-                            * objectstorage.videoobject.y_resize_factor
-                        ),
-                    ),
-                    (
-                        int(
-                            coordinate_end[0]
-                            * objectstorage.videoobject.x_resize_factor
-                        ),
-                        int(
-                            coordinate_end[1]
-                            * objectstorage.videoobject.y_resize_factor
-                        ),
-                    ),
-                    (254, 255, 0, 255),
-                    1,
+            for p0_video, p1_video in pairwise(active_count.Coordinates):
+                _draw_arrow(
+                    np_image=np_image,
+                    p0_video=p0_video,
+                    p1_video=p1_video,
+                    color=(254, 255, 0, 255),
                 )
 
     return np_image
