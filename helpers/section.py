@@ -1,9 +1,9 @@
 from math import atan2, dist, pi
 
 import cv2
-from shapely.geometry import LineString, Polygon
 
 import helpers.filehelper.objectstorage as objectstorage
+from helpers.resize import get_canvas_coordinate_for
 
 
 def draw_section_line(np_image):
@@ -15,32 +15,12 @@ def draw_section_line(np_image):
     Returns:
         _type_: _description_
     """
+    p0_video = objectstorage.maincanvas.points[0]
+    p1_video = objectstorage.maincanvas.points[1]
+    p0_canvas = get_canvas_coordinate_for(p0_video)
+    p1_canvas = get_canvas_coordinate_for(p1_video)
 
-    return cv2.line(
-        np_image,
-        (
-            int(
-                objectstorage.maincanvas.points[0][0]
-                * objectstorage.videoobject.x_resize_factor
-            ),
-            int(
-                objectstorage.maincanvas.points[0][1]
-                * objectstorage.videoobject.y_resize_factor
-            ),
-        ),
-        (
-            int(
-                objectstorage.maincanvas.points[1][0]
-                * objectstorage.videoobject.x_resize_factor
-            ),
-            int(
-                objectstorage.maincanvas.points[1][1]
-                * objectstorage.videoobject.y_resize_factor
-            ),
-        ),
-        (200, 125, 125, 255),
-        3,
-    )
+    return cv2.line(np_image, p0_canvas, p1_canvas, (200, 125, 125, 255), 3)
 
 
 def draw_ellipse_around_section(np_image, p0, p1):

@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 
 import helpers.filehelper.objectstorage as objectstorage
 from helpers.filehelper.config import vehicle_abbreviation
+from helpers.resize import get_canvas_coordinate_for
 from helpers.section import draw_ellipse_around_section, draw_section_line
 
 
@@ -23,8 +24,8 @@ def manipulate_image(np_image=None):
             objectstorage.maincanvas.points[1][0],
             objectstorage.maincanvas.points[1][1],
         )
-        p0_canvas = _get_canvas_coordinate_for(p0_video)
-        p1_canvas = _get_canvas_coordinate_for(p1_video)
+        p0_canvas = get_canvas_coordinate_for(p0_video)
+        p1_canvas = get_canvas_coordinate_for(p1_video)
         np_image = draw_ellipse_around_section(np_image, p0=p0_canvas, p1=p1_canvas)
 
     np_image = draw_detectors_from_dict(np_image)
@@ -102,7 +103,7 @@ def _draw_labelled_circle(
     color=(0, 255, 255, 255),
     font_scale=1,
 ):
-    point_canvas = _get_canvas_coordinate_for(point_video)
+    point_canvas = get_canvas_coordinate_for(point_video)
     np_image = cv2.circle(np_image, point_canvas, radius, color)
     np_image = cv2.putText(
         np_image,
@@ -126,8 +127,8 @@ def _draw_arrow(
     label_text=None,
     font_scale=1,
 ):
-    p0_canvas = _get_canvas_coordinate_for(p0_video)
-    p1_canvas = _get_canvas_coordinate_for(p1_video)
+    p0_canvas = get_canvas_coordinate_for(p0_video)
+    p1_canvas = get_canvas_coordinate_for(p1_video)
     np_image = cv2.arrowedLine(np_image, p0_canvas, p1_canvas, color, 1)
     if label_text is not None:
         np_image = cv2.putText(
@@ -161,8 +162,8 @@ def draw_detectors_from_dict(np_image):
         for detector in objectstorage.flow_dict["sections"]:
             for i in range(len(detector["coordinates"]) - 1):
                 p0_video, p1_video = _get_detector_video_coordinates(detector, i)
-                p0_canvas = _get_canvas_coordinate_for(p0_video)
-                p1_canvas = _get_canvas_coordinate_for(p1_video)
+                p0_canvas = get_canvas_coordinate_for(p0_video)
+                p1_canvas = get_canvas_coordinate_for(p1_video)
                 color = (200, 125, 125, 255)
 
                 np_image = cv2.line(np_image, p0_canvas, p1_canvas, color, 3)
@@ -185,13 +186,6 @@ def _get_detector_video_coordinates(detector, i):
     )
 
     return p0_video, p1_video
-
-
-def _get_canvas_coordinate_for(video_coordinate):
-    return (
-        int(video_coordinate[0] * objectstorage.videoobject.x_resize_factor),
-        int(video_coordinate[1] * objectstorage.videoobject.y_resize_factor),
-    )
 
 
 def draw_tag_around_start_coordinate(np_image):
