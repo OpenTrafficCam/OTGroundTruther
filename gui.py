@@ -255,7 +255,7 @@ class gui(tk.Tk):
         # better workaround ==> get dic by key value pair(i.g. section id) with listcomprehension and change value
         # [d for d in dictionaries if d.get(key) == value]
         self._integrate_flowfile_data_in_objstorage()
-        print("finished")
+        print("Successfully imported flowfile")
 
         manipulate_image(objectstorage.videoobject.np_image.copy())
 
