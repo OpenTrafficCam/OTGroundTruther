@@ -264,18 +264,17 @@ class gui(tk.Tk):
         for detector in objectstorage.flow_dict["sections"]:
             print(detector)
             print("----------------")
-            coordinates_list = []
-            for coordinate in detector["coordinates"]:
-                coordinates_list.append(
-                    {
-                        "x": int(
-                            coordinate["x"] * objectstorage.videoobject.x_resize_factor
-                        ),
-                        "y": int(
-                            coordinate["y"] * objectstorage.videoobject.x_resize_factor
-                        ),
-                    }
-                )
+            coordinates_list = [
+                {
+                    "x": int(
+                        coordinate["x"] * objectstorage.videoobject.x_resize_factor
+                    ),
+                    "y": int(
+                        coordinate["y"] * objectstorage.videoobject.x_resize_factor
+                    ),
+                }
+                for coordinate in detector["coordinates"]
+            ]
             imported_sections.append(
                 {
                     "id": detector["id"],
