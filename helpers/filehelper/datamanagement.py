@@ -209,7 +209,7 @@ def dic_to_gt_dataframe():
     ground_truth_dic = {}
 
     for event in objectstorage.eventbased_dictionary:
-        id = objectstorage.eventbased_dictionary[event]["TrackID"]
+        _id = objectstorage.eventbased_dictionary[event]["TrackID"]
         if (
             objectstorage.eventbased_dictionary[event]["TrackID"]
             not in ground_truth_dic
@@ -220,22 +220,22 @@ def dic_to_gt_dataframe():
                 "Crossed_Frames": [],
                 "Crossed_Coordinates": [],
             }
-            ground_truth_dic[id]["Class"] = objectstorage.eventbased_dictionary[event][
+            ground_truth_dic[_id]["Class"] = objectstorage.eventbased_dictionary[event][
                 "Class"
             ]
 
         if (
-            not ground_truth_dic[id]["Crossed_Frames"]
+            not ground_truth_dic[_id]["Crossed_Frames"]
             or objectstorage.eventbased_dictionary[event]["Frame"]
-            < ground_truth_dic[id]["Crossed_Frames"][-1]
+            < ground_truth_dic[_id]["Crossed_Frames"][-1]
         ):
-            ground_truth_dic[id]["Crossed_Gates"].insert(
+            ground_truth_dic[_id]["Crossed_Gates"].insert(
                 0, objectstorage.eventbased_dictionary[event]["SectionID"]
             )
-            ground_truth_dic[id]["Crossed_Frames"].insert(
+            ground_truth_dic[_id]["Crossed_Frames"].insert(
                 0, objectstorage.eventbased_dictionary[event]["Frame"]
             )
-            ground_truth_dic[id]["Crossed_Coordinates"].insert(
+            ground_truth_dic[_id]["Crossed_Coordinates"].insert(
                 0,
                 (
                     # hier muss die umrechnung mit x faktor geschehen
@@ -246,13 +246,13 @@ def dic_to_gt_dataframe():
             )
 
         else:
-            ground_truth_dic[id]["Crossed_Gates"].append(
+            ground_truth_dic[_id]["Crossed_Gates"].append(
                 objectstorage.eventbased_dictionary[event]["SectionID"]
             )
-            ground_truth_dic[id]["Crossed_Frames"].append(
+            ground_truth_dic[_id]["Crossed_Frames"].append(
                 objectstorage.eventbased_dictionary[event]["Frame"]
             )
-            ground_truth_dic[id]["Crossed_Coordinates"].append(
+            ground_truth_dic[_id]["Crossed_Coordinates"].append(
                 (
                     # hier muss die umrechnung mit x faktor geschehen
                     objectstorage.eventbased_dictionary[event]["X"],
