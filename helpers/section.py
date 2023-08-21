@@ -3,6 +3,7 @@ from math import atan2, dist, pi
 import cv2
 
 import helpers.filehelper.objectstorage as objectstorage
+from helpers.filehelper.objectstorage import ELLIPSEHEIGHT
 from helpers.resize import get_canvas_coordinate_for
 
 
@@ -39,7 +40,7 @@ def draw_ellipse_around_section(np_image, p0, p1):
     np_image = cv2.ellipse(
         np_image,
         (int(middle_point_x), int(middle_point_y)),
-        (int(major_axis_length), (int(major_axis_length * 0.15))),
+        (int(major_axis_length), (int(major_axis_length * ELLIPSEHEIGHT))),
         angle,
         0,
         360,
