@@ -146,7 +146,7 @@ def _draw_labelled_arrow(
     )
     np_image = cv2.putText(
         np_image,
-        str(track_id) + "-" + vehicle_abbreviation[track_class],
+        f"{str(track_id)}-{vehicle_abbreviation[track_class]}",
         (
             int(
                 (coordinate_start[0] + coordinate_end[0])
