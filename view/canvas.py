@@ -4,7 +4,6 @@ from math import atan2, dist
 import numpy as np
 
 import helpers.filehelper.objectstorage as objectstorage
-import view.config as config
 from helpers.filehelper.objectstorage import ELLIPSEHEIGHT, config_dict
 from helpers.image_alteration import manipulate_image
 
@@ -100,9 +99,6 @@ class OtcCanvas(tk.Canvas):
                 if self._coordinate_in_section_ellipse(
                     section_p0=p0, section_p1=p1
                 ):
-                    # if event.num == config.LEFT_CLICK_EVENT_NUMBER:
-                    #     self._delete_event()
-
                     print(f"Coordinate in the gate: {detector}")
 
                     if (not self._there_is_an_active_count() or (
@@ -111,9 +107,9 @@ class OtcCanvas(tk.Canvas):
                     )):
                         self._append_new_event(detector)
 
-                    elif self._there_is_an_active_count() and self._is_same_gate_as_before(
-                        detector
-                    ):
+                    elif (self._there_is_an_active_count() and
+                          self._is_same_gate_as_before(detector)
+                          ):
                         self._update_event()
                     in_detector_ellipse = True
                     break

@@ -252,7 +252,8 @@ class gui(tk.Tk):
         objectstorage.flow_dict = load_flowfile()
 
         # create a new list of dictionaries ro insert imported section
-        # better workaround ==> get dic by key value pair(i.g. section id) with listcomprehension and change value
+        # better workaround ==> get dic by key value pair(i.g. section id)
+        # with listcomprehension and change value
         # [d for d in dictionaries if d.get(key) == value]
         self._integrate_flowfile_data_in_objstorage()
         print("Successfully imported flowfile")
