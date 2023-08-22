@@ -85,7 +85,7 @@ class OtcCanvas(tk.Canvas):
         """
         if not objectstorage.flow_dict["sections"]:
             return
-
+        in_detector_ellipse = False
         for detector in objectstorage.flow_dict["sections"]:
             for i in range(len(detector["coordinates"]) - 1):
                 p0 = (
@@ -97,27 +97,28 @@ class OtcCanvas(tk.Canvas):
                     detector["coordinates"][i + 1]["y"],
                 )
 
-                if not self._coordinate_in_section_ellipse(
+                if self._coordinate_in_section_ellipse(
                     section_p0=p0, section_p1=p1
                 ):
                     # if event.num == config.LEFT_CLICK_EVENT_NUMBER:
                     #     self._delete_event()
-                    continue
 
-                print(f"Coordinate in the gate: {detector}")
+                    print(f"Coordinate in the gate: {detector}")
 
-                if (
-                    self._there_is_an_active_count()
-                    and not self._is_same_gate_as_before(detector)
-                ):
-                    self._append_new_event(detector)
+                    if (not self._there_is_an_active_count() or (
+                        self._there_is_an_active_count()
+                        and not self._is_same_gate_as_before(detector)
+                    )):
+                        self._append_new_event(detector)
 
-                elif self._there_is_an_active_count() and self._is_same_gate_as_before(
-                    detector
-                ):
-                    self._update_event()
-
-                return
+                    elif self._there_is_an_active_count() and self._is_same_gate_as_before(
+                        detector
+                    ):
+                        self._update_event()
+                    in_detector_ellipse = True
+                    break
+            if in_detector_ellipse:
+                break
 
     def _append_new_event(self, detector):
         objectstorage.active_countings[
@@ -177,7 +178,7 @@ class OtcCanvas(tk.Canvas):
             objectstorage.active_countings[objectstorage.active_countings_index].Gates[
                 -1
             ]
-            == detector
+            == detector["id"]
         )
 
 
