@@ -4,7 +4,7 @@ from math import atan2, dist
 import numpy as np
 
 import helpers.filehelper.objectstorage as objectstorage
-from helpers.filehelper.objectstorage import ELLIPSEHEIGHT, config_dict
+from helpers.filehelper.objectstorage import ELLIPSEHEIGHT
 from helpers.image_alteration import manipulate_image
 
 
@@ -18,41 +18,6 @@ class OtcCanvas(tk.Canvas):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.points = [(0, 0), (0, 0)]
-        self.polygon_points = []
-
-        self.bind(
-            "<B1-Motion>",
-            lambda event: [
-                self.click_receive_section_coordinates(event, 1),
-            ],
-        )
-
-    def click_receive_section_coordinates(self, event, list_index):
-        """Saves coordinates from canvas event to linepoint list.
-
-        Args:
-            event (tkinter.event): Click on canvas triggers event.
-            list_index (index): 0 : start, 1 : end
-        """
-        if config_dict["linedetector_toggle"]:
-            #  uses mouseevents to get coordinates (left button)
-            self.coordinateX = int(
-                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
-            )
-            self.coordinateY = int(
-                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
-            )
-
-            self.points[list_index] = (
-                self.coordinateX,
-                self.coordinateY,
-            )
-            # section line gets drawn when second section coordinate is
-            # changed/else Line jumps
-            if list_index == 1:
-                manipulate_image(objectstorage.videoobject.np_image.copy())
-
     def click_receive_vehicle_coordinates(self, event):
         """Saves coordinates from canvas event to linepoint list.
 
@@ -60,16 +25,12 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
-        if config_dict["linedetector_toggle"]:
-            return
-
-        if config_dict["gt_active"]:
-            self.coordinateX = int(
-                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
-            )
-            self.coordinateY = int(
-                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
-            )
+        self.coordinateX = int(
+            self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
+        )
+        self.coordinateY = int(
+            self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
+        )
 
         self._handle_event(event)
 

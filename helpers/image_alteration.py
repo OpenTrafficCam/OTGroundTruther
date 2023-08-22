@@ -1,4 +1,5 @@
 import tkinter
+from math import atan2, dist, pi
 
 import cv2
 from more_itertools import pairwise
@@ -6,28 +7,11 @@ from PIL import Image, ImageTk
 
 import helpers.filehelper.objectstorage as objectstorage
 from helpers.filehelper.config import vehicle_abbreviation
+from helpers.filehelper.objectstorage import ELLIPSEHEIGHT
 from helpers.resize import get_canvas_coordinate_for
-from helpers.section import draw_ellipse_around_section, draw_section_line
 
 
 def manipulate_image(np_image=None):
-    if np_image is None:
-        np_image = objectstorage.videoobject.np_image.copy()
-
-    if objectstorage.config_dict["linedetector_toggle"]:
-        np_image = draw_section_line(np_image)
-        p0_video = (
-            objectstorage.maincanvas.points[0][0],
-            objectstorage.maincanvas.points[0][1],
-        )
-        p1_video = (
-            objectstorage.maincanvas.points[1][0],
-            objectstorage.maincanvas.points[1][1],
-        )
-        p0_canvas = get_canvas_coordinate_for(p0_video)
-        p1_canvas = get_canvas_coordinate_for(p1_video)
-        np_image = draw_ellipse_around_section(np_image, p0=p0_canvas, p1=p1_canvas)
-
     np_image = draw_detectors_from_dict(np_image)
 
     np_image = draw_finished_counts(np_image)
@@ -217,5 +201,32 @@ def draw_tag_around_start_coordinate(np_image):
                     p1_video=p1_video,
                     color=(254, 255, 0, 255),
                 )
+
+    return np_image
+
+
+def draw_ellipse_around_section(np_image, p0, p1):
+    middle_point_x = (p0[0] + p1[0]) / 2
+    middle_point_y = (p0[1] + p1[1]) / 2
+
+    major_axis_length = dist(p0, p1) / 2
+
+    radian = atan2(
+        p1[1] - p0[1],
+        p0[0] - p1[0],
+    )
+
+    angle = -radian * (180 / pi)
+
+    np_image = cv2.ellipse(
+        np_image,
+        (int(middle_point_x), int(middle_point_y)),
+        (int(major_axis_length), (int(major_axis_length * ELLIPSEHEIGHT))),
+        angle,
+        0,
+        360,
+        color=(127, 255, 0, 255),
+        thickness=2,
+    )
 
     return np_image
