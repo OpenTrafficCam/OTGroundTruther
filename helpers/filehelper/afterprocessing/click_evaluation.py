@@ -1,6 +1,7 @@
+import os
+
 import cv2
 import pandas as pd
-import os
 
 color_codes = [
     (255, 0, 0),       # Red
@@ -48,10 +49,14 @@ Scene = "17"
 safe_name = f"{city}_Otcamera{Scene}.PNG"
 
 # better create image from video
-image_path = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\sections\Querschnitte\Saarbruecken_OTCamera17.PNG"
+image_path = r"\\vs-grp08.zih.tu-dresden.de\otc_live" \
+             r"\validate\ground truth events" \
+             r"\sections\Querschnitte\Saarbruecken_OTCamera17.PNG"
 
 
-csv_dir = r"\\vs-grp08.zih.tu-dresden.de\otc_live\validate\ground truth events\events\Saarbrücken"
+csv_dir = r"\\vs-grp08.zih.tu-dresden.de\otc_live" \
+          r"\validate\ground truth events" \
+          r"\events\Saarbrücken"
 
 # Load the image you want to draw on
 img = cv2.imread(image_path)

@@ -25,16 +25,26 @@ def fill_ground_truth(event):
         # change 0 to active_count_index
         # appends dataframe with values from dictionary
 
+        # objectstorage.ground_truth = pd.concat(
+        #     [
+        #         objectstorage.ground_truth,
+        #         pd.DataFrame(objectstorage.active_countings[
+        #             objectstorage.active_countings_index
+        #         ].counted_vehicle_information())
+        #     ],
+        #     ignore_index=True,
+        # )
         objectstorage.ground_truth = objectstorage.ground_truth.append(
             objectstorage.active_countings[
                 objectstorage.active_countings_index
             ].counted_vehicle_information(),
             ignore_index=True,
         )
-        
+
         reset_active_count()
-        
+
         print(objectstorage.ground_truth)
+
 
 def reset_active_count():
     del objectstorage.active_countings[objectstorage.active_countings_index]
@@ -62,7 +72,6 @@ def fill_eventbased_dictionary(event):
         for crossed_gate, crossed_coordinate, crossed_frame in zip(
             active_count.Gates, active_count.Coordinates, active_count.Frames
         ):
-
             objectstorage.eventbased_dictionary_index += 1
 
             objectstorage.eventbased_dictionary[
@@ -200,34 +209,33 @@ def dic_to_gt_dataframe():
     ground_truth_dic = {}
 
     for event in objectstorage.eventbased_dictionary:
-        id = objectstorage.eventbased_dictionary[event]["TrackID"]
+        _id = objectstorage.eventbased_dictionary[event]["TrackID"]
         if (
             objectstorage.eventbased_dictionary[event]["TrackID"]
             not in ground_truth_dic
         ):
-
             ground_truth_dic[objectstorage.eventbased_dictionary[event]["TrackID"]] = {
                 "Class": [],
                 "Crossed_Gates": [],
                 "Crossed_Frames": [],
                 "Crossed_Coordinates": [],
             }
-            ground_truth_dic[id]["Class"] = objectstorage.eventbased_dictionary[event][
+            ground_truth_dic[_id]["Class"] = objectstorage.eventbased_dictionary[event][
                 "Class"
             ]
 
         if (
-            not ground_truth_dic[id]["Crossed_Frames"]
+            not ground_truth_dic[_id]["Crossed_Frames"]
             or objectstorage.eventbased_dictionary[event]["Frame"]
-            < ground_truth_dic[id]["Crossed_Frames"][-1]
+            < ground_truth_dic[_id]["Crossed_Frames"][-1]
         ):
-            ground_truth_dic[id]["Crossed_Gates"].insert(
+            ground_truth_dic[_id]["Crossed_Gates"].insert(
                 0, objectstorage.eventbased_dictionary[event]["SectionID"]
             )
-            ground_truth_dic[id]["Crossed_Frames"].insert(
+            ground_truth_dic[_id]["Crossed_Frames"].insert(
                 0, objectstorage.eventbased_dictionary[event]["Frame"]
             )
-            ground_truth_dic[id]["Crossed_Coordinates"].insert(
+            ground_truth_dic[_id]["Crossed_Coordinates"].insert(
                 0,
                 (
                     # hier muss die umrechnung mit x faktor geschehen
@@ -238,13 +246,13 @@ def dic_to_gt_dataframe():
             )
 
         else:
-            ground_truth_dic[id]["Crossed_Gates"].append(
+            ground_truth_dic[_id]["Crossed_Gates"].append(
                 objectstorage.eventbased_dictionary[event]["SectionID"]
             )
-            ground_truth_dic[id]["Crossed_Frames"].append(
+            ground_truth_dic[_id]["Crossed_Frames"].append(
                 objectstorage.eventbased_dictionary[event]["Frame"]
             )
-            ground_truth_dic[id]["Crossed_Coordinates"].append(
+            ground_truth_dic[_id]["Crossed_Coordinates"].append(
                 (
                     # hier muss die umrechnung mit x faktor geschehen
                     objectstorage.eventbased_dictionary[event]["X"],
@@ -277,7 +285,6 @@ def safe_eventbased_dataframe():
 
 
 def quick_safe_to_csv(event):
-
     eventbased_dataframe = eventased_dictionary_to_dataframe()
 
     if objectstorage.quicksafe_filepath_event:
@@ -314,8 +321,7 @@ def load_flowfile():
     Returns:
         json: Return json file to read from.
     """
-    if (
-            not objectstorage.flow_dict["sections"]):
+    if not objectstorage.flow_dict["sections"]:
         filepath = filedialog.askopenfile(filetypes=[("sections", "*.OTflow")])
         files = open(filepath.name, "r")
         files = files.read()
@@ -337,25 +343,9 @@ def save_flowfile():
         files = [("Files", "*.otflow")]
         file = filedialog.asksaveasfile(filetypes=files, defaultextension=files)
 
-        flow_dic_for_saving = {"metadata": None, "sections": []}
+        flow_dic_for_saving = {"metadata": None, "sections": [], "flows": []}
 
-        # delete shapeley objects because they cant be safed
-        for detector in objectstorage.flow_dict["sections"]:
-            del detector["Geometry_line"]
-
-            x1 = int(
-                detector["coordinates"][0]["x"] / objectstorage.videoobject.x_resize_factor)
-            y1 = int(
-                detector["coordinates"][0]["y"] / objectstorage.videoobject.y_resize_factor)
-            x2 = int(
-                detector["coordinates"][1]["x"] / objectstorage.videoobject.x_resize_factor)
-            y2 = int(
-                detector["coordinates"][1]["y"] / objectstorage.videoobject.y_resize_factor)
-
-            # add altered sections to new section dic for safing
-            flow_dic_for_saving["sections"].append({"id": detector["id"], "type": "line",
-                                                    "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
-                                                    "coordinates": [{"x": x1, "y": y1}, {"x": x2, "y": y2}], "plugin_data": {}})
+        flow_dic_for_saving = add_detector_information(flow_dic_for_saving)
 
         flow_dic_for_saving = add_meta_data(flow_dic_for_saving)
 
@@ -364,11 +354,39 @@ def save_flowfile():
         info_message("Warning", "Create sections and Movements first!")
 
 
+def add_detector_information(flow_dic_for_saving):
+    for detector in objectstorage.flow_dict["sections"]:
+        coordinates_list = []
+        for i in range(len(detector["coordinates"])):
+            x = int(
+                detector["coordinates"][i]["x"]
+                / objectstorage.videoobject.x_resize_factor
+            )
+            y = int(
+                detector["coordinates"][i]["y"]
+                / objectstorage.videoobject.y_resize_factor
+            )
+            coordinates_list.append({"x": x, "y": y})
+
+            # add altered sections to new section dic for safing
+        flow_dic_for_saving["sections"].append(
+            {
+                "id": detector["id"],
+                "type": "line",
+                "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
+                "coordinates": coordinates_list,
+                "plugin_data": {},
+            }
+        )
+    return flow_dic_for_saving
+
+
 def add_meta_data(flow_dic):
     # adds meta data dic
     flow_dic["metadata"] = meta_data_dict["metadata"]
-    flow_dic["metadata"]["video"]["name"] = objectstorage.videoobject.filename.split(".")[
-        0]
+    flow_dic["metadata"]["video"]["name"] = objectstorage.videoobject.filename.split(
+        "."
+    )[0]
     flow_dic["metadata"]["video"]["width"] = objectstorage.videoobject.videowidth
     flow_dic["metadata"]["video"]["height"] = objectstorage.videoobject.videoheight
 
@@ -376,5 +394,4 @@ def add_meta_data(flow_dic):
 
 
 def info_message(title, text):
-
     return messagebox.showinfo(title=title, message=text)
