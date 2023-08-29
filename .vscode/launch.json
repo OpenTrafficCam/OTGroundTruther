@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: OTGroundTruther __main__.py",
+            "name": "Python: OTGroundTruther App",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/__main__.py",
+            "module": "OTGroundTruther",
             "console": "integratedTerminal",
             "justMyCode": false
         },

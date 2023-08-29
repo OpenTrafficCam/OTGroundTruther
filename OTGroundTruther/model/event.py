@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from .coordinate import Coordinate
-from .section import LineSection
+from OTGroundTruther.model.coordinate import Coordinate
+from OTGroundTruther.model.section import LineSection
 
 
 @dataclass

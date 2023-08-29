@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from event import Event
+from OTGroundTruther.model.event import Event
 
 ACTIVE_COUNT_ID = "active-count-id"
 
@@ -54,10 +54,10 @@ class ActiveCount:
         return self._events
 
 
-@dataclass
 class CountRepository:
-    _counts: dict[str, Count] = {}
-    _current_id: int = 0
+    def __init__(self):
+        self._counts: dict[str, Count] = {}
+        self._current_id: int = 0
 
     def add_all(self, counts: Iterable[Count]) -> None:
         """Add several counts at once to the repository.
@@ -111,12 +111,6 @@ class CountRepository:
         """
         del self._counts[id]
 
-    def clear(self) -> None:
-        """
-        Clear the repository.
-        """
-        self._counts.clear()
-
     def get_id(self) -> int:
         """
         Get an id for a new count
@@ -124,3 +118,12 @@ class CountRepository:
         self._current_id += 1
         candidate = self._current_id
         return self.get_id() if candidate in self._counts.keys() else candidate
+
+    def is_empty(self) -> bool:
+        return not self._counts
+
+    def clear(self) -> None:
+        """
+        Clear the repository.
+        """
+        self._counts.clear()

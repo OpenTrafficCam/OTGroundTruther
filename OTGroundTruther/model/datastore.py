@@ -1,10 +1,10 @@
-from .count import ActiveCount, CountRepository
-from .section import SectionRepository
+from OTGroundTruther.model.count import ActiveCount, CountRepository
+from OTGroundTruther.model.section import SectionRepository
 
 
 class Datastore:
     """
-    Central element to hold data in the application.
+    Central element to hold data in the model.
     """
 
     def __init__(

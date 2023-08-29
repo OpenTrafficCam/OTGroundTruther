@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from .coordinate import Coordinate
-from .ellipse import Ellipse
-from .parse import parse
+from OTGroundTruther.model.coordinate import Coordinate
+from OTGroundTruther.model.ellipse import Ellipse
+from OTGroundTruther.model.parse import parse
 
 SECTIONS: str = "sections"
 ID: str = "id"
@@ -38,10 +38,10 @@ class LineSection:
                 return True
 
 
-@dataclass
 class SectionRepository:
-    _sections: dict[str, LineSection] = {}
-    _otanalytics_file_content: dict = {}
+    def __init__(self):
+        self._sections: dict[str, LineSection] = {}
+        self._otanalytics_file_content: dict = {}
 
     def add_all(self, sections: Iterable[LineSection]) -> None:
         """Add several sections at once to the repository.
@@ -98,6 +98,9 @@ class SectionRepository:
 
     def get_otanalytics_file_content(self) -> dict:
         return self._otanalytics_file_content
+
+    def is_empty(self) -> bool:
+        return not self._sections
 
     def clear(self) -> None:
         """

@@ -1,14 +1,11 @@
-from model.application import OTGroundTrutherApplication
-from presenter.presenter import Presenter
-
-from view.gui import Gui
+from OTGroundTruther.presenter.model_initializer import ModelInitializer
+from OTGroundTruther.presenter.presenter import Presenter
 
 
 def main() -> None:
-    application = OTGroundTrutherApplication()
-    gui = Gui()
-    presenter = Presenter(application, gui)
-    presenter.run()
+    model = ModelInitializer().get()
+    presenter = Presenter(model=model)
+    presenter.run_gui()
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from ..model.config import ON_MAC
+from OTGroundTruther.model.config import ON_MAC
 
 PADX = 10
 PADY = 5
@@ -11,6 +11,8 @@ STICKY = "NESW"
 LEFT_BUTTON_DOWN = "left_mousebutton_down"
 LEFT_BUTTON_UP = "left_mousebutton_up"
 RIGHT_BUTTON_UP = "right_mousebutton_up"
+MIDDLE_BUTTON_DOWN = "middle_mousebutton_down"
+MIDDLE_BUTTON_UP = "middle_mousebutton_up"
 MOTION = "mouse_motion"
 MOTION_WHILE_LEFT_BUTTON_DOWN = "mouse_motion_while_left_button_down"
 LEAVE_CANVAS = "mouse_leaves_canvas"
@@ -22,6 +24,8 @@ LEFT_KEY = "left"
 RIGHT_KEY = "right"
 PLUS_KEYS = "+"
 MINUS_KEYS = "-"
+MOUSE_WHEEL_SCROLLED = "mouse_wheel_scrolled"
+MOUSE_WHEEL_PRESSED_AND_SCROLLED = "mouse_wheel_pressed_and_scrolled"
 
 STATE_DISABLED = "disabled"
 STATE_NORMAL = "normal"
@@ -62,9 +66,11 @@ class TkEvents:
     DELETE_KEY: ClassVar[str] = "<Delete>"
     BACKSPACE_KEY: ClassVar[str] = "<BackSpace>"
     ESCAPE_KEY: ClassVar[str] = "<Escape>"
+    ALPHANUMERIC_KEY: ClassVar[str] = "<Key>"
     MULTI_SELECT_SINGLE: ClassVar[str] = (
         "<Command-ButtonRelease-1>" if ON_MAC else "<Control-ButtonRelease-1>"
     )
+    MOUSE_WHEEL_SCROLLED: ClassVar[str] = "<MouseWheel>"
 
 
 tk_events = TkEvents()

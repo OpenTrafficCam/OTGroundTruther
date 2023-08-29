@@ -3,7 +3,7 @@ from math import atan2, dist
 
 import numpy as np
 
-from .coordinate import Coordinate
+from OTGroundTruther.model.coordinate import Coordinate
 
 
 @dataclass
