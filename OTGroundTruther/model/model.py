@@ -29,7 +29,12 @@ class Model:
         self._section_repository = section_repository
         self._count_repository = count_repository
         self._active_count = active_count
-        self._section_parser: SectionParser = SectionParser
+        self._section_parser: SectionParser = SectionParser()
+
+    def load_videos_from_files(self, files: list[Path]):
+        self._video_repository.clear()
+        videos = [Video(file) for file in files]
+        self._video_repository.add_all(videos)
 
     def read_sections_from_file(self, file: Path) -> None:
         self._section_repository.clear()
@@ -42,11 +47,6 @@ class Model:
 
     def write_events_to_file(self, file: Path) -> None:
         pass  # TODO
-
-    def load_videos_from_files(self, files: list[Path]):
-        self._video_repository.clear()
-        videos = [Video(file) for file in files]
-        self._video_repository.add_all(videos)
 
     def get_frame_by_timestamp(self, unix_timestamp) -> BackgroundFrame:
         if self._video_repository == []:
@@ -129,7 +129,7 @@ class Model:
         self._count_repository.get_by_frame_of_events(frame)
 
     def clear_repositories(self) -> None:
-        self.section_repository.clear()
-        self.count_repository.clear()
-        self.video_repsitory.clear()
+        self._section_repository.clear()
+        self._count_repository.clear()
+        self._video_repository.clear()
         self.active_count = None

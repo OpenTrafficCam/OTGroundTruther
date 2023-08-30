@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter.filedialog import askopenfilenames
+from tkinter.filedialog import askopenfilename, askopenfilenames
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
@@ -31,8 +31,15 @@ class Presenter(PresenterInterface):
         self._display_first_frame()
 
     def _display_first_frame(self) -> None:
-        first_displayble_frame = self._model.get_first_frame()
-        self._update_canvas_image(first_displayble_frame)
+        first_frame = self._model.get_first_frame()
+        self._update_canvas_image(first_frame)
+
+    def load_otflow(self) -> None:
+        otflow_file = askopenfilename(defaultextension="*.otlfow")
+        self._model.read_sections_from_file(Path(otflow_file))
+        if self._current_frame is None:
+            return
+        # TODO: Redraw frame with sections
 
     def scroll_through_videos(
         self, scroll_delta: int, mouse_wheel_pressed: bool
