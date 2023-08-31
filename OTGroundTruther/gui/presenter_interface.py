@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 
 class PresenterInterface(ABC):
     @abstractmethod
+    def after_run_gui(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     def load_video_files(self) -> None:
         raise NotImplementedError
 

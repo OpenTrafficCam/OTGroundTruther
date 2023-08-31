@@ -20,6 +20,15 @@ class Presenter(PresenterInterface):
     def run_gui(self) -> None:
         self._gui.run()
 
+    def after_run_gui(self) -> None:
+        if self._model._video_repository.is_empty():
+            return
+        self._display_first_frame()
+        if self._model._section_repository.is_empty():
+            return
+        self._refresh_current_frame()
+        # TODO: Also refresh when count_repository not empty
+
     def load_video_files(self) -> None:
         video_files = askopenfilenames(defaultextension="*.mp4")
         self._model.load_videos_from_files([Path(file) for file in video_files])

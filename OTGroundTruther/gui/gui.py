@@ -21,6 +21,7 @@ class Gui(ctk.CTk):
         self._maximize_window()
         self._get_widgets()
         self._place_widgets()
+        self.after(ms=1000, func=self._presenter.after_run_gui)
         self.mainloop()
 
     def _maximize_window(self):
