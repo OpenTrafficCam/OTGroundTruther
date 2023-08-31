@@ -5,27 +5,7 @@ from OTGroundTruther.model.config import ON_MAC
 
 PADX = 10
 PADY = 5
-TABVIEW_SEGMENTED_BUTTON_ELEVATION = 13
 STICKY = "NESW"
-
-LEFT_BUTTON_DOWN = "left_mousebutton_down"
-LEFT_BUTTON_UP = "left_mousebutton_up"
-RIGHT_BUTTON_UP = "right_mousebutton_up"
-MIDDLE_BUTTON_DOWN = "middle_mousebutton_down"
-MIDDLE_BUTTON_UP = "middle_mousebutton_up"
-MOTION = "mouse_motion"
-MOTION_WHILE_LEFT_BUTTON_DOWN = "mouse_motion_while_left_button_down"
-LEAVE_CANVAS = "mouse_leaves_canvas"
-ENTER_CANVAS = "mouse_enters_canvas"
-RETURN_KEY = "return"
-DELETE_KEYS = "delete"
-ESCAPE_KEY = "escape"
-LEFT_KEY = "left"
-RIGHT_KEY = "right"
-PLUS_KEYS = "+"
-MINUS_KEYS = "-"
-MOUSE_WHEEL_SCROLLED = "mouse_wheel_scrolled"
-MOUSE_WHEEL_PRESSED_AND_SCROLLED = "mouse_wheel_pressed_and_scrolled"
 
 STATE_DISABLED = "disabled"
 STATE_NORMAL = "normal"

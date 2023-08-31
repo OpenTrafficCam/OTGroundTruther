@@ -1,6 +1,5 @@
 import datetime as dt
 import re
-from abc import ABC
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
@@ -52,16 +51,6 @@ class FrameNotFoundInVideoError(Exception):
 
 
 class VideoNotFoundError(Exception):
-    pass
-
-
-@dataclass
-class FrameOverlay(ABC):
-    pass
-
-
-@dataclass
-class SectionOverlay:
     pass
 
 
@@ -306,15 +295,3 @@ class VideoRepository:
 
     def clear(self):
         self._videos.clear()
-
-
-class OverlayProvider:
-    pass
-
-
-class SectionsLayer:
-    pass
-
-
-class CountLayer:
-    pass

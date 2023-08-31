@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable, Optional
 
 from OTGroundTruther.model.event import Event
+from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
 
@@ -18,7 +19,7 @@ class EventBeforePreviouseEventError(Exception):
 class Count:
     id: str
     events: list[Event]
-    road_user_class: str
+    road_user_class: RoadUserClass
 
     def __post_init__(self) -> None:
         self._validate()
@@ -31,7 +32,7 @@ class Count:
 class ActiveCount:
     def __init__(self, first_event: Event):
         self._events: list[Event] = [first_event]
-        self._road_user_class: str | None = None
+        self._road_user_class: RoadUserClass | None = None
 
     def add_event(self, event: Event):
         if self._new_event_earlier_than_previous(event):

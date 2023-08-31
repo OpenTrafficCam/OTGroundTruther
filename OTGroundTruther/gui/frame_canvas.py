@@ -5,26 +5,7 @@ from typing import Any
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
-from OTGroundTruther.gui.constants import (
-    DELETE_KEYS,
-    ENTER_CANVAS,
-    ESCAPE_KEY,
-    LEAVE_CANVAS,
-    LEFT_BUTTON_DOWN,
-    LEFT_BUTTON_UP,
-    LEFT_KEY,
-    MIDDLE_BUTTON_DOWN,
-    MIDDLE_BUTTON_UP,
-    MOTION,
-    MOTION_WHILE_LEFT_BUTTON_DOWN,
-    PADX,
-    PLUS_KEYS,
-    RETURN_KEY,
-    RIGHT_BUTTON_UP,
-    RIGHT_KEY,
-    STICKY,
-    tk_events,
-)
+from OTGroundTruther.gui.constants import PADX, STICKY, tk_events
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 
 PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
@@ -135,45 +116,32 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
 
-    def _notify_presenter(
-        self,
-        event: Any,
-        event_type: str,
-        key: str | None = None,
-        scroll_delta: int = None,
-    ) -> None:
-        coordinates = self._get_mouse_coordinates(event)
-        # self._presenter.handle_canvas_input(coordinates, event_type, key, scroll_delta)
-
     def _on_left_button_down(self, event: Any) -> None:
-        self._notify_presenter(event, LEFT_BUTTON_DOWN)
+        pass
 
     def _on_left_button_up(self, event: Any) -> None:
-        self._notify_presenter(event, LEFT_BUTTON_UP)
+        pass
 
     def _on_right_button_up(self, event: Any) -> None:
-        self._notify_presenter(event, RIGHT_BUTTON_UP)
+        pass
 
     def _on_middle_button_down(self, event: Any) -> None:
         self._middle_button_pressed = True
-        self._notify_presenter(event, MIDDLE_BUTTON_DOWN)
 
     def _on_middle_button_up(self, event: Any) -> None:
         self._middle_button_pressed = False
-        self._notify_presenter(event, MIDDLE_BUTTON_UP)
 
     def _on_mouse_motion(self, event: Any) -> None:
-        self._notify_presenter(event, MOTION)
+        pass
 
     def _on_motion_while_left_button_down(self, event: Any) -> None:
-        self._notify_presenter(event, MOTION_WHILE_LEFT_BUTTON_DOWN)
+        pass
 
     def _on_mouse_leaves_canvas(self, event: Any) -> None:
-        self._notify_presenter(event, LEAVE_CANVAS)
+        pass
 
     def _on_mouse_enters_canvas(self, event: Any) -> None:
         self._canvas.focus_set()
-        self._notify_presenter(event, ENTER_CANVAS)
 
     def _on_mouse_wheel_scrolled(self, event: Any) -> None:
         scroll_delta = event.delta
@@ -183,27 +151,26 @@ class CanvasEventTranslator:
         )
 
     def _on_plus(self, event: Any) -> None:
-        self._notify_presenter(event, PLUS_KEYS)
+        pass
 
     def _on_left_key(self, event: Any) -> None:
-        self._notify_presenter(event, LEFT_KEY)
+        pass
 
     def _on_right_key(self, event: Any) -> None:
-        self._notify_presenter(event, RIGHT_KEY)
+        pass
 
     def _on_return_key(self, event: Any) -> None:
-        self._notify_presenter(event, RETURN_KEY)
+        pass
 
     def _on_delete_keys(self, event: Any) -> None:
-        self._notify_presenter(event, DELETE_KEYS)
+        pass
 
     def _on_escape_key(self, event: Any) -> None:
-        self._notify_presenter(event, ESCAPE_KEY)
+        pass
 
     def _on_alphanumeric_key(self, event: Any) -> None:
-        self._presenter.canvas_input_handler.on_alphanumeric_key(
-            key_symbol=event.keysym
-        )
+        # key = event.keysym
+        pass
 
     def _get_mouse_coordinates(self, event: Any) -> tuple[int, int]:
         """Returns coordinates of event on canvas taking into account the horizontal and

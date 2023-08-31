@@ -7,7 +7,6 @@ from OTGroundTruther.gui.presenter_interface import PresenterInterface
 # from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
-from OTGroundTruther.presenter.state import DisplayedFrameState
 
 SCROLL_STEP_SECONDS: float = 0.05
 MAX_SCROLL_STEP: int = 50
@@ -17,9 +16,6 @@ class Presenter(PresenterInterface):
     def __init__(self, model: Model) -> None:
         self._model = model
         self._gui = Gui(presenter=self)
-        self._displayed_frame_state: DisplayedFrameState = DisplayedFrameState(
-            None, None
-        )
         self._current_frame: OverlayedFrame | None = None
 
     def run_gui(self) -> None:
