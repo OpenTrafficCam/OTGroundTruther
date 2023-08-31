@@ -3,8 +3,8 @@ from tkinter.filedialog import askopenfilename, askopenfilenames
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
-
-# from OTGroundTruther.model.coordinate import Coordinate
+from OTGroundTruther.model.coordinate import Coordinate
+from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsError
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 
@@ -58,9 +58,27 @@ class Presenter(PresenterInterface):
         self._gui.frame_canvas.canvas_background.update_image(image=frame.get())
         self._current_frame = frame
 
-    # def add_event(self, x: int, y: int) -> None:
-    #     coordinate = Coordinate(x, y)
-    #     event = self._model.get_event_for(coordinate)
-    #     if event is None:
-    #         return
-    #     self._model.add_event_to_active_count(event)
+    def try_add_event(self, x: int, y: int) -> None:
+        coordinate = Coordinate(x, y)
+        event = self._model.get_event_for(
+            coordinate=coordinate, current_frame=self._current_frame
+        )
+        if event is None:
+            return
+        self._model.add_event_to_active_count(event)
+
+    def set_road_user_class_for_active_count(self, key: str) -> None:
+        self._model.set_road_user_class_for_active_count(key)
+
+    def finsh_active_count(self) -> None:
+        try:
+            self._model.add_active_count_to_repository()
+        except TooFewEventsError:
+            print("Too few events, you need at least two events to finish a count")
+        except MissingRoadUserClassError:
+            print("Please specify a class for the road user")
+        finally:
+            return
+
+    def abort_active_count(self) -> None:
+        self._model.clear_active_count()

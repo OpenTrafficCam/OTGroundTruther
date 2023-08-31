@@ -49,7 +49,7 @@ class LineSection:
             ellipses.append(Ellipse(start, end))
         return ellipses
 
-    def ellipses_contain(self, coordinate: Coordinate, relative_ellipse_height: float):
+    def ellipses_contain(self, coordinate: Coordinate):
         for ellipse in self.ellipses:
             if ellipse.contains(coordinate):
                 return True

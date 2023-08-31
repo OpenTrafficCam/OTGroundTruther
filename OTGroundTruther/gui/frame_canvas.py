@@ -117,10 +117,11 @@ class CanvasEventTranslator:
         pass
 
     def _on_left_button_up(self, event: Any) -> None:
-        pass
+        x, y = self._get_mouse_coordinates(event)
+        self._presenter.try_add_event(x=x, y=y)
 
     def _on_right_button_up(self, event: Any) -> None:
-        pass
+        self._presenter.finsh_active_count()
 
     def _on_middle_button_down(self, event: Any) -> None:
         self._middle_button_pressed = True
@@ -157,17 +158,17 @@ class CanvasEventTranslator:
         pass
 
     def _on_return_key(self, event: Any) -> None:
-        pass
+        self._presenter.finsh_active_count()
 
     def _on_delete_keys(self, event: Any) -> None:
         pass
 
     def _on_escape_key(self, event: Any) -> None:
-        pass
+        self._presenter.abort_active_count()
 
     def _on_alphanumeric_key(self, event: Any) -> None:
-        # key = event.keysym
-        pass
+        key = event.keysym
+        self._presenter.set_road_user_class_for_active_count(key)
 
     def _get_mouse_coordinates(self, event: Any) -> tuple[int, int]:
         """Returns coordinates of event on canvas taking into account the horizontal and

@@ -110,21 +110,19 @@ class Model:
         self._video.set_frame_number(frame_number)
 
     def get_event_for(
-        self, coordinate: Coordinate, video_file: Path, frame_number: int
+        self, coordinate: Coordinate, current_frame: OverlayedFrame
     ) -> Event | None:
         section = self.get_section_by_coordinate(coordinate)
         if section is None:
             return
-        video = self._video_repository.get_video_by_file(video_file)
-        timestamp = video.get_timestamp_by_frame_number(frame_number)
-        created = dt.datetime.now().timestamp()
+        now = dt.datetime.now().timestamp()
         return Event(
             coordinate,
             section,
-            frame=frame_number,
-            timestamp=timestamp,
-            video=video,
-            time_created=created,
+            frame_number=current_frame.background_frame.frame_number,
+            timestamp=current_frame.background_frame.unix_timestamp,
+            video_file=current_frame.background_frame.video_file,
+            time_created=now,
         )
 
     def get_section_by_coordinate(self, coordinate: Coordinate) -> LineSection | None:
@@ -133,20 +131,37 @@ class Model:
     def add_event_to_active_count(self, event: Event) -> None:
         if self._active_count is None:
             self._active_count = ActiveCount(event)
+            print("New active count")
         else:
             self._active_count.add_event(event)
+        print(f"New event: {event.to_dict()}")
 
-    def add_active_count_to_counts(self, count: Count, road_user_class: str) -> None:
+    def set_road_user_class_for_active_count(self, key: str):
+        road_user_class = self._valid_road_user_classes.get_by_key(key)
+        if road_user_class is None:
+            return
+        if self._active_count is None:
+            self._active_count = ActiveCount(road_user_class)
+            print("New active count")
+        self._active_count.set_road_user_class(road_user_class)
+        print(f"Road user class: {road_user_class.label}")
+
+    def add_active_count_to_repository(self) -> None:
         if self._active_count is None:
             return
         _id = self._count_repository.get_id()
         count = Count(
             id=_id,
             events=self._active_count.get_events(),
-            road_user_class=road_user_class,
+            road_user_class=self._active_count.get_road_user_class(),
         )
         self._count_repository.add(count)
         self._active_count = None
+        print("Active count finished")
+
+    def clear_active_count(self) -> None:
+        self._active_count = None
+        print("Active count aborted")
 
     def get_all_counts(self) -> list[Count]:
         self._count_repository.get_all()

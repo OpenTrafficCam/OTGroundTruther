@@ -23,7 +23,7 @@ class ValidRoadUserClasses:
     _road_user_classes: dict[str, RoadUserClass]
 
     def get_by_key(self, key: str) -> RoadUserClass:
-        return self._road_user_classes[key]
+        return self._road_user_classes.get(key)
 
     @staticmethod
     def _parse(yaml_content: list[dict[str, dict[str, str]]]):

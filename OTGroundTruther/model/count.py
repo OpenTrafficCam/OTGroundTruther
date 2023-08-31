@@ -11,6 +11,10 @@ class TooFewEventsError(Exception):
     pass
 
 
+class MissingRoadUserClassError(Exception):
+    pass
+
+
 class EventBeforePreviouseEventError(Exception):
     pass
 
@@ -27,12 +31,20 @@ class Count:
     def _validate(self):
         if len(self.events) < 2:
             raise TooFewEventsError
+        if self.road_user_class is None:
+            raise MissingRoadUserClassError
 
 
 class ActiveCount:
-    def __init__(self, first_event: Event):
-        self._events: list[Event] = [first_event]
-        self._road_user_class: RoadUserClass | None = None
+    def __init__(
+        self,
+        first_event: Event | None = None,
+        road_user_class: RoadUserClass | None = None,
+    ):
+        self._events: list[Event] = [first_event] if first_event is not None else []
+        self._road_user_class: RoadUserClass | None = (
+            road_user_class if road_user_class is not None else None
+        )
 
     def add_event(self, event: Event):
         if self._new_event_earlier_than_previous(event):
@@ -42,17 +54,23 @@ class ActiveCount:
         else:
             self._events.append(event)
 
-    def _replace_previous_event_with(self, event):
+    def _replace_previous_event_with(self, event: Event):
         self._events[-1] = event
 
-    def _new_event_has_same_section_as_previous(self, event):
+    def _new_event_has_same_section_as_previous(self, event: Event):
         return event.section == self._events[-1].section
 
-    def _new_event_earlier_than_previous(self, event):
-        return event.frame < self._events[-1].frame
+    def _new_event_earlier_than_previous(self, event: Event):
+        return event.frame_number < self._events[-1].frame_number
 
     def get_events(self) -> list[Event]:
         return self._events
+
+    def set_road_user_class(self, road_user_class: RoadUserClass) -> None:
+        self._road_user_class = road_user_class
+
+    def get_road_user_class(self) -> RoadUserClass:
+        return self._road_user_class
 
 
 @dataclass
@@ -106,7 +124,7 @@ class CountRepository:
         filtered_counts: list[Count] = []
         for count in self._counts.values():
             filtered_counts.extend(
-                count for event in count.events if event.frame == frame
+                count for event in count.events if event.frame_number == frame
             )
         return list(set(filtered_counts))
 
