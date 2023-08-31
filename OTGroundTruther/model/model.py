@@ -5,6 +5,7 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
 from OTGroundTruther.model.event import Event
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
+from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
     LineSection,
     SectionParser,
@@ -30,11 +31,13 @@ class Model:
         section_repository: SectionRepository,
         count_repository: CountRepository,
         active_count: ActiveCount | None,
+        valid_road_user_classes: ValidRoadUserClasses,
     ) -> None:
         self._video_repository = video_repository
         self._section_repository = section_repository
         self._count_repository = count_repository
         self._active_count = active_count
+        self._valid_road_user_classes = valid_road_user_classes
         self._section_parser: SectionParser = SectionParser()
 
     def load_videos_from_files(self, files: list[Path]):
