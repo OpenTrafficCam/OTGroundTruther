@@ -10,6 +10,20 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Pre-filled OTGroundTruther App",
+            "type": "python",
+            "request": "launch",
+            "module": "OTGroundTruther",
+            "args": [
+                "--videos",
+                "${workspaceFolder}/tests/data",
+                "--otflow",
+                "${workspaceFolder}/tests/data/Testvideo_Cars-Cyclist_FR20_2020-01-01_00-00-00.otflow"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
