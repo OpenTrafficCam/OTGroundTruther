@@ -8,7 +8,6 @@ from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 
-SCROLL_STEP_SECONDS: float = 0.05
 MAX_SCROLL_STEP: int = 50
 
 
