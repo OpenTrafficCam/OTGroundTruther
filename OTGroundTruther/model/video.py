@@ -1,6 +1,7 @@
 import datetime as dt
 import re
-from dataclasses import dataclass
+from abc import ABC
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
@@ -55,20 +56,39 @@ class VideoNotFoundError(Exception):
 
 
 @dataclass
+class FrameOverlay(ABC):
+    pass
+
+
+@dataclass
+class SectionOverlay:
+    pass
+
+
+@dataclass
 class BackgroundFrame:
-    frame: np.array
+    np_array: np.array
     video_file: Path
     frame_number: int
     unix_timestamp: float
+    image: Image.Image = field(init=False)
+
+    def __post_init__(self):
+        self.image = Image.fromarray(cv2.cvtColor(self.np_array, cv2.COLOR_BGR2RGB))
 
     def get_width(self) -> int:
-        return self.frame.shape[1]
+        return self.np_array.shape[1]
 
     def get_height(self) -> int:
-        return self.frame.shape[0]
+        return self.np_array.shape[0]
 
-    def get(self) -> Image:
-        return Image.fromarray(cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB))
+    def get(self) -> Image.Image:
+        return self.image
+
+    def add_overlay(self, overlay: Image.Image) -> None:
+        self.image = Image.alpha_composite(
+            self.image.convert("RGBA"), overlay.convert(mode="RGBA")
+        )
 
 
 class Video:
@@ -121,7 +141,7 @@ class Video:
         frame = self._get_frame_by_number(frame_number)
         unix_timestamp = self.get_timestamp_by_frame_number(frame_number)
         return BackgroundFrame(
-            frame=frame,
+            np_array=frame,
             frame_number=frame_number,
             unix_timestamp=unix_timestamp,
             video_file=self.file,
@@ -227,13 +247,12 @@ class VideoRepository:
                 current_frame_number=current_frame_number,
                 delta_of_frames=delta_of_frames,
             )
-        elif new_frame_number > current_video_number_of_frames:
+        else:
             return self._try_get_by_delta_from_next(
                 current_video=current_video,
                 current_frame_number=current_frame_number,
                 delta_of_frames=delta_of_frames,
             )
-        print("Huch")
 
     def _try_get_by_delta_from_next(
         self, current_video: Video, current_frame_number: int, delta_of_frames: int

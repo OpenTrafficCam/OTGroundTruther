@@ -54,6 +54,12 @@ class ActiveCount:
         return self._events
 
 
+@dataclass
+class CountsOverlay:
+    # TODO
+    pass
+
+
 class CountRepository:
     def __init__(self):
         self._counts: dict[str, Count] = {}

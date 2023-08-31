@@ -64,11 +64,11 @@ class CanvasBackground(ctk.CTkCanvas):
         self._current_id: Any = None
         self.update_image(self._get_preview_image())
 
-    def _get_preview_image(self) -> Image:
+    def _get_preview_image(self) -> Image.Image:
         if Path(PREVIEW_IMAGE_FILE).exists():
             return Image.open(PREVIEW_IMAGE_FILE)
 
-    def update_image(self, image: Image) -> None:
+    def update_image(self, image: Image.Image) -> None:
         photo_image = ImageTk.PhotoImage(image)
         if self._current_id:
             self.delete(self._current_id)

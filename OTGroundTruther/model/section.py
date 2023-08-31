@@ -1,6 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
+
+import cv2
+import numpy as np
+from PIL import Image
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.ellipse import Ellipse
@@ -17,25 +21,81 @@ RELATIVE_OFFSET_COORDINATES: str = "relative_offset_coordinates"
 PLUGIN_DATA: str = "plugin_data"
 METADATA: str = "metadata"
 
+SECTION_COLOR = (200, 125, 125, 255)
+ELLIPSE_COLOR = (127, 255, 0, 255)
+SECTION_THICKNESS = 2
+ELLIPSE_THICKNESS = 1
+
 
 class UnambigousSectionEllipsesError(Exception):
     pass
 
 
-@dataclass(frozen=True)
+@dataclass
 class LineSection:
     id: str
     name: str
     coordinates: list[Coordinate]
+    ellipses: list[Ellipse] = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.ellipses = self._get_ellipses()
+
+    def _get_ellipses(self) -> None:
+        ellipses = []
+        for i in range(len(self.coordinates) - 1):
+            start = self.coordinates[i]
+            end = self.coordinates[i + 1]
+            ellipses.append(Ellipse(start, end))
+        return ellipses
 
     def ellipses_contain(self, coordinate: Coordinate, relative_ellipse_height: float):
-        for i in range(len(self.coordinates) - 1):
-            start = coordinate[i]
-            end = coordinate[i + 1]
-            if Ellipse(start, end, relative_height=relative_ellipse_height).contains(
-                coordinate
-            ):
+        for ellipse in self.ellipses:
+            if ellipse.contains(coordinate):
                 return True
+
+
+@dataclass
+class SectionsOverlay:
+    sections: list[LineSection]
+    width: int
+    height: int
+    image: Image.Image = field(init=False)
+
+    def __post_init__(self) -> None:
+        self._get_image()
+
+    def get(self) -> Image.Image:
+        return self.image
+
+    def _get_image(self) -> Image.Image:
+        image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
+        for section in self.sections:
+            for ellipse in section.ellipses:
+                self._draw_line(image_array, ellipse)
+                self._draw_ellipse(image_array, ellipse)
+        self.image = Image.fromarray(image_array)
+
+    def _draw_line(self, image_array: np.array, ellipse: Ellipse) -> None:
+        return cv2.line(
+            img=image_array,
+            pt1=ellipse.start.as_tuple(),
+            pt2=ellipse.end.as_tuple(),
+            color=SECTION_COLOR,
+            thickness=SECTION_THICKNESS,
+        )
+
+    def _draw_ellipse(self, image_array: np.array, ellipse: Ellipse) -> None:
+        return cv2.ellipse(
+            img=image_array,
+            center=ellipse.center.as_tuple(),
+            axes=(round(ellipse.major_axis_length), round(ellipse.minor_axis_length)),
+            angle=ellipse.angle,
+            startAngle=0,
+            endAngle=360,
+            color=ELLIPSE_COLOR,
+            thickness=ELLIPSE_THICKNESS,
+        )
 
 
 class SectionRepository:
@@ -108,6 +168,29 @@ class SectionRepository:
         """
         self._sections.clear()
         self._otanalytics_file_content.clear()
+
+
+# class SectionLayer:
+#     def __init__(self, width: int, height: int, section_repository:):
+#         # TODO
+#         transparent_image = np.zeros((height, width, 4), dtype=np.uint8)
+#         transparent_image[
+#             :, :, 3
+#         ] = 255  # Alpha-Kanal auf 255 setzen (vollständig sichtbar)
+
+#         # Elemente und Text hinzufügen
+#         cv2.rectangle(
+#             transparent_image, (100, 100), (300, 300), (0, 0, 255, 128), -1
+#         )  # Rote halbtransparente Box
+#         cv2.putText(
+#             transparent_image,
+#             "Beispieltext",
+#             (150, 200),
+#             cv2.FONT_HERSHEY_SIMPLEX,
+#             1,
+#             (255, 255, 255, 255),
+#             2,
+#         )
 
 
 class SectionParser:

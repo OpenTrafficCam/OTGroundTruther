@@ -4,7 +4,13 @@ from pathlib import Path
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
 from OTGroundTruther.model.event import Event
-from OTGroundTruther.model.section import LineSection, SectionParser, SectionRepository
+from OTGroundTruther.model.overlayed_frame import OverlayedFrame
+from OTGroundTruther.model.section import (
+    LineSection,
+    SectionParser,
+    SectionRepository,
+    SectionsOverlay,
+)
 from OTGroundTruther.model.video import (
     BackgroundFrame,
     NoVideoError,
@@ -48,32 +54,52 @@ class Model:
     def write_events_to_file(self, file: Path) -> None:
         pass  # TODO
 
-    def get_frame_by_timestamp(self, unix_timestamp) -> BackgroundFrame:
+    def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
         if self._video_repository == []:
             raise NoVideoError
         video = self._video_repository.get_by_timestamp(unix_timestamp)
-        return video.get_frame_by_timestamp(unix_timestamp)
+        background_frame = video.get_frame_by_timestamp(unix_timestamp)
+        return self._get_overlayed_frame(background_frame)
 
     def get_frame_by_delta_of_frames(
-        self, current_frame: BackgroundFrame, delta_of_frames: int
-    ) -> BackgroundFrame:
-        current_video_file = current_frame.video_file
-        current_frame_number = current_frame.frame_number
+        self, current_frame: OverlayedFrame, delta_of_frames: int
+    ) -> OverlayedFrame:
         video: Video
         frame_number: int
         (
             video,
             frame_number,
         ) = self._video_repository.get_video_and_frame_by_delta_of_frames(
-            current_file=current_video_file,
-            current_frame_number=current_frame_number,
+            current_file=current_frame.background_frame.video_file,
+            current_frame_number=current_frame.background_frame.frame_number,
             delta_of_frames=delta_of_frames,
         )
-        return video.get_frame_by_number(frame_number)
+        background_frame = video.get_frame_by_number(frame_number)
+        return self._get_overlayed_frame(background_frame)
 
-    def get_first_frame(self):
+    def get_first_frame(self) -> OverlayedFrame:
         first_video = self._video_repository.get_first()
-        return first_video.get_frame_by_number(0)
+        background_frame = first_video.get_frame_by_number(0)
+        return self._get_overlayed_frame(background_frame)
+
+    def get_current_frame(self, current_frame: OverlayedFrame) -> OverlayedFrame:
+        current_video = self._video_repository.get_video_by_file(
+            current_frame.background_frame.video_file
+        )
+        background_frame = current_video.get_frame_by_number(
+            current_frame.background_frame.frame_number
+        )
+        return self._get_overlayed_frame(background_frame)
+
+    def _get_overlayed_frame(self, background_frame: BackgroundFrame) -> OverlayedFrame:
+        sections_overlay = SectionsOverlay(
+            sections=self._section_repository.get_all(),
+            width=background_frame.get_width(),
+            height=background_frame.get_height(),
+        )
+        return OverlayedFrame(
+            background_frame=background_frame, sections_overlay=sections_overlay
+        )
 
     def set_video_frame(self, frame_number: int) -> None:
         if self._video is None:
