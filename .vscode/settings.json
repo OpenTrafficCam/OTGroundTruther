@@ -1,6 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./OTGroundTruther/"
+        "./OTGroundTruther"
     ],
     "editor.formatOnSave": true,
     "python.formatting.provider": "black",
