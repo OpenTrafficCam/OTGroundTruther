@@ -137,12 +137,11 @@ class Model:
         print(f"New event: {event.to_dict()}")
 
     def set_road_user_class_for_active_count(self, key: str):
+        if self._active_count is None:
+            return
         road_user_class = self._valid_road_user_classes.get_by_key(key)
         if road_user_class is None:
             return
-        if self._active_count is None:
-            self._active_count = ActiveCount(road_user_class)
-            print("New active count")
         self._active_count.set_road_user_class(road_user_class)
         print(f"Road user class: {road_user_class.label}")
 
