@@ -12,7 +12,6 @@ class MenuBar(Menu):
         self._place_widgets()
 
     def _get_widgets(self) -> None:
-        # Create a "File" menu
         self._file_menu = FileMenu(master=self, tearoff=0, presenter=self._presenter)
 
     def _place_widgets(self) -> None:

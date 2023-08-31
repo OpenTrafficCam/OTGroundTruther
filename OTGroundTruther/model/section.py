@@ -111,7 +111,7 @@ class SectionRepository:
         """
         for section in sections:
             self._add(section)
-            # TODO: Check if Ellipses around different sections touch each other
+            # TODO: Check if ellipses around different sections touch each other
 
     def _add(self, section: LineSection) -> None:
         """Internal method to add sections without notifying observers.
@@ -168,29 +168,6 @@ class SectionRepository:
         """
         self._sections.clear()
         self._otanalytics_file_content.clear()
-
-
-# class SectionLayer:
-#     def __init__(self, width: int, height: int, section_repository:):
-#         # TODO
-#         transparent_image = np.zeros((height, width, 4), dtype=np.uint8)
-#         transparent_image[
-#             :, :, 3
-#         ] = 255  # Alpha-Kanal auf 255 setzen (vollständig sichtbar)
-
-#         # Elemente und Text hinzufügen
-#         cv2.rectangle(
-#             transparent_image, (100, 100), (300, 300), (0, 0, 255, 128), -1
-#         )  # Rote halbtransparente Box
-#         cv2.putText(
-#             transparent_image,
-#             "Beispieltext",
-#             (150, 200),
-#             cv2.FONT_HERSHEY_SIMPLEX,
-#             1,
-#             (255, 255, 255, 255),
-#             2,
-#         )
 
 
 class SectionParser:

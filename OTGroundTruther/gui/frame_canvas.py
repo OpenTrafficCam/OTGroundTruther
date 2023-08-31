@@ -1,4 +1,3 @@
-# from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -70,7 +69,6 @@ class CanvasBackground(ctk.CTkCanvas):
             width=self._current_image.width(), height=self._current_image.height()
         )
         self.config(highlightthickness=0)
-        # self._presenter.refresh_items_on_canvas()
 
     def _get_width(self) -> int:
         return self.winfo_width()
@@ -81,7 +79,6 @@ class CanvasBackground(ctk.CTkCanvas):
     def clear_image(self) -> None:
         if self._current_id:
             self.delete(self._current_id)
-            # self._presenter.refresh_items_on_canvas()
 
 
 class CanvasEventTranslator:

@@ -81,7 +81,6 @@ class BackgroundFrame:
 
 
 class Video:
-    # ? Load current video into RAM or all videos or just current frame ?
     def __init__(self, file: Path):
         self.file: Path = file
         self._load()
