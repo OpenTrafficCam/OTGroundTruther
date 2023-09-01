@@ -35,11 +35,12 @@ class UnambigousSectionEllipsesError(Exception):
 class LineSection:
     id: str
     name: str
-    coordinates: list[Coordinate]
-    ellipses: list[Ellipse] = field(init=False)
+    coordinates: list[Coordinate] | None
+    ellipses: list[Ellipse] = field(init=False) 
 
     def __post_init__(self) -> None:
-        self.ellipses = self._get_ellipses()
+        if self.coordinates is not None:
+            self.ellipses = self._get_ellipses()
 
     def _get_ellipses(self) -> None:
         ellipses = []
@@ -53,6 +54,25 @@ class LineSection:
         for ellipse in self.ellipses:
             if ellipse.contains(coordinate):
                 return True
+    
+    def to_dict(self) -> dict:
+        coordinates = self._get_coordinate_list()
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": "line",
+            "relative_offset_coordinates": {
+                "section-enter": {
+                    "x": 0.5,
+                    "y": 0.5
+                }
+            },
+            "coordinates": coordinates,
+            "plugin_data": {}
+        }
+
+    def _get_coordinate_list(self):
+        return [coordinate.to_dict() for coordinate in self.coordinates]
 
 
 @dataclass

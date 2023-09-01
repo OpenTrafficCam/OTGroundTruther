@@ -9,6 +9,14 @@ class PresenterInterface(ABC):
     @abstractmethod
     def load_otflow(self) -> None:
         raise NotImplementedError
+    
+    @abstractmethod
+    def load_otevent(self) -> None:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def safe_otevents(self) -> None:
+        raise NotImplementedError
 
     @abstractmethod
     def scroll_through_videos(

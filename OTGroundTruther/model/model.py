@@ -3,7 +3,7 @@ from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
-from OTGroundTruther.model.event import Event
+from OTGroundTruther.model.event import Event, EventListParser
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
@@ -39,6 +39,7 @@ class Model:
         self._active_count = active_count
         self._valid_road_user_classes = valid_road_user_classes
         self._section_parser: SectionParser = SectionParser()
+        self.eventlistparser: EventListParser = EventListParser()
 
     def load_videos_from_files(self, files: list[Path]):
         self._video_repository.clear()
@@ -52,10 +53,23 @@ class Model:
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
 
     def read_events_from_file(self, file: Path) -> None:
-        pass  # TODO
+        event_list = self.eventlistparser.parse(file)
+        self._count_repository.from_event_list(event_list)
 
-    def write_events_to_file(self, file: Path) -> None:
-        pass  # TODO
+    def write_events_to_file(self, event_list: list[Event]) -> None:
+        parent = self._get_first_videopath_parent()
+        name = self._get_first_videopath_stem()
+        suffix = ".otevents"
+        filepath = Path(f"{parent}\\{name}{suffix}")
+        self.eventlistparser.serialize(events=event_list,
+                                       sections=self._section_repository._sections,
+                                       file=filepath)
+
+    def _get_first_videopath_stem(self):
+        return list(self._video_repository._videos.keys())[0].stem
+
+    def _get_first_videopath_parent(self):
+        return str(list(self._video_repository._videos.keys())[0].parent)
 
     def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
         if self._video_repository == []:
@@ -143,7 +157,7 @@ class Model:
         if self._active_count is None:
             self._active_count = ActiveCount(road_user_class)
             print("New active count")
-        self._active_count.set_road_user_class(road_user_class)
+        self._active_count.set_road_user_type(road_user_class)
         print(f"Road user class: {road_user_class.label}")
 
     def add_active_count_to_repository(self) -> None:
@@ -153,7 +167,7 @@ class Model:
         count = Count(
             id=_id,
             events=self._active_count.get_events(),
-            road_user_class=self._active_count.get_road_user_class(),
+            road_user_class=self._active_count.get_road_user_type(),
         )
         self._count_repository.add(count)
         self._active_count = None
@@ -177,3 +191,6 @@ class Model:
         self._count_repository.clear()
         self._video_repository.clear()
         self.active_count = None
+
+
+
