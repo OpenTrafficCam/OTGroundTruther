@@ -36,14 +36,14 @@ class Presenter(PresenterInterface):
             return
         self._refresh_current_frame()
 
-    def load_otevent(self) -> None:
+    def load_otevents(self) -> None:
         otevent_file = askopenfilename(defaultextension="*.otevents")
         self._model.read_events_from_file(Path(otevent_file))
         if self._current_frame is None:
             return
         self._refresh_current_frame()
     
-    def safe_otevents(self) -> None:
+    def save_otevents(self) -> None:
         event_list = self._model._count_repository.to_event_list()
         self._model.write_events_to_file(event_list)
 

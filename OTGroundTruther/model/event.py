@@ -46,7 +46,7 @@ class EventParser:
 
 class EventListParser():
     def parse(self, otevent_file: Path) -> list[Event]:
-        """Parse otevent file and convert its content to domain level objects namely
+        """Parse otevents file and convert its content to domain level objects namely
         `Events`s.
 
         Args:
