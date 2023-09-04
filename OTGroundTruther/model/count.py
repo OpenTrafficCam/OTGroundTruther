@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from OTGroundTruther.model.event import Event
+from OTGroundTruther.model.event import Event, Event_For_Saving
 from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
@@ -21,16 +21,19 @@ class EventBeforePreviouseEventError(Exception):
 
 @dataclass
 class Count:
-    road_user_id: int | None
+    road_user_id: int
     events: list[Event]
     road_user_class: RoadUserClass
+
+    def __post_init__(self) -> None:
+        self._validate()
 
     def _validate(self):
         if len(self.events) < 2:
             raise TooFewEventsError
         if self.road_user_class is None:
             raise MissingRoadUserClassError
-        
+
     def add_id_and_class_to_events(self) -> None:
         for i in range(len(self.events)):
             self.events[i].road_user_id = self.road_user_id
@@ -41,6 +44,12 @@ class Count:
 
     def get_events(self) -> list[Event]:
         return self.events
+
+    def get_road_user_id(self) -> int:
+        return self.road_user_id
+
+    def get_road_user_class(self) -> RoadUserClass:
+        return self.road_user_class
 
 
 class ActiveCount:
@@ -169,21 +178,17 @@ class CountRepository:
         """
         self._counts.clear()
 
-    def _add_id_and_class_to_events(self) -> None:
-        """
-        add the id and class of the counts to each event of the each count
-        """
-        for key in self._counts.keys():
-            self._counts[key].add_id_and_class_to_events()
-
-    def to_event_list(self) -> list[Event]:
+    def to_event_list(self) -> list[Event_For_Saving]:
         """"
         get an event list out of the CountRepo
         """
-        self._add_id_and_class_to_events()
         event_list = []
         for count in self._counts.values():
-            event_list += count.get_events()
+            for event in count.get_events():
+                event_for_save = event.to_event_for_saving(
+                    road_user_id=count.get_road_user_id,
+                    road_user_class=count.get_road_user_class)
+                event_list.append(event_for_save)
         return event_list
     
     def from_event_list(self, event_list: list[Event]) -> None:

@@ -6,6 +6,7 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.section import LineSection
 
 from .parse import _parse_bz2, _write_bz2
+from .road_user_class import RoadUserClass
 
 METADATA: str = "metadata"
 VERSION: str = "version"
@@ -16,15 +17,38 @@ SECTIONS: str = "sections"
 
 
 @dataclass
-class Event:
+class Event_Parent_Class:
     coordinate: Coordinate 
     section: LineSection
     frame_number: int
-    timestamp: float | None
+    timestamp: float
     video_file: Path
     time_created: float
-    road_user_id: int | None = None
-    road_user_class: str | None = None
+
+
+@dataclass
+class Event(Event_Parent_Class):
+    def to_event_for_saving(self, road_user_id: int, road_user_class: RoadUserClass):
+        event_dict = vars(self)
+        event_dict["road_user_id"] = road_user_id
+        event_dict["road_user_class"] = road_user_class.name
+        return Event_For_Saving(**event_dict)
+
+    def to_dict(self) -> dict:
+        return {
+            "event_coordinate": self.coordinate.as_list(),
+            "section_id": self.section.name,
+            "frame_number": self.frame_number,
+            "occurrence": self.timestamp,
+            "video_name": self.video_file.stem,
+            "time_created": self.time_created,
+        }
+
+
+@dataclass
+class Event_For_Saving(Event_Parent_Class):
+    road_user_id: int
+    road_user_class: RoadUserClass
 
     def to_dict(self) -> dict:
         return {
@@ -74,7 +98,8 @@ class EventListParser():
         return event_list
 
     def serialize(
-        self, events: Iterable[Event], sections: Iterable[LineSection], file: Path
+        self, events: Iterable[Event_For_Saving],
+        sections: Iterable[LineSection], file: Path
     ) -> None:
         """Serialize event list into file.
 
@@ -87,7 +112,7 @@ class EventListParser():
         _write_bz2(content, file)
 
     def _convert(
-        self, events: Iterable[Event], sections: Iterable[LineSection]
+        self, events: Iterable[Event_For_Saving], sections: Iterable[LineSection]
     ) -> dict[str, Any]:
         """Convert events to dictionary.
 
@@ -114,7 +139,7 @@ class EventListParser():
             EVENT_FORMAT_VERSION: None,
         }
 
-    def _convert_events(self, events: Iterable[Event]) -> list[dict]:
+    def _convert_events(self, events: Iterable[Event_For_Saving]) -> list[dict]:
         """Convert events to dictionary.
 
         Args:

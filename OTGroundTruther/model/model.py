@@ -3,7 +3,7 @@ from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
-from OTGroundTruther.model.event import Event, EventListParser
+from OTGroundTruther.model.event import Event, Event_For_Saving, EventListParser
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
@@ -56,11 +56,11 @@ class Model:
         event_list = self.eventlistparser.parse(file)
         self._count_repository.from_event_list(event_list)
 
-    def write_events_to_file(self, event_list: list[Event]) -> None:
-        parent = self._get_first_videopath_parent()
-        name = self._get_first_videopath_stem()
+    def write_events_to_file(self, event_list: list[Event_For_Saving]) -> None:
+        file_parent = self._get_first_videopath_parent()
+        file_name = self._get_first_videopath_stem()
         suffix = ".otevents"
-        filepath = Path(f"{parent}\\{name}{suffix}")
+        filepath = Path(f"{file_parent}\\{file_name}{suffix}")
         self.eventlistparser.serialize(events=event_list,
                                        sections=self._section_repository._sections,
                                        file=filepath)
