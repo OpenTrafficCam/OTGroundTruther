@@ -24,7 +24,7 @@ class Event:
     video_file: Path
     time_created: float
     road_user_id: int | None = None
-    road_user_type: str | None = None
+    road_user_class: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -35,7 +35,7 @@ class Event:
             "video_name": self.video_file.stem,
             "time_created": self.time_created,
             "road_user_id": self.road_user_id,
-            "road_user_type": self.road_user_type
+            "road_user_type": self.road_user_class
         }
 
 
@@ -70,7 +70,7 @@ class EventListParser():
                                     video_file=Path(dets_list[i]["video_name"]),
                                     time_created=None,
                                     road_user_id=dets_list[i]["road_user_id"],
-                                    road_user_type=dets_list[i]["road_user_type"]))
+                                    road_user_class=dets_list[i]["road_user_type"]))
         return event_list
 
     def serialize(

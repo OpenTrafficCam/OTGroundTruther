@@ -157,7 +157,7 @@ class Model:
         if self._active_count is None:
             self._active_count = ActiveCount(road_user_class)
             print("New active count")
-        self._active_count.set_road_user_type(road_user_class)
+        self._active_count.set_road_user_class(road_user_class)
         print(f"Road user class: {road_user_class.label}")
 
     def add_active_count_to_repository(self) -> None:
@@ -167,7 +167,7 @@ class Model:
         count = Count(
             id=_id,
             events=self._active_count.get_events(),
-            road_user_class=self._active_count.get_road_user_type(),
+            road_user_class=self._active_count.get_road_user_class(),
         )
         self._count_repository.add(count)
         self._active_count = None

@@ -6,7 +6,7 @@ from PIL import Image
 
 
 @dataclass
-class RoadUserType:
+class RoadUserClass:
     name: str
     label: str
     short_label: str
@@ -20,9 +20,9 @@ class RoadUserType:
 
 @dataclass
 class ValidRoadUserClasses:
-    _road_user_classes: dict[str, RoadUserType]
+    _road_user_classes: dict[str, RoadUserClass]
 
-    def get_by_key(self, key: str) -> RoadUserType:
+    def get_by_key(self, key: str) -> RoadUserClass:
         return self._road_user_classes.get(key)
 
     @staticmethod
@@ -31,7 +31,7 @@ class ValidRoadUserClasses:
         for road_user_class in yaml_content:
             for name, properties in road_user_class.items():
                 key = properties["key"]
-                road_user_classes[key] = RoadUserType(
+                road_user_classes[key] = RoadUserClass(
                     name=name,
                     label=properties["label"],
                     short_label=properties["short_label"],

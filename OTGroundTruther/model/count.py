@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable, Optional
 
 from OTGroundTruther.model.event import Event
-from OTGroundTruther.model.road_user_class import RoadUserType
+from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
 
@@ -23,18 +23,18 @@ class EventBeforePreviouseEventError(Exception):
 class Count:
     road_user_id: int | None
     events: list[Event]
-    road_user_type: RoadUserType
+    road_user_class: RoadUserClass
 
     def _validate(self):
         if len(self.events) < 2:
             raise TooFewEventsError
-        if self.road_user_type is None:
+        if self.road_user_class is None:
             raise MissingRoadUserClassError
         
     def add_id_and_class_to_events(self) -> None:
         for i in range(len(self.events)):
             self.events[i].road_user_id = self.road_user_id
-            self.events[i].road_user_type = self.road_user_type
+            self.events[i].road_user_class = self.road_user_class
 
     def add_event(self, event: Event) -> None:
         self.events.append(event)
@@ -47,11 +47,11 @@ class ActiveCount:
     def __init__(
         self,
         first_event: Event | None = None,
-        road_user_type: RoadUserType | None = None,
+        road_user_class: RoadUserClass | None = None,
     ):
         self._events: list[Event] = [first_event] if first_event is not None else []
-        self._road_user_type: RoadUserType | None = (
-            road_user_type if road_user_type is not None else None
+        self._road_user_class: RoadUserClass | None = (
+            road_user_class if road_user_class is not None else None
         )
 
     def add_event(self, event: Event):
@@ -74,11 +74,11 @@ class ActiveCount:
     def get_events(self) -> list[Event]:
         return self._events
 
-    def set_road_user_type(self, road_user_class: RoadUserType) -> None:
-        self._road_user_type = road_user_class
+    def set_road_user_class(self, road_user_class: RoadUserClass) -> None:
+        self._road_user_class = road_user_class
 
-    def get_road_user_type(self) -> RoadUserType:
-        return self._road_user_type
+    def get_road_user_class(self) -> RoadUserClass:
+        return self._road_user_class
 
 
 @dataclass
@@ -202,7 +202,7 @@ class CountRepository:
                     event.road_user_id
                 ] = Count(road_user_id=event.road_user_id,
                           events=[event],
-                          road_user_type=event.road_user_type)
+                          road_user_class=event.road_user_class)
 
         self.set_current_id(list(self._counts.keys())[0])
 
