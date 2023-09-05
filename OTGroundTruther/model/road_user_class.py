@@ -17,6 +17,9 @@ class RoadUserClass:
     def __post_init__(self):
         self.icon = Image.open(self.icon_file)
 
+    def get_name(self) -> str:
+        return self.name
+
 
 @dataclass
 class ValidRoadUserClasses:
@@ -24,6 +27,12 @@ class ValidRoadUserClasses:
 
     def get_by_key(self, key: str) -> RoadUserClass:
         return self._road_user_classes.get(key)
+    
+    def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
+        new_dict = {}
+        for key, value in self._road_user_classes.items():
+            new_dict[value.get_name()] = value
+        return new_dict
 
     @staticmethod
     def _parse(yaml_content: list[dict[str, dict[str, str]]]):

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
-from OTGroundTruther.model.event import Event, Event_For_Saving, EventListParser
+from OTGroundTruther.model.event import Event, EventForSaving, EventListParser
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
@@ -53,10 +53,13 @@ class Model:
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
 
     def read_events_from_file(self, file: Path) -> None:
-        event_list = self.eventlistparser.parse(file)
+        event_list = self.eventlistparser.parse(
+            otevent_file=file,
+            sections_dict=self._section_repository.get_all_as_dict(),
+            valid_road_user_classes=self._valid_road_user_classes)
         self._count_repository.from_event_list(event_list)
 
-    def write_events_to_file(self, event_list: list[Event_For_Saving]) -> None:
+    def write_events_to_file(self, event_list: list[EventForSaving]) -> None:
         file_parent = self._get_first_videopath_parent()
         file_name = self._get_first_videopath_stem()
         suffix = ".otevents"
@@ -110,7 +113,7 @@ class Model:
 
     def _get_overlayed_frame(self, background_frame: BackgroundFrame) -> OverlayedFrame:
         sections_overlay = SectionsOverlay(
-            sections=self._section_repository.get_all(),
+            sections=self._section_repository.get_all_as_list(),
             width=background_frame.get_width(),
             height=background_frame.get_height(),
         )

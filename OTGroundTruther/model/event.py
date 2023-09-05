@@ -3,8 +3,10 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from OTGroundTruther.model.coordinate import Coordinate
+from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import LineSection
 
+from .abc_classes import EventForSaving
 from .parse import _parse_bz2, _write_bz2
 from .road_user_class import RoadUserClass
 
@@ -17,22 +19,22 @@ SECTIONS: str = "sections"
 
 
 @dataclass
-class Event_Parent_Class:
-    coordinate: Coordinate 
+class Event:
+    coordinate: Coordinate
     section: LineSection
     frame_number: int
     timestamp: float
     video_file: Path
     time_created: float
 
-
-@dataclass
-class Event(Event_Parent_Class):
-    def to_event_for_saving(self, road_user_id: int, road_user_class: RoadUserClass):
+    def to_event_for_saving(
+            self, road_user_id: int, road_user_class: RoadUserClass
+            ) -> EventForSaving:
+        
         event_dict = vars(self)
         event_dict["road_user_id"] = road_user_id
-        event_dict["road_user_class"] = road_user_class.name
-        return Event_For_Saving(**event_dict)
+        event_dict["road_user_class"] = road_user_class
+        return EventForSaving(**event_dict)
 
     def to_dict(self) -> dict:
         return {
@@ -46,9 +48,21 @@ class Event(Event_Parent_Class):
 
 
 @dataclass
-class Event_For_Saving(Event_Parent_Class):
+class EventForSaving:
+    coordinate: Coordinate
+    section: LineSection
+    frame_number: int
+    timestamp: float
+    video_file: Path
+    time_created: float
     road_user_id: int
     road_user_class: RoadUserClass
+
+    def to_event(self) -> Event:
+        event_dict = vars(self)
+        event_dict.pop("road_user_id")
+        event_dict.pop("road_user_class")
+        return Event(**event_dict)
 
     def to_dict(self) -> dict:
         return {
@@ -59,8 +73,14 @@ class Event_For_Saving(Event_Parent_Class):
             "video_name": self.video_file.stem,
             "time_created": self.time_created,
             "road_user_id": self.road_user_id,
-            "road_user_type": self.road_user_class
+            "road_user_type": self.road_user_class.get_name()
         }
+
+    def get_road_user_id(self) -> int:
+        return self.road_user_id
+
+    def get_road_user_class(self) -> RoadUserClass:
+        return self.road_user_class
 
 
 class EventParser:
@@ -69,7 +89,9 @@ class EventParser:
 
 
 class EventListParser():
-    def parse(self, otevent_file: Path) -> list[Event]:
+    def parse(self, otevent_file: Path,
+              sections_dict: dict[str, LineSection],
+              valid_road_user_classes: ValidRoadUserClasses) -> list[EventForSaving]:
         """Parse otevents file and convert its content to domain level objects namely
         `Events`s.
 
@@ -82,23 +104,26 @@ class EventListParser():
         otevent_dict = _parse_bz2(otevent_file)
         dets_list: list[dict] = otevent_dict[EVENT_LIST]
         event_list = []
+        classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
         for i in range(len(dets_list)):
-            section = LineSection(id=dets_list[i]["section_id"], name="to_do",
-                                  coordinates=None)
-            coordinate = Coordinate(round(dets_list[i]["event_coordinate"][0]),
-                                    round(dets_list[i]["event_coordinate"][1]))
-            event_list.append(Event(coordinate=coordinate,
-                                    section=section,
-                                    frame_number=dets_list[i]["frame_number"],
-                                    timestamp=dets_list[i]["occurrence"],
-                                    video_file=Path(dets_list[i]["video_name"]),
-                                    time_created=None,
-                                    road_user_id=dets_list[i]["road_user_id"],
-                                    road_user_class=dets_list[i]["road_user_type"]))
+            if dets_list[i]["section_id"] in list(sections_dict.keys()):
+                section = sections_dict[dets_list[i]["section_id"]]
+                coordinate = Coordinate(round(dets_list[i]["event_coordinate"][0]),
+                                        round(dets_list[i]["event_coordinate"][1]))
+                road_user_class = classes_by_name[dets_list[i]["road_user_type"]]
+
+                event_list.append(EventForSaving(coordinate=coordinate,
+                                  section=section,
+                                  frame_number=dets_list[i]["frame_number"],
+                                  timestamp=dets_list[i]["occurrence"],
+                                  video_file=Path(dets_list[i]["video_name"]),
+                                  time_created=0,
+                                  road_user_id=dets_list[i]["road_user_id"],
+                                  road_user_class=road_user_class))
         return event_list
 
     def serialize(
-        self, events: Iterable[Event_For_Saving],
+        self, events: Iterable[EventForSaving],
         sections: Iterable[LineSection], file: Path
     ) -> None:
         """Serialize event list into file.
@@ -112,7 +137,7 @@ class EventListParser():
         _write_bz2(content, file)
 
     def _convert(
-        self, events: Iterable[Event_For_Saving], sections: Iterable[LineSection]
+        self, events: Iterable[EventForSaving], sections: Iterable[LineSection]
     ) -> dict[str, Any]:
         """Convert events to dictionary.
 
@@ -139,7 +164,7 @@ class EventListParser():
             EVENT_FORMAT_VERSION: None,
         }
 
-    def _convert_events(self, events: Iterable[Event_For_Saving]) -> list[dict]:
+    def _convert_events(self, events: Iterable[EventForSaving]) -> list[dict]:
         """Convert events to dictionary.
 
         Args:

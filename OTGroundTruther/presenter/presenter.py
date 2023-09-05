@@ -38,6 +38,7 @@ class Presenter(PresenterInterface):
 
     def load_otevents(self) -> None:
         otevent_file = askopenfilename(defaultextension="*.otevents")
+        self._model.read_sections_from_file(Path(otevent_file))
         self._model.read_events_from_file(Path(otevent_file))
         if self._current_frame is None:
             return

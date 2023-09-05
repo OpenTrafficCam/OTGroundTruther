@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from OTGroundTruther.model.event import Event, Event_For_Saving
+from OTGroundTruther.model.event import Event, EventForSaving
 from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
@@ -178,7 +178,7 @@ class CountRepository:
         """
         self._counts.clear()
 
-    def to_event_list(self) -> list[Event_For_Saving]:
+    def to_event_list(self) -> list[EventForSaving]:
         """"
         get an event list out of the CountRepo
         """
@@ -186,30 +186,46 @@ class CountRepository:
         for count in self._counts.values():
             for event in count.get_events():
                 event_for_save = event.to_event_for_saving(
-                    road_user_id=count.get_road_user_id,
-                    road_user_class=count.get_road_user_class)
+                    road_user_id=count.get_road_user_id(),
+                    road_user_class=count.get_road_user_class())
                 event_list.append(event_for_save)
         return event_list
     
-    def from_event_list(self, event_list: list[Event]) -> None:
+    def from_event_list(self, event_list: list[EventForSaving]) -> None:
         """
         create count list from event list and the suitable list of the object ids
 
         Args:
-            event_list (list[Event]): _description_
+            event_list (list[Event_For_Saving]): _description_
         """
-        self._counts = {}
-        for event in event_list:
-            if event.road_user_id in self._counts.keys():
-                self._counts[event.road_user_id].add_event(event)
-            else:
-                self._counts[
-                    event.road_user_id
-                ] = Count(road_user_id=event.road_user_id,
-                          events=[event],
-                          road_user_class=event.road_user_class)
+        event_dict, class_dict = self._events_and_class_by_id(event_list)
 
-        self.set_current_id(list(self._counts.keys())[0])
+        self._counts = {}
+        for id_ in event_dict.keys():
+            if len(event_dict[id_]) >= 2:
+                self._counts[id_] = Count(road_user_id=id_,
+                                          events=event_dict[id_],
+                                          road_user_class=class_dict[id_])
+            else:
+                pass  # todo
+        if len(self._counts.keys()) > 0:
+            self.set_current_id(list(self._counts.keys())[0])
+
+    def _events_and_class_by_id(
+            self, event_list: list[EventForSaving]
+            ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
+        
+        event_dict: dict[int, list[Event]] = {}
+        class_dict: dict[int, RoadUserClass] = {}
+        for event_for_saving in event_list:
+            id_ = event_for_saving.get_road_user_id()
+            if id_ in event_dict.keys():
+                event_dict[id_].append(event_for_saving.to_event())
+            else:
+                class_dict[id_] = event_for_saving.get_road_user_class()
+                event_dict[id_] = [event_for_saving.to_event()]
+                
+        return event_dict, class_dict
 
         
 
