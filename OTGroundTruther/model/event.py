@@ -73,7 +73,8 @@ class EventForSaving:
             "video_name": self.video_file.stem,
             "time_created": self.time_created,
             "road_user_id": self.road_user_id,
-            "road_user_type": self.road_user_class.get_name()
+            "road_user_type": self.road_user_class.get_name(),
+            "direction_vector": None
         }
 
     def get_road_user_id(self) -> int:
