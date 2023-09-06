@@ -6,7 +6,7 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import LineSection
 
-from .parse import _parse_bz2, _write_bz2
+from .parse import parse, write_bz2
 from .road_user_class import RoadUserClass
 
 METADATA: str = "metadata"
@@ -103,7 +103,7 @@ class EventListParser:
         Returns:
             list[Event]: the events.
         """
-        otevent_dict = _parse_bz2(otevent_file)
+        otevents_content = parse(otevent_file)
         dets_list: list[dict] = otevent_dict[EVENT_LIST]
         event_list = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
@@ -144,7 +144,7 @@ class EventListParser:
             file (Path): file to serialize events and sections to
         """
         content = self._convert(events, sections)
-        _write_bz2(content, file)
+        write_bz2(content, file)
 
     def _convert(
         self, events: Iterable[EventForSaving], sections: Iterable[LineSection]
