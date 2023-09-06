@@ -145,7 +145,7 @@ class EventListParser:
     def serialize(
         self,
         events: Iterable[EventForParsingSerializing],
-        sections: Iterable[LineSection],
+        sections: dict[str, LineSection],
         file: Path,
     ) -> None:
         """Serialize event list into file.
@@ -161,7 +161,7 @@ class EventListParser:
     def _convert(
         self,
         events: Iterable[EventForParsingSerializing],
-        sections: Iterable[LineSection],
+        sections: dict[str, LineSection],
     ) -> dict[str, Any]:
         """Convert events to dictionary.
 
@@ -201,7 +201,7 @@ class EventListParser:
         """
         return [event.to_dict() for event in events]
 
-    def _convert_sections(self, sections: Iterable[LineSection]) -> list[dict]:
+    def _convert_sections(self, sections: dict[str, LineSection]) -> list[dict]:
         """Convert sections to dictionary
 
         Args:
