@@ -2,9 +2,12 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from pathlib import Path
 
-VIDEO_FILE_TYPE = "mp4"
-OTANALYTICS_FILE_TYPE = "otflow"
-OTEVENTS_FILE_TYPE = "otevents"
+from OTGroundTruther.model.config import (
+    DEFAULT_VIDEO_FILE_SUFFIX,
+    GROUND_TRUTH_EVENTS_FILE_SUFFIX,
+    OTANALYTICS_FILE_SUFFIX,
+    OTEVENTS_FILE_SUFFIX,
+)
 
 
 class SectionsFileDoesNotExist(Exception):
@@ -72,12 +75,12 @@ class CliArgumentParser:
         args = self._parser.parse_args()
         video_files = self._parse_video_file_paths(files=args.videos)
         sections_file = (
-            self._parse_file_path(file=args.otflow, file_type=OTANALYTICS_FILE_TYPE)
+            self._parse_file_path(file=args.otflow, file_type=OTANALYTICS_FILE_SUFFIX)
             if args.otflow is not None
             else None
         )
         events_file = (
-            self._parse_file_path(file=args.otevents, file_type=OTEVENTS_FILE_TYPE)
+            self._parse_file_path(file=args.otevents, file_type=OTANALYTICS_FILE_SUFFIX)
             if args.otevents is not None
             else None
         )
@@ -107,13 +110,13 @@ class CliArgumentParser:
         for file in files:
             video_file = Path(file)
             if video_file.is_dir():
-                files_in_directory = video_file.rglob(f"*.{VIDEO_FILE_TYPE}")
+                files_in_directory = video_file.rglob(f"*.{DEFAULT_VIDEO_FILE_SUFFIX}")
                 video_files.update(files_in_directory)
                 continue
 
             if not video_file.exists():
                 raise VideoFileDoesNotExist(f"Video file'{video_file}' does not exist.")
-            if video_file.suffix != f".{VIDEO_FILE_TYPE}":
+            if video_file.suffix != f".{DEFAULT_VIDEO_FILE_SUFFIX}":
                 raise InvalidVideoFileType(
                     f"Video file {video_file} has wrong file type. "
                 )
@@ -139,7 +142,10 @@ class CliArgumentParser:
             raise SectionsFileDoesNotExist(
                 f"{file_type} file '{file_of_type}' does not exist."
             )
-        if file_of_type.suffix != f".{OTANALYTICS_FILE_TYPE}":
+        if file_of_type.suffix not in [
+            f".{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
+            f".{OTEVENTS_FILE_SUFFIX}",
+        ]:
             raise InvalidSectionFileType(
                 f"{file_type} file {file_of_type} has wrong file type."
             )
