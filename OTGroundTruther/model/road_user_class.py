@@ -25,17 +25,11 @@ class RoadUserClass:
 class ValidRoadUserClasses:
     _road_user_classes: dict[str, RoadUserClass]
 
-    def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
-        return {value.get_name(): value for value in self._road_user_classes.values()}
-
     def get_by_key(self, key: str) -> RoadUserClass:
         return self._road_user_classes.get(key)
 
     def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
-        new_dict = {}
-        for key, value in self._road_user_classes.items():
-            new_dict[value.get_name()] = value
-        return new_dict
+        return {value.get_name(): value for value in self._road_user_classes.values()}
 
     @staticmethod
     def _parse(yaml_content: list[dict[str, dict[str, str]]]):

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from OTGroundTruther.model.event import Event, EventForSaving
+from OTGroundTruther.model.event import Event, EventForParsingSerializing
 from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
@@ -182,53 +182,53 @@ class CountRepository:
         """
         self._counts.clear()
 
-    def to_event_list(self) -> list[EventForSaving]:
-        """ "
+    def to_event_list(self) -> list[EventForParsingSerializing]:
+        """
         get an event list out of the CountRepo
         """
         event_list = []
         for count in self._counts.values():
             for event in count.get_events():
-                event_for_save = event.to_event_for_saving(
+                event_for_save = event.to_event_for_serializing(
                     road_user_id=count.get_road_user_id(),
                     road_user_class=count.get_road_user_class(),
                 )
                 event_list.append(event_for_save)
         return event_list
 
-    def from_event_list(self, event_list: list[EventForSaving]) -> None:
+    def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
         """
         create count list from event list and the suitable list of the object ids
 
         Args:
-            event_list (list[Event_For_Saving]): _description_
+            event_list (list[Event_For_Saving]): List of events.
         """
-        event_dict, class_dict = self._events_and_class_by_id(event_list)
+        events, classes = self._get_events_and_classes_by_id(event_list)
 
         self._counts = {}
-        for id_ in event_dict.keys():
-            if len(event_dict[id_]) >= 2:
+        for id_ in events.keys():
+            if len(events[id_]) >= 2:
                 self._counts[id_] = Count(
                     road_user_id=id_,
-                    events=event_dict[id_],
-                    road_user_class=class_dict[id_],
+                    events=events[id_],
+                    road_user_class=classes[id_],
                 )
             else:
                 raise UnknownSectionError
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[0])
 
-    def _events_and_class_by_id(
-        self, event_list: list[EventForSaving]
+    def _get_events_and_classes_by_id(
+        self, event_list: list[EventForParsingSerializing]
     ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
-        event_dict: dict[int, list[Event]] = {}
-        class_dict: dict[int, RoadUserClass] = {}
+        events: dict[int, list[Event]] = {}
+        classes: dict[int, RoadUserClass] = {}
         for event_for_saving in event_list:
             id_ = event_for_saving.get_road_user_id()
-            if id_ in event_dict.keys():
-                event_dict[id_].append(event_for_saving.to_event())
+            if id_ in events.keys():
+                events[id_].append(event_for_saving.to_event())
             else:
-                class_dict[id_] = event_for_saving.get_road_user_class()
-                event_dict[id_] = [event_for_saving.to_event()]
+                classes[id_] = event_for_saving.get_road_user_class()
+                events[id_] = [event_for_saving.to_event()]
 
-        return event_dict, class_dict
+        return events, classes

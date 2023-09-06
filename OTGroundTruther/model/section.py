@@ -253,7 +253,10 @@ class SectionParser:
 
     def _parse_name(self, data: dict) -> str:
         _id = data[ID]
-        return Coordinate(x=data["x"], y=data["y"])
+        return data.get(NAME, _id)
+
+    def _parse_coordinates(self, data: dict) -> list[Coordinate]:
+        """Parse data to coordinates.
 
         Args:
             data (dict): data to parse to coordinates
@@ -272,7 +275,4 @@ class SectionParser:
         Returns:
             Coordinate: coordinate
         """
-        return Coordinate(
-            x=data.get("x", 0),
-            y=data.get("y", 0),
-        )
+        return Coordinate(x=data["x"], y=data["y"])

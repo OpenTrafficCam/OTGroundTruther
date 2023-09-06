@@ -1,6 +1,8 @@
 import platform
 from pathlib import Path
 
+OTEVENTS_SUFFIX: str = "otevents"
+
 LOG_DIR = Path(".logs").absolute()
 """The log save directory."""
 

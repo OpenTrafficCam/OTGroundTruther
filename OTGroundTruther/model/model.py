@@ -3,7 +3,11 @@ from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
-from OTGroundTruther.model.event import Event, EventForSaving, EventListParser
+from OTGroundTruther.model.event import (
+    Event,
+    EventForParsingSerializing,
+    EventListParser,
+)
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
@@ -39,7 +43,7 @@ class Model:
         self._active_count = active_count
         self._valid_road_user_classes = valid_road_user_classes
         self._section_parser: SectionParser = SectionParser()
-        self.eventlistparser: EventListParser = EventListParser()
+        self._eventlistparser: EventListParser = EventListParser()
 
     def load_videos_from_files(self, files: list[Path]):
         self._video_repository.clear()
@@ -53,29 +57,24 @@ class Model:
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
 
     def read_events_from_file(self, file: Path) -> None:
-        event_list = self.eventlistparser.parse(
+        event_list = self._eventlistparser.parse(
             otevent_file=file,
-            sections_dict=self._section_repository.get_all_as_dict(),
+            sections=self._section_repository.get_all_as_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
         self._count_repository.from_event_list(event_list)
 
-    def write_events_to_file(self, event_list: list[EventForSaving]) -> None:
-        file_parent = self._get_first_videopath_parent()
-        file_name = self._get_first_videopath_stem()
-        suffix = ".otevents"
-        filepath = Path(f"{file_parent}\\{file_name}{suffix}")
-        self.eventlistparser.serialize(
+    def write_events_to_file(
+        self, event_list: list[EventForParsingSerializing], file_type: str
+    ) -> None:
+        file = self._video_repository.get_first_video_file().with_suffix(
+            f".{file_type}"
+        )
+        self._eventlistparser.serialize(
             events=event_list,
             sections=self._section_repository._sections,
-            file=filepath,
+            file=file,
         )
-
-    def _get_first_videopath_stem(self):
-        return list(self._video_repository._videos.keys())[0].stem
-
-    def _get_first_videopath_parent(self):
-        return str(list(self._video_repository._videos.keys())[0].parent)
 
     def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
         if self._video_repository == []:
@@ -101,7 +100,7 @@ class Model:
         return self._get_overlayed_frame(background_frame)
 
     def get_first_frame(self) -> OverlayedFrame:
-        first_video = self._video_repository.get_first()
+        first_video = self._video_repository.get_first_video()
         background_frame = first_video.get_frame_by_number(0)
         return self._get_overlayed_frame(background_frame)
 

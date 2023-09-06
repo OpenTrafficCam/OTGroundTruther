@@ -15,6 +15,18 @@ SECTION_FORMAT_VERSION: str = "section_file_version"
 EVENT_FORMAT_VERSION: str = "event_file_version"
 EVENT_LIST = "event_list"
 SECTIONS: str = "sections"
+SECTION_ID: str = "section_id"
+EVENT_COORDINATE: str = "event_coordinate"
+EVENT_TYPE: str = "event_type"
+DIRECTION_VECTOR: str = "direction_vector"
+VIDEO_NAME: str = "video_name"
+OCCURENCE: str = "occurrence"
+HOSTNAME: str = "hostname"
+ROAD_USER_CLASS: str = "road_user_class"
+ROAD_USER_CLASS_OTEVENTS: str = "road_user_type"
+ROAD_USER_ID: str = "road_user_id"
+FRAME_NUMBER: str = "frame_number"
+TIME_CREATED: str = "time_created"
 
 
 @dataclass
@@ -26,27 +38,27 @@ class Event:
     video_file: Path
     time_created: float
 
-    def to_event_for_saving(
+    def to_event_for_serializing(
         self, road_user_id: int, road_user_class: RoadUserClass
-    ) -> "EventForSaving":
+    ) -> "EventForParsingSerializing":
         event_dict = vars(self)
-        event_dict["road_user_id"] = road_user_id
-        event_dict["road_user_class"] = road_user_class
-        return EventForSaving(**event_dict)
+        event_dict[ROAD_USER_ID] = road_user_id
+        event_dict[ROAD_USER_CLASS] = road_user_class
+        return EventForParsingSerializing(**event_dict)
 
     def to_dict(self) -> dict:
         return {
-            "event_coordinate": self.coordinate.as_list(),
-            "section_id": self.section.name,
-            "frame_number": self.frame_number,
-            "occurrence": self.timestamp,
-            "video_name": self.video_file.stem,
-            "time_created": self.time_created,
+            EVENT_COORDINATE: self.coordinate.as_list(),
+            SECTION_ID: self.section.name,
+            FRAME_NUMBER: self.frame_number,
+            OCCURENCE: self.timestamp,
+            VIDEO_NAME: self.video_file.stem,
+            TIME_CREATED: self.time_created,
         }
 
 
 @dataclass
-class EventForSaving:
+class EventForParsingSerializing:
     coordinate: Coordinate
     section: LineSection
     frame_number: int
@@ -58,21 +70,21 @@ class EventForSaving:
 
     def to_event(self) -> Event:
         event_dict = vars(self)
-        event_dict.pop("road_user_id")
-        event_dict.pop("road_user_class")
+        event_dict.pop(ROAD_USER_ID)
+        event_dict.pop(ROAD_USER_CLASS)
         return Event(**event_dict)
 
     def to_dict(self) -> dict:
         return {
-            "event_coordinate": self.coordinate.as_list(),
-            "section_id": self.section.name,
-            "frame_number": self.frame_number,
-            "occurrence": self.timestamp,
-            "video_name": self.video_file.stem,
-            "time_created": self.time_created,
-            "road_user_id": self.road_user_id,
-            "road_user_type": self.road_user_class.get_name(),
-            "direction_vector": None,
+            EVENT_COORDINATE: self.coordinate.as_list(),
+            SECTION_ID: self.section.name,
+            FRAME_NUMBER: self.frame_number,
+            OCCURENCE: self.timestamp,
+            VIDEO_NAME: self.video_file.stem,
+            TIME_CREATED: self.time_created,
+            ROAD_USER_ID: self.road_user_id,
+            ROAD_USER_CLASS_OTEVENTS: self.road_user_class.get_name(),
+            DIRECTION_VECTOR: None,
         }
 
     def get_road_user_id(self) -> int:
@@ -91,9 +103,9 @@ class EventListParser:
     def parse(
         self,
         otevent_file: Path,
-        sections_dict: dict[str, LineSection],
+        sections: dict[str, LineSection],
         valid_road_user_classes: ValidRoadUserClasses,
-    ) -> list[EventForSaving]:
+    ) -> list[EventForParsingSerializing]:
         """Parse otevents file and convert its content to domain level objects namely
         `Events`s.
 
@@ -104,35 +116,35 @@ class EventListParser:
             list[Event]: the events.
         """
         otevents_content = parse(otevent_file)
-        dets_list: list[dict] = otevent_dict[EVENT_LIST]
-        event_list = []
+        events: list[dict] = otevents_content[EVENT_LIST]
+        parsed_events = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
-        for i in range(len(dets_list)):
-            if dets_list[i]["section_id"] in list(sections_dict.keys()):
-                section = sections_dict[dets_list[i]["section_id"]]
+        for event in events:
+            if event[SECTION_ID] in list(sections.keys()):
+                section = sections[event[SECTION_ID]]
                 coordinate = Coordinate(
-                    round(dets_list[i]["event_coordinate"][0]),
-                    round(dets_list[i]["event_coordinate"][1]),
+                    round(event[EVENT_COORDINATE][0]),
+                    round(event[EVENT_COORDINATE][1]),
                 )
-                road_user_class = classes_by_name[dets_list[i]["road_user_type"]]
+                road_user_class = classes_by_name[event[ROAD_USER_CLASS_OTEVENTS]]
 
-                event_list.append(
-                    EventForSaving(
+                parsed_events.append(
+                    EventForParsingSerializing(
                         coordinate=coordinate,
                         section=section,
-                        frame_number=dets_list[i]["frame_number"],
-                        timestamp=dets_list[i]["occurrence"],
-                        video_file=Path(dets_list[i]["video_name"]),
+                        frame_number=event[FRAME_NUMBER],
+                        timestamp=event[OCCURENCE],
+                        video_file=Path(event[VIDEO_NAME]),
                         time_created=0,
-                        road_user_id=dets_list[i]["road_user_id"],
+                        road_user_id=event[ROAD_USER_ID],
                         road_user_class=road_user_class,
                     )
                 )
-        return event_list
+        return parsed_events
 
     def serialize(
         self,
-        events: Iterable[EventForSaving],
+        events: Iterable[EventForParsingSerializing],
         sections: Iterable[LineSection],
         file: Path,
     ) -> None:
@@ -147,7 +159,9 @@ class EventListParser:
         write_bz2(content, file)
 
     def _convert(
-        self, events: Iterable[EventForSaving], sections: Iterable[LineSection]
+        self,
+        events: Iterable[EventForParsingSerializing],
+        sections: Iterable[LineSection],
     ) -> dict[str, Any]:
         """Convert events to dictionary.
 
@@ -174,7 +188,9 @@ class EventListParser:
             EVENT_FORMAT_VERSION: None,
         }
 
-    def _convert_events(self, events: Iterable[EventForSaving]) -> list[dict]:
+    def _convert_events(
+        self, events: Iterable[EventForParsingSerializing]
+    ) -> list[dict]:
         """Convert events to dictionary.
 
         Args:

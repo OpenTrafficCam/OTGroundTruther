@@ -3,6 +3,7 @@ from tkinter.filedialog import askopenfilename, askopenfilenames
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
+from OTGroundTruther.model.config import OTEVENTS_SUFFIX
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsError
 from OTGroundTruther.model.model import Model
@@ -37,7 +38,7 @@ class Presenter(PresenterInterface):
         self._refresh_current_frame()
 
     def load_otevents(self) -> None:
-        otevent_file = askopenfilename(defaultextension="*.otevents")
+        otevent_file = askopenfilename(defaultextension=f"*.{OTEVENTS_SUFFIX}")
         self._model.read_sections_from_file(Path(otevent_file))
         self._model.read_events_from_file(Path(otevent_file))
         if self._current_frame is None:
@@ -46,7 +47,7 @@ class Presenter(PresenterInterface):
 
     def save_otevents(self) -> None:
         event_list = self._model._count_repository.to_event_list()
-        self._model.write_events_to_file(event_list)
+        self._model.write_events_to_file(event_list, OTEVENTS_SUFFIX)
 
     def _refresh_current_frame(self) -> None:
         frame = self._model.get_current_frame(current_frame=self._current_frame)
