@@ -25,7 +25,7 @@ class RoadUserClass:
 class ValidRoadUserClasses:
     _road_user_classes: dict[str, RoadUserClass]
 
-    def get_by_key(self, key: str) -> RoadUserClass:
+    def get_by_key(self, key: str) -> RoadUserClass | None:
         return self._road_user_classes.get(key)
 
     def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
@@ -47,7 +47,7 @@ class ValidRoadUserClasses:
         return ValidRoadUserClasses(road_user_classes)
 
     @staticmethod
-    def from_yaml(yaml_file: Path) -> dict:
+    def from_yaml(yaml_file: Path) -> "ValidRoadUserClasses":
         with open(yaml_file, "r") as file:
             try:
                 yaml_content = yaml.safe_load(file)

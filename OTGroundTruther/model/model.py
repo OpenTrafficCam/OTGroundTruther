@@ -2,7 +2,12 @@ import datetime as dt
 from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
-from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
+from OTGroundTruther.model.count import (
+    ActiveCount,
+    Count,
+    CountRepository,
+    MissingRoadUserClassError,
+)
 from OTGroundTruther.model.event import (
     Event,
     EventForParsingSerializing,
@@ -19,6 +24,7 @@ from OTGroundTruther.model.section import (
 from OTGroundTruther.model.video import (
     BackgroundFrame,
     NoVideoError,
+    TimestampNotFoundInVideosError,
     Video,
     VideoRepository,
 )
@@ -84,6 +90,8 @@ class Model:
         if self._video_repository == []:
             raise NoVideoError
         video = self._video_repository.get_by_timestamp(unix_timestamp)
+        if video is None:
+            raise TimestampNotFoundInVideosError
         background_frame = video.get_frame_by_timestamp(unix_timestamp)
         return self._get_overlayed_frame(background_frame)
 
@@ -108,7 +116,7 @@ class Model:
         background_frame = first_video.get_frame_by_number(0)
         return self._get_overlayed_frame(background_frame)
 
-    def get_current_frame(self, current_frame: OverlayedFrame) -> OverlayedFrame:
+    def refresh_current_frame(self, current_frame: OverlayedFrame) -> OverlayedFrame:
         current_video = self._video_repository.get_video_by_file(
             current_frame.background_frame.video_file
         )
@@ -127,17 +135,14 @@ class Model:
             background_frame=background_frame, sections_overlay=sections_overlay
         )
 
-    def set_video_frame(self, frame_number: int) -> None:
-        if self._video is None:
-            raise NoVideoError
-        self._video.set_frame_number(frame_number)
-
     def get_event_for(
-        self, coordinate: Coordinate, current_frame: OverlayedFrame
+        self, coordinate: Coordinate, current_frame: OverlayedFrame | None
     ) -> Event | None:
+        if current_frame is None:
+            return None
         section = self.get_section_by_coordinate(coordinate)
         if section is None:
-            return
+            return None
         now = dt.datetime.now().timestamp()
         return Event(
             coordinate,
@@ -172,10 +177,13 @@ class Model:
         if self._active_count is None:
             return
         _id = self._count_repository.get_id()
+        road_user_class = self._active_count.get_road_user_class()
+        if road_user_class is None:
+            raise MissingRoadUserClassError
         count = Count(
             road_user_id=_id,
             events=self._active_count.get_events(),
-            road_user_class=self._active_count.get_road_user_class(),
+            road_user_class=road_user_class,
         )
         self._count_repository.add(count)
         self._active_count = None
@@ -186,13 +194,13 @@ class Model:
         print("Active count aborted")
 
     def get_all_counts(self) -> list[Count]:
-        self._count_repository.get_all()
+        return self._count_repository.get_all_as_list()
 
-    def delete_count(self, id: str) -> None:
+    def delete_count(self, id: int) -> None:
         self._count_repository.remove(id)
 
     def get_counts_by_frame(self, frame: int) -> list[Count]:
-        self._count_repository.get_by_frame_of_events(frame)
+        return self._count_repository.get_by_frame_of_events(frame)
 
     def clear_repositories(self) -> None:
         self._section_repository.clear()

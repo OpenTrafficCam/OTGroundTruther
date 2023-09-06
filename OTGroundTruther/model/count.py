@@ -81,12 +81,12 @@ class ActiveCount:
     def set_road_user_class(self, road_user_class: RoadUserClass) -> None:
         self._road_user_class = road_user_class
 
-    def get_road_user_class(self) -> RoadUserClass:
+    def get_road_user_class(self) -> RoadUserClass | None:
         return self._road_user_class
 
 
 class CountRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._counts: dict[int, Count] = {}
         self._current_id: int = 0
 
@@ -107,7 +107,7 @@ class CountRepository:
         """
         self._counts[count.road_user_id] = count
 
-    def get_all(self) -> list[Count]:
+    def get_all_as_list(self) -> list[Count]:
         """Get all counts from the repository.
 
         Returns:

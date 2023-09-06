@@ -80,7 +80,9 @@ class Presenter(PresenterInterface):
         self._model.write_events_to_file(event_list, GROUND_TRUTH_EVENTS_FILE_SUFFIX)
 
     def _refresh_current_frame(self) -> None:
-        frame = self._model.get_current_frame(current_frame=self._current_frame)
+        if self._current_frame is None:
+            return
+        frame = self._model.refresh_current_frame(current_frame=self._current_frame)
         self._update_canvas_image(frame=frame)
 
     def scroll_through_videos(

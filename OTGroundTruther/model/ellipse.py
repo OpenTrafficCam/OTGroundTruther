@@ -5,14 +5,14 @@ import numpy as np
 
 from OTGroundTruther.model.coordinate import Coordinate
 
-RELATIVE_HEIGHT = 0.15
+RELATIVE_HEIGHT: float = 0.15
 
 
 @dataclass
 class Ellipse:
     start: Coordinate
     end: Coordinate
-    relative_height: int = RELATIVE_HEIGHT
+    relative_height: float = RELATIVE_HEIGHT
     center: Coordinate = field(init=False)
     radian: float = field(init=False)
     angle: float = field(init=False)

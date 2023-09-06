@@ -4,6 +4,7 @@ from typing import Iterable, Optional, Sequence
 
 import cv2
 import numpy as np
+import numpy.typing as npt
 from PIL import Image
 
 from OTGroundTruther.model.coordinate import Coordinate
@@ -41,7 +42,7 @@ class LineSection:
     def __post_init__(self) -> None:
         self.ellipses = self._get_ellipses()
 
-    def _get_ellipses(self) -> None:
+    def _get_ellipses(self) -> list[Ellipse]:
         ellipses = []
         for i in range(len(self.coordinates) - 1):
             start = self.coordinates[i]
@@ -88,7 +89,7 @@ class SectionsOverlay:
                 self._draw_ellipse(image_array, ellipse)
         self.image = Image.fromarray(image_array)
 
-    def _draw_line(self, image_array: np.array, ellipse: Ellipse) -> None:
+    def _draw_line(self, image_array: npt.NDArray, ellipse: Ellipse) -> None:
         return cv2.line(
             img=image_array,
             pt1=ellipse.start.as_tuple(),
@@ -97,7 +98,7 @@ class SectionsOverlay:
             thickness=SECTION_THICKNESS,
         )
 
-    def _draw_ellipse(self, image_array: np.array, ellipse: Ellipse) -> None:
+    def _draw_ellipse(self, image_array: npt.NDArray, ellipse: Ellipse) -> None:
         return cv2.ellipse(
             img=image_array,
             center=ellipse.center.as_tuple(),
@@ -111,7 +112,7 @@ class SectionsOverlay:
 
 
 class SectionRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._sections: dict[str, LineSection] = {}
         self._otanalytics_file_content: dict = {}
 

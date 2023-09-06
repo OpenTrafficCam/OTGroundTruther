@@ -28,7 +28,7 @@ class InvalidVideoFileType(Exception):
 
 @dataclass(frozen=True)
 class CliArguments:
-    video_files: list[Path]
+    video_files: set[Path]
     sections_file: Path | None
     events_file: Path | None
 
@@ -97,7 +97,7 @@ class CliArgumentParser:
         )
 
     @staticmethod
-    def _parse_video_file_paths(files: str) -> list[Path]:
+    def _parse_video_file_paths(files: str) -> set[Path]:
         """Parse video files.
 
         Files that do not exist will be skipped.

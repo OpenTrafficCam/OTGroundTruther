@@ -8,11 +8,11 @@ from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import SectionParser, SectionRepository
 from OTGroundTruther.model.video import Video, VideoRepository
 
-ROAD_USER_CLASSES_YAML_FILE = r"OTGroundTruther/road_user_classes_v1_2.yaml"
+ROAD_USER_CLASSES_YAML_FILE: Path = Path(r"OTGroundTruther/road_user_classes_v1_2.yaml")
 
 
 class ModelInitializer:
-    def __init__(self):
+    def __init__(self) -> None:
         parser = CliArgumentParser()
         cli_args: CliArguments = parser.parse()
         self._valid_road_user_classes: ValidRoadUserClasses = (
@@ -43,7 +43,7 @@ class ModelInitializer:
         elif cli_args.sections_file is not None:
             self._prefill_section_repository(file=cli_args.sections_file)
 
-    def _prefill_video_repository(self, files: list[Path]) -> None:
+    def _prefill_video_repository(self, files: set[Path]) -> None:
         video_files = [Video(file) for file in files]
         self._video_repository.add_all(video_files)
 

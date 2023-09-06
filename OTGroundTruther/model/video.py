@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Iterable
 
 import cv2
-import numpy as np
+import numpy.typing as npt
 from PIL import Image
 
 
@@ -18,7 +18,7 @@ def _get_datetime_from_filename(
 ) -> tuple[float, str]:
     """Get date and time from file name.
     Searches for "_yyyy-mm-dd_hh-mm-ss".
-    Returns "yyyy-mm-dd_hh-mm-ss".
+    Returns timestamp in seconds since epoch and "yyyy-mm-dd_hh-mm-ss".
 
     Args:
         filename (str): filename with expression
@@ -31,7 +31,7 @@ def _get_datetime_from_filename(
     regex = "_([0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}_[0-9]{2,2}-[0-9]{2,2}-[0-9]{2,2})"
     match = re.search(regex, filename)
     if not match:
-        return epoch_datetime
+        return 0, epoch_datetime
 
     # Assume that there is only one timestamp in the file name
     datetime = match[1]
@@ -54,9 +54,13 @@ class VideoNotFoundError(Exception):
     pass
 
 
+class TimestampNotFoundInVideosError(Exception):
+    pass
+
+
 @dataclass
 class BackgroundFrame:
-    np_array: np.array
+    np_array: npt.NDArray
     video_file: Path
     frame_number: int
     unix_timestamp: float
@@ -101,7 +105,7 @@ class Video:
     def get_height(self) -> int:
         return self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-    def _set_frame_rate(self) -> float:
+    def _set_frame_rate(self) -> None:
         self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
 
     def _parse_start_time(self) -> tuple[float, str]:
@@ -117,10 +121,7 @@ class Video:
         return int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def get_duration_in_seconds(self) -> float:
-        return
-
-    def get_frame_number(self) -> int:
-        self.cap.get(cv2.CAP_PROP_POS_FRAMES)
+        return self.get_number_of_frames / self.frame_rate
 
     def set_frame_number(self, frame_number: int) -> None:
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
@@ -141,7 +142,7 @@ class Video:
             raise ValueError("frame_number is not in video")
         return self.get_frame_by_number(frame_number)
 
-    def _get_frame_by_number(self, frame_number: int) -> np.array:
+    def _get_frame_by_number(self, frame_number: int) -> npt.NDArray:
         if frame_number == self._get_current_frame_number() + 1:
             pass
         elif frame_number == 0:
@@ -154,11 +155,8 @@ class Video:
             raise FrameNotFoundInVideoError()
         return frame
 
-    def _get_current_frame_number(self):
+    def _get_current_frame_number(self) -> int:
         return self.cap.get(cv2.CAP_PROP_POS_FRAMES)
-
-    def get_next_frame(self) -> np.array:
-        pass
 
     def get_timestamp_by_frame_number(self, frame_number: int) -> float:
         return self._start_timestamp + frame_number / self.frame_rate
@@ -186,7 +184,7 @@ class Video:
 
 
 class VideoRepository:
-    def __init__(self):
+    def __init__(self) -> None:
         self._videos: dict[Path, Video] = {}
 
     def add(self, video: Video) -> None:
@@ -214,10 +212,11 @@ class VideoRepository:
         """
         self._videos[video.file] = video
 
-    def get_by_timestamp(self, unix_timestamp: float) -> Video:
+    def get_by_timestamp(self, unix_timestamp: float) -> Video | None:
         for video in self._videos.values():
             if video.includes_timestamp(unix_timestamp):
                 return video
+        return None
 
     def get_video_and_frame_by_delta_of_frames(
         self, current_file: Path, current_frame_number: int, delta_of_frames: int
