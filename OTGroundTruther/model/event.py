@@ -41,10 +41,10 @@ class Event:
     def to_event_for_serializing(
         self, road_user_id: int, road_user_class: RoadUserClass
     ) -> "EventForParsingSerializing":
-        event_dict = vars(self)
-        event_dict[ROAD_USER_ID] = road_user_id
-        event_dict[ROAD_USER_CLASS] = road_user_class
-        return EventForParsingSerializing(**event_dict)
+        event: dict = vars(self)
+        event[ROAD_USER_ID] = road_user_id
+        event[ROAD_USER_CLASS] = road_user_class
+        return EventForParsingSerializing(**event)
 
     def to_dict(self) -> dict:
         return {
