@@ -19,10 +19,6 @@ class EventBeforePreviouseEventError(Exception):
     pass
 
 
-class UnknownSectionError(Exception):
-    pass
-
-
 @dataclass
 class Count:
     road_user_id: int
@@ -214,7 +210,7 @@ class CountRepository:
                     road_user_class=classes[id_],
                 )
             else:
-                raise UnknownSectionError
+                continue  # TODO: Store in "SingleEventRepository"
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[0])
 
