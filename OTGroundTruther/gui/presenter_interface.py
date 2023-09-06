@@ -11,11 +11,11 @@ class PresenterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_otevents(self) -> None:
+    def load_events(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def save_otevents(self) -> None:
+    def save_events(self) -> None:
         raise NotImplementedError
 
     @abstractmethod

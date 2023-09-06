@@ -29,9 +29,8 @@ class FileMenu(Menu):
     def _get_and_place_widgets(self) -> None:
         self.add_command(label="Load videos", command=self._presenter.load_video_files)
         self.add_command(label="Load otflow", command=self._presenter.load_otflow)
-        self.add_command(label="Load events", command=self._presenter.load_otevents)
-        self.add_command(label="Save events",
-                         command=self._presenter.save_otevents)
+        self.add_command(label="Load events", command=self._presenter.load_events)
+        self.add_command(label="Save events", command=self._presenter.save_events)
 
 
 class HelpMenu(Menu):
