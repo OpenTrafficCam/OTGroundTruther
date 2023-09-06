@@ -15,6 +15,14 @@ class PresenterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def load_events(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_events(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     def scroll_through_videos(
         self, scroll_delta: int, mouse_wheel_pressed: bool
     ) -> None:

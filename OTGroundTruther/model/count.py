@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from OTGroundTruther.model.event import Event
+from OTGroundTruther.model.event import Event, EventForParsingSerializing
 from OTGroundTruther.model.road_user_class import RoadUserClass
 
 ACTIVE_COUNT_ID = "active-count-id"
@@ -21,7 +21,7 @@ class EventBeforePreviouseEventError(Exception):
 
 @dataclass
 class Count:
-    id: str
+    road_user_id: int
     events: list[Event]
     road_user_class: RoadUserClass
 
@@ -33,6 +33,18 @@ class Count:
             raise TooFewEventsError
         if self.road_user_class is None:
             raise MissingRoadUserClassError
+
+    def add_event(self, event: Event) -> None:
+        self.events.append(event)
+
+    def get_events(self) -> list[Event]:
+        return self.events
+
+    def get_road_user_id(self) -> int:
+        return self.road_user_id
+
+    def get_road_user_class(self) -> RoadUserClass:
+        return self.road_user_class
 
 
 class ActiveCount:
@@ -73,15 +85,9 @@ class ActiveCount:
         return self._road_user_class
 
 
-@dataclass
-class CountsOverlay:
-    # TODO
-    pass
-
-
 class CountRepository:
     def __init__(self):
-        self._counts: dict[str, Count] = {}
+        self._counts: dict[int, Count] = {}
         self._current_id: int = 0
 
     def add_all(self, counts: Iterable[Count]) -> None:
@@ -99,7 +105,7 @@ class CountRepository:
         Args:
             count (Count): the count to be added
         """
-        self._counts[count.id] = count
+        self._counts[count.road_user_id] = count
 
     def get_all(self) -> list[Count]:
         """Get all counts from the repository.
@@ -109,11 +115,11 @@ class CountRepository:
         """
         return list(self._counts.values())
 
-    def get(self, id: str) -> Optional[Count]:
+    def get(self, id: int) -> Optional[Count]:
         """Get the count for the given id or nothing, if the id is missing.
 
         Args:
-            id (str): id to get count for
+            id (int): id to get count for
 
         Returns:
             Optional[Count]: count if present
@@ -128,13 +134,21 @@ class CountRepository:
             )
         return list(set(filtered_counts))
 
-    def remove(self, id: str) -> None:
+    def remove(self, id: int) -> None:
         """Remove count from the repository.
 
         Args:
-            id (str): the count id to be removed
+            id (int): the count id to be removed
         """
         del self._counts[id]
+
+    def set_current_id(self, id: int):
+        """set current id
+
+        Args:
+            id (int): _description_
+        """
+        self._current_id = id
 
     def get_id(self) -> int:
         """
@@ -152,3 +166,54 @@ class CountRepository:
         Clear the repository.
         """
         self._counts.clear()
+
+    def to_event_list(self) -> list[EventForParsingSerializing]:
+        """
+        get an event list out of the CountRepo
+        """
+        event_list = []
+        for count in self._counts.values():
+            for event in count.get_events():
+                event_for_save = event.to_event_for_serializing(
+                    road_user_id=count.get_road_user_id(),
+                    road_user_class=count.get_road_user_class(),
+                )
+                event_list.append(event_for_save)
+        return event_list
+
+    def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
+        """
+        create count list from event list and the suitable list of the object ids
+
+        Args:
+            event_list (list[Event_For_Saving]): List of events.
+        """
+        events, classes = self._get_events_and_classes_by_id(event_list)
+
+        self._counts = {}
+        for id_ in events.keys():
+            if len(events[id_]) >= 2:
+                self._counts[id_] = Count(
+                    road_user_id=id_,
+                    events=events[id_],
+                    road_user_class=classes[id_],
+                )
+            else:
+                continue  # TODO: Store in "SingleEventRepository"
+        if len(self._counts.keys()) > 0:
+            self.set_current_id(list(self._counts.keys())[0])
+
+    def _get_events_and_classes_by_id(
+        self, event_list: list[EventForParsingSerializing]
+    ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
+        events: dict[int, list[Event]] = {}
+        classes: dict[int, RoadUserClass] = {}
+        for event_for_saving in event_list:
+            id_ = event_for_saving.get_road_user_id()
+            if id_ in events.keys():
+                events[id_].append(event_for_saving.to_event())
+            else:
+                classes[id_] = event_for_saving.get_road_user_class()
+                events[id_] = [event_for_saving.to_event()]
+
+        return events, classes
