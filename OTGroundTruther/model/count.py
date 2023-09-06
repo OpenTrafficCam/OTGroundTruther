@@ -34,11 +34,6 @@ class Count:
         if self.road_user_class is None:
             raise MissingRoadUserClassError
 
-    def add_id_and_class_to_events(self) -> None:
-        for i in range(len(self.events)):
-            self.events[i].road_user_id = self.road_user_id
-            self.events[i].road_user_class = self.road_user_class
-
     def add_event(self, event: Event) -> None:
         self.events.append(event)
 
