@@ -39,8 +39,7 @@ class LineSection:
     ellipses: list[Ellipse] = field(init=False)
 
     def __post_init__(self) -> None:
-        if self.coordinates is not None:
-            self.ellipses = self._get_ellipses()
+        self.ellipses = self._get_ellipses()
 
     def _get_ellipses(self) -> None:
         ellipses = []
