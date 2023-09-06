@@ -255,7 +255,6 @@ class Video(FileVideoStream):
             array: array of current image
         """
         # if the frame changes ==> drawn but not safed sections gets deleted
-        objectstorage.maincanvas.points = [(0, 0), (0, 0)]
 
         self.stream.set(1, self.current_frame)
 

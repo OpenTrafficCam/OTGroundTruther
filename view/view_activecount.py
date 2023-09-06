@@ -48,23 +48,10 @@ class FrameActiveCounts(tk.LabelFrame):
         self.frame_control_active_counts = tk.Frame(master=self)
         self.frame_control_active_counts.pack()
 
-        self.button_count = tk.Button(
-            master=self.frame_control_active_counts,
-            width=20,
-            bg="green",
-            text="Activate Counting",
-        )
-        self.button_count.grid(row=0, column=1, padx=(10, 0))
-
     def insert_active_count_to_treeview(self, event):
         # insert latest item from activecount list
         # if button n (keysym = n) is pressed or there is no active count
-        if (
-            event.keysym_num == 120
-            or not objectstorage.config_dict["count_active"]
-            and objectstorage.config_dict["gt_active"]
-        ):
-
+        if not objectstorage.config_dict["count_active"]:
             objectstorage.config_dict["count_active"] = True
             latest_count = objectstorage.active_countings[-1]
 
@@ -127,21 +114,3 @@ class FrameActiveCounts(tk.LabelFrame):
                 values = self.tree_active_countings.item(child, "text")
                 if int(count_ID) == int(values):
                     self.tree_active_countings.delete(child)
-
-    def button_count_switch(self, opposite_button):
-
-        objectstorage.config_dict["gt_active"] = not objectstorage.config_dict[
-            "gt_active"
-        ]
-        objectstorage.config_dict[
-            "linedetector_toggle"
-        ] = not objectstorage.config_dict["linedetector_toggle"]
-        if objectstorage.config_dict["gt_active"]:
-            self.button_count.configure(bg="green")
-            opposite_button.configure(bg="red")
-
-        else:
-            self.button_count.configure(bg="red")
-            opposite_button.configure(bg="green")
-
-        print("Adding to count: " + str(objectstorage.config_dict["gt_active"]))

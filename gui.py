@@ -119,21 +119,14 @@ class gui(tk.Tk):
             self.bind("<Button-5>", lambda _: forward_video())  # scroll up
             self.bind("<Button-4>", lambda _: rewind_video())  # scroll down
 
-    def handle_return_pressed_event(self, _):
-        if config.RETURN_KEYBIND_IS_ENABLED:
-            self.frame_sections.create_section_entry_window()
-
     def handle_left_click_event(self, event):
         initialize_new_count(event)
         self.frame_active_counts.insert_active_count_to_treeview(event)
         objectstorage.maincanvas.click_receive_vehicle_coordinates(event)
-        objectstorage.maincanvas.click_receive_section_coordinates(event, 0)
         self.frame_active_counts.update_treeview(event)
 
     # for finish the actual count
     def handle_right_click_event(self, event):
-        self.frame_sections.create_section_entry_window()
-
         self.frame_active_counts.delete_from_treeview(event=event, reset=False)
         self.frame_gt.insert_to_gt_treeview(event=event)
         fill_eventbased_dictionary(event=event)
@@ -218,17 +211,6 @@ class gui(tk.Tk):
         if objectstorage.use_test_version is not None:
             objectstorage.videoobject = load_video_and_frame()
 
-        self.frame_active_counts.button_count.configure(
-            command=lambda: self.frame_active_counts.button_count_switch(
-                self.frame_sections.button_line
-            )
-        )
-        self.frame_sections.button_line.configure(
-            command=lambda: self.frame_sections.button_line_switch(
-                self.frame_active_counts.button_count
-            )
-        )
-
     def add_canvas_frame(self):
         np_image = objectstorage.videoobject.get_frame(np_image=True)
 
@@ -252,7 +234,8 @@ class gui(tk.Tk):
         objectstorage.flow_dict = load_flowfile()
 
         # create a new list of dictionaries ro insert imported section
-        # better workaround ==> get dic by key value pair(i.g. section id) with listcomprehension and change value
+        # better workaround ==> get dic by key value pair(i.g. section id)
+        # with listcomprehension and change value
         # [d for d in dictionaries if d.get(key) == value]
         self._integrate_flowfile_data_in_objstorage()
         print("Successfully imported flowfile")

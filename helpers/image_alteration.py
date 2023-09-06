@@ -1,4 +1,5 @@
 import tkinter
+from math import atan2, dist, pi
 
 import cv2
 from more_itertools import pairwise
@@ -6,28 +7,11 @@ from PIL import Image, ImageTk
 
 import helpers.filehelper.objectstorage as objectstorage
 from helpers.filehelper.config import vehicle_abbreviation
+from helpers.filehelper.objectstorage import ELLIPSEHEIGHT
 from helpers.resize import get_canvas_coordinate_for
-from helpers.section import draw_ellipse_around_section, draw_section_line
 
 
 def manipulate_image(np_image=None):
-    if np_image is None:
-        np_image = objectstorage.videoobject.np_image.copy()
-
-    if objectstorage.config_dict["linedetector_toggle"]:
-        np_image = draw_section_line(np_image)
-        p0_video = (
-            objectstorage.maincanvas.points[0][0],
-            objectstorage.maincanvas.points[0][1],
-        )
-        p1_video = (
-            objectstorage.maincanvas.points[1][0],
-            objectstorage.maincanvas.points[1][1],
-        )
-        p0_canvas = get_canvas_coordinate_for(p0_video)
-        p1_canvas = get_canvas_coordinate_for(p1_video)
-        np_image = draw_ellipse_around_section(np_image, p0=p0_canvas, p1=p1_canvas)
-
     np_image = draw_detectors_from_dict(np_image)
 
     np_image = draw_finished_counts(np_image)
@@ -80,7 +64,6 @@ def draw_finished_counts(np_image):
         track_class = row["Class"]
 
         p0_video = coordinates[0]
-        np_image = _draw_labelled_circle(np_image, p0_video, str(track_id))
 
         if len(coordinates) > 1:
             text = f"{str(track_id)}-{vehicle_abbreviation[track_class]}"
@@ -95,27 +78,16 @@ def draw_finished_counts(np_image):
     return np_image
 
 
-def _draw_labelled_circle(
+def _draw_click_circle(
     np_image,
     point_video,
-    text,
-    radius=1,
-    color=(0, 255, 255, 255),
-    font_scale=1,
+    radius=5,
+    color=(255, 255, 255, 255),
 ):
     point_canvas = get_canvas_coordinate_for(point_video)
-    np_image = cv2.circle(np_image, point_canvas, radius, color)
-    np_image = cv2.putText(
-        np_image,
-        text,
-        point_canvas,
-        cv2.FONT_HERSHEY_SIMPLEX,
-        font_scale,
-        color,
-        1,
-        cv2.LINE_AA,
-        False,
-    )
+    np_image = cv2.circle(np_image, point_canvas, radius, (10, 10, 10, 255), 2)
+    np_image = cv2.circle(np_image, point_canvas, radius, color, 1)
+
     return np_image
 
 
@@ -125,11 +97,18 @@ def _draw_arrow(
     p1_video,
     color=(255, 185, 15, 255),
     label_text=None,
-    font_scale=1,
+    font_scale=0.5,
 ):
     p0_canvas = get_canvas_coordinate_for(p0_video)
     p1_canvas = get_canvas_coordinate_for(p1_video)
-    np_image = cv2.arrowedLine(np_image, p0_canvas, p1_canvas, color, 1)
+    tiplength = _tiplength_for_same_size(p0_canvas, p1_canvas, 18)
+    np_image = cv2.arrowedLine(
+        np_image, p0_canvas, p1_canvas, (10, 10, 10, 255), 2, tipLength=tiplength
+    )
+    tiplength = _tiplength_for_same_size(p0_canvas, p1_canvas, 17)
+    np_image = cv2.arrowedLine(
+        np_image, p0_canvas, p1_canvas, color, 1, tipLength=tiplength
+    )
     if label_text is not None:
         np_image = cv2.putText(
             np_image,
@@ -149,6 +128,14 @@ def _draw_arrow(
     return np_image
 
 
+def _tiplength_for_same_size(p0_canvas, p1_canvas, size=20):
+    length = (
+        (p0_canvas[0] - p1_canvas[0]) ** 2 + (p0_canvas[1] - p1_canvas[1]) ** 2
+    ) ** 0.5
+
+    return size / length
+
+
 def draw_detectors_from_dict(np_image):
     """Draws detectors on every frame.
 
@@ -164,9 +151,9 @@ def draw_detectors_from_dict(np_image):
                 p0_video, p1_video = _get_detector_video_coordinates(detector, i)
                 p0_canvas = get_canvas_coordinate_for(p0_video)
                 p1_canvas = get_canvas_coordinate_for(p1_video)
-                color = (200, 125, 125, 255)
+                color = (127, 255, 0, 255)
 
-                np_image = cv2.line(np_image, p0_canvas, p1_canvas, color, 3)
+                np_image = cv2.line(np_image, p0_canvas, p1_canvas, color, 1)
 
                 np_image = draw_ellipse_around_section(
                     np_image, p0=p0_canvas, p1=p1_canvas
@@ -192,21 +179,19 @@ def draw_tag_around_start_coordinate(np_image):
     for active_count in objectstorage.active_countings:
         if (
             active_count
-            != objectstorage.active_countings[objectstorage.active_countings_index]
+            == objectstorage.active_countings[objectstorage.active_countings_index]
         ):
-            color = (0, 0, 255, 255)
+            color = (255, 20, 147, 255)
         else:
-            color = (124, 252, 0, 255)
+            color = (255, 252, 255, 255)
 
         if active_count.Coordinates:
             p0_video = active_count.Coordinates[0]
-            np_image = _draw_labelled_circle(
+            np_image = _draw_click_circle(
                 np_image,
                 point_video=p0_video,
-                text=str(active_count.ID),
                 radius=5,
                 color=color,
-                font_scale=0.75,
             )
 
         if len(active_count.Coordinates) > 1:
@@ -217,5 +202,32 @@ def draw_tag_around_start_coordinate(np_image):
                     p1_video=p1_video,
                     color=(254, 255, 0, 255),
                 )
+
+    return np_image
+
+
+def draw_ellipse_around_section(np_image, p0, p1):
+    middle_point_x = (p0[0] + p1[0]) / 2
+    middle_point_y = (p0[1] + p1[1]) / 2
+
+    major_axis_length = dist(p0, p1) / 2
+
+    radian = atan2(
+        p1[1] - p0[1],
+        p0[0] - p1[0],
+    )
+
+    angle = -radian * (180 / pi)
+
+    np_image = cv2.ellipse(
+        np_image,
+        (int(middle_point_x), int(middle_point_y)),
+        (int(major_axis_length), (int(major_axis_length * ELLIPSEHEIGHT))),
+        angle,
+        0,
+        360,
+        color=(127, 255, 0, 255),
+        thickness=2,
+    )
 
     return np_image

@@ -54,7 +54,6 @@ class FrameGT(tk.LabelFrame):
             and objectstorage.active_countings[
                 objectstorage.active_countings_index
             ].all_values_set()
-            and not objectstorage.config_dict["linedetector_toggle"]
         ):
 
             active_count = objectstorage.active_countings[

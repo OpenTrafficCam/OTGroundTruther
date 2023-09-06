@@ -4,8 +4,7 @@ from math import atan2, dist
 import numpy as np
 
 import helpers.filehelper.objectstorage as objectstorage
-import view.config as config
-from helpers.filehelper.objectstorage import ELLIPSEHEIGHT, config_dict
+from helpers.filehelper.objectstorage import ELLIPSEHEIGHT
 from helpers.image_alteration import manipulate_image
 
 
@@ -19,41 +18,6 @@ class OtcCanvas(tk.Canvas):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.points = [(0, 0), (0, 0)]
-        self.polygon_points = []
-
-        self.bind(
-            "<B1-Motion>",
-            lambda event: [
-                self.click_receive_section_coordinates(event, 1),
-            ],
-        )
-
-    def click_receive_section_coordinates(self, event, list_index):
-        """Saves coordinates from canvas event to linepoint list.
-
-        Args:
-            event (tkinter.event): Click on canvas triggers event.
-            list_index (index): 0 : start, 1 : end
-        """
-        if config_dict["linedetector_toggle"]:
-            #  uses mouseevents to get coordinates (left button)
-            self.coordinateX = int(
-                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
-            )
-            self.coordinateY = int(
-                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
-            )
-
-            self.points[list_index] = (
-                self.coordinateX,
-                self.coordinateY,
-            )
-            # section line gets drawn when second section coordinate is
-            # changed/else Line jumps
-            if list_index == 1:
-                manipulate_image(objectstorage.videoobject.np_image.copy())
-
     def click_receive_vehicle_coordinates(self, event):
         """Saves coordinates from canvas event to linepoint list.
 
@@ -61,16 +25,12 @@ class OtcCanvas(tk.Canvas):
             event (tkinter.event): Click on canvas triggers event.
             list_index (index):
         """
-        if config_dict["linedetector_toggle"]:
-            return
-
-        if config_dict["gt_active"]:
-            self.coordinateX = int(
-                self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
-            )
-            self.coordinateY = int(
-                self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
-            )
+        self.coordinateX = int(
+            self.canvasx(event.x) / objectstorage.videoobject.x_resize_factor
+        )
+        self.coordinateY = int(
+            self.canvasy(event.y) / objectstorage.videoobject.y_resize_factor
+        )
 
         self._handle_event(event)
 
@@ -85,7 +45,7 @@ class OtcCanvas(tk.Canvas):
         """
         if not objectstorage.flow_dict["sections"]:
             return
-
+        in_detector_ellipse = False
         for detector in objectstorage.flow_dict["sections"]:
             for i in range(len(detector["coordinates"]) - 1):
                 p0 = (
@@ -97,27 +57,24 @@ class OtcCanvas(tk.Canvas):
                     detector["coordinates"][i + 1]["y"],
                 )
 
-                if not self._coordinate_in_section_ellipse(
-                    section_p0=p0, section_p1=p1
-                ):
-                    # if event.num == config.LEFT_CLICK_EVENT_NUMBER:
-                    #     self._delete_event()
-                    continue
+                if self._coordinate_in_section_ellipse(section_p0=p0, section_p1=p1):
+                    print(f"Coordinate in the gate: {detector}")
 
-                print(f"Coordinate in the gate: {detector}")
+                    if not self._there_is_an_active_count() or (
+                        self._there_is_an_active_count()
+                        and not self._is_same_gate_as_before(detector)
+                    ):
+                        self._append_new_event(detector)
 
-                if (
-                    self._there_is_an_active_count()
-                    and not self._is_same_gate_as_before(detector)
-                ):
-                    self._append_new_event(detector)
-
-                elif self._there_is_an_active_count() and self._is_same_gate_as_before(
-                    detector
-                ):
-                    self._update_event()
-
-                return
+                    elif (
+                        self._there_is_an_active_count()
+                        and self._is_same_gate_as_before(detector)
+                    ):
+                        self._update_event()
+                    in_detector_ellipse = True
+                    break
+            if in_detector_ellipse:
+                break
 
     def _append_new_event(self, detector):
         objectstorage.active_countings[
@@ -177,7 +134,7 @@ class OtcCanvas(tk.Canvas):
             objectstorage.active_countings[objectstorage.active_countings_index].Gates[
                 -1
             ]
-            == detector
+            == detector["id"]
         )
 
 

@@ -33,8 +33,6 @@ quicksafe_filepath_event = None
 flow_dict = {"metadata": None, "sections": []}
 
 config_dict = {
-    "linedetector_toggle": False,
-    "polygondetector_toggle": False,
     "tracks_imported": False,
     "detections_drawn": False,
     "display_all_tracks_toggle": False,
@@ -47,7 +45,6 @@ config_dict = {
     "display_live_track": False,
     "slider": False,
     "dataframe_cleaned": False,
-    "gt_active": True,
     "count_active": False,
 }
 
