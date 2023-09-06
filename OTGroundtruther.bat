@@ -1,3 +1,3 @@
 call venv\Scripts\activate
-python -m OTGroundTruther.py
+python -m OTGroundTruther
 timeout /T 10
