@@ -90,8 +90,7 @@ class Presenter(PresenterInterface):
             print("Too few events, you need at least two events to finish a count")
         except MissingRoadUserClassError:
             print("Please specify a class for the road user")
-        finally:
-            return
+        return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
