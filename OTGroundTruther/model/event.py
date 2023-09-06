@@ -36,7 +36,7 @@ class Event:
     frame_number: int
     timestamp: float
     video_file: Path
-    time_created: float
+    time_created: float | None
 
     def to_event_for_serializing(
         self, road_user_id: int, road_user_class: RoadUserClass
@@ -64,7 +64,7 @@ class EventForParsingSerializing:
     frame_number: int
     timestamp: float
     video_file: Path
-    time_created: float
+    time_created: float | None
     road_user_id: int
     road_user_class: RoadUserClass
 
@@ -135,7 +135,7 @@ class EventListParser:
                         frame_number=event[FRAME_NUMBER],
                         timestamp=event[OCCURENCE],
                         video_file=Path(event[VIDEO_NAME]),
-                        time_created=0,
+                        time_created=event.get(TIME_CREATED, None),
                         road_user_id=event[ROAD_USER_ID],
                         road_user_class=road_user_class,
                     )
