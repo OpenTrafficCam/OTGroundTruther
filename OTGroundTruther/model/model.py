@@ -49,12 +49,14 @@ class Model:
         self._video_repository.clear()
         videos = [Video(file) for file in files]
         self._video_repository.add_all(videos)
+        print(f"Videos loaded: {files}")
 
     def read_sections_from_file(self, file: Path) -> None:
         self._section_repository.clear()
         sections, otanalytics_file_content = self._section_parser.parse(file=file)
         self._section_repository.add_all(sections)
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
+        print(f"Sections read from {file}")
 
     def read_events_from_file(self, file: Path) -> None:
         event_list = self._eventlistparser.parse(
@@ -63,6 +65,7 @@ class Model:
             valid_road_user_classes=self._valid_road_user_classes,
         )
         self._count_repository.from_event_list(event_list)
+        print(f"Events read from {file}")
 
     def write_events_to_file(
         self, event_list: list[EventForParsingSerializing], file_type: str
@@ -75,6 +78,7 @@ class Model:
             sections=self._section_repository._sections,
             file=file,
         )
+        print(f"Events written to {file}")
 
     def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
         if self._video_repository == []:
