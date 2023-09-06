@@ -7,3 +7,5 @@ pre-commit
 pytest
 pytest-cov
 yamllint
+types-PyYAML
+types-ujson
