@@ -60,9 +60,7 @@ class LineSection:
             "id": self.id,
             "name": self.name,
             "type": "line",
-            "relative_offset_coordinates": {"section-enter": {"x": 0.5, "y": 0.5}},
             "coordinates": coordinates,
-            "plugin_data": {},
         }
 
     def _get_coordinate_list(self):
