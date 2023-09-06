@@ -6,7 +6,6 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import LineSection
 
-from .abc_classes import EventForSaving
 from .parse import _parse_bz2, _write_bz2
 from .road_user_class import RoadUserClass
 
@@ -29,7 +28,7 @@ class Event:
 
     def to_event_for_saving(
         self, road_user_id: int, road_user_class: RoadUserClass
-    ) -> EventForSaving:
+    ) -> "EventForSaving":
         event_dict = vars(self)
         event_dict["road_user_id"] = road_user_id
         event_dict["road_user_class"] = road_user_class
