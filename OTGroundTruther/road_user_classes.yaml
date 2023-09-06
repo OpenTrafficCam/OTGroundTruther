@@ -1,90 +1,90 @@
 - pedestrian:
-      label: Person
-      short_label: Person
-      key: f
-      icon_file: assets/pedestrian.png
+        label: Person
+        short_label: Person
+        key: f
+        icon_file: assets/pedestrian.png
 - bicyclist:
-      label: Fahrrad ohne Anhänger
-      short_label: Fahrrad
-      key: r
-      icon_file: assets/cyclist.png
+        label: Fahrrad ohne Anhänger
+        short_label: Fahrrad
+        key: r
+        icon_file: assets/cyclist.png
 - bicyclist_with_trailer:
-      label: Fahrrad mit Anhänger
-      short_label: Fahrrad mA
-      key: R
-      icon_file: assets/cyclist-trailer.png
+        label: Fahrrad mit Anhänger
+        short_label: Fahrrad mA
+        key: R
+        icon_file: assets/cyclist-trailer.png
 - cargo_bike_driver:
-      label: Lastenrad
-      short_label: Lastenrad
-      key: c
-      icon_file: assets/cargo_cyclist.png
+        label: Lastenrad
+        short_label: Lastenrad
+        key: c
+        icon_file: assets/cargo_cyclist.png
 - scooter_driver:
-      label: Scooter
-      short_label: Scooter
-      key: s
-      icon_file: assets/scooter_rider.png
+        label: Scooter
+        short_label: Scooter
+        key: s
+        icon_file: assets/scooter_rider.png
 - motorcyclist:
-      label: Motorisierte Zweiräder
-      short_label: Motorrad
-      key: m
-      icon_file: assets/motorcycle_rider.png
+        label: Motorisierte Zweiräder
+        short_label: Motorrad
+        key: m
+        icon_file: assets/motorcycle_rider.png
 - car:
-      label: Pkw ohne Anhänger
-      short_label: Pkw
-      key: p
-      icon_file: assets/car.png
+        label: Pkw ohne Anhänger
+        short_label: Pkw
+        key: p
+        icon_file: assets/car.png
 - car_with_trailer:
-      label: Pkw mit Anhänger
-      short_label: Pkw mA
-      key: P
-      icon_file: assets/car_trailer.png
+        label: Pkw mit Anhänger
+        short_label: Pkw mA
+        key: P
+        icon_file: assets/car_trailer.png
 - private_van:
-      label: Kleinbus ohne Anhänger
-      short_label: Kleinbus
-      key: v
-      icon_file: assets/van.png
+        label: Kleinbus ohne Anhänger
+        short_label: Kleinbus
+        key: v
+        icon_file: assets/van.png
 - private_van_with_trailer:
-      label: Kleinbus mit Anhänger
-      short_label: Kleinbus mA
-      key: V
-      icon_file: assets/van_trailer.png
+        label: Kleinbus mit Anhänger
+        short_label: Kleinbus mA
+        key: V
+        icon_file: assets/van_trailer.png
 - delivery_van:
-      label: Lieferwagen ohne Anhänger
-      short_label: Lieferwagen
-      key: d
-      icon_file: assets/van.png
+        label: Lieferwagen ohne Anhänger
+        short_label: Lieferwagen
+        key: d
+        icon_file: assets/van.png
 - delivery_van_with_trailer:
-      label: Lieferwagen mit Anhänger
-      short_label: Lieferwagen mA
-      key: D
-      icon_file: assets/van_trailer.png
+        label: Lieferwagen mit Anhänger
+        short_label: Lieferwagen mA
+        key: D
+        icon_file: assets/van_trailer.png
 - bus:
-      label: Bus
-      short_label: Bus
-      key: b
-      icon_file: assets/bus.png
+        label: Bus
+        short_label: Bus
+        key: b
+        icon_file: assets/bus.png
 - truck:
-      label: Lkw ohne Anhänger
-      short_label: Lkw
-      key: l
-      icon_file: assets/truck.png
+        label: Lkw ohne Anhänger
+        short_label: Lkw
+        key: l
+        icon_file: assets/truck.png
 - truck_with_trailer:
-      label: Lkw mit Anhänger
-      short_label: Lkw mA
-      key: L
-      icon_file: assets/truck_trailer.png
+        label: Lkw mit Anhänger
+        short_label: Lkw mA
+        key: L
+        icon_file: assets/truck_trailer.png
 - truck_with_semitrailer:
-      label: Sattelzug
-      short_label: Sattelzug
-      key: i
-      icon_file: assets/truck_trailer.png
+        label: Sattelzug
+        short_label: Sattelzug
+        key: i
+        icon_file: assets/truck_trailer.png
 - train:
-      label: Schienenfahrzeug
-      short_label: Zug
-      key: z
-      icon_file: assets/tram_train.png
+        label: Schienenfahrzeug
+        short_label: Zug
+        key: z
+        icon_file: assets/tram_train.png
 - other:
-      label: Kinderwagen, Rollstuhl, Rolator, Bagger
-      short_label: Anderes
-      key: q
-      icon_file: assets/tram_train.png
+        label: Kinderwagen, Rollstuhl, Rolator, Bagger
+        short_label: Anderes
+        key: q
+        icon_file: assets/tram_train.png

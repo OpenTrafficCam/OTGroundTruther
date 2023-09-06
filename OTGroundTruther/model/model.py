@@ -56,7 +56,8 @@ class Model:
         event_list = self.eventlistparser.parse(
             otevent_file=file,
             sections_dict=self._section_repository.get_all_as_dict(),
-            valid_road_user_classes=self._valid_road_user_classes)
+            valid_road_user_classes=self._valid_road_user_classes,
+        )
         self._count_repository.from_event_list(event_list)
 
     def write_events_to_file(self, event_list: list[EventForSaving]) -> None:
@@ -64,9 +65,11 @@ class Model:
         file_name = self._get_first_videopath_stem()
         suffix = ".otevents"
         filepath = Path(f"{file_parent}\\{file_name}{suffix}")
-        self.eventlistparser.serialize(events=event_list,
-                                       sections=self._section_repository._sections,
-                                       file=filepath)
+        self.eventlistparser.serialize(
+            events=event_list,
+            sections=self._section_repository._sections,
+            file=filepath,
+        )
 
     def _get_first_videopath_stem(self):
         return list(self._video_repository._videos.keys())[0].stem
@@ -194,6 +197,3 @@ class Model:
         self._count_repository.clear()
         self._video_repository.clear()
         self.active_count = None
-
-
-

@@ -78,6 +78,3 @@ def _write_bz2(data: dict, path: Path) -> None:
     """
     with bz2.open(path, "wt", encoding=ENCODING) as file:
         ujson.dump(data, file)
-
-
-

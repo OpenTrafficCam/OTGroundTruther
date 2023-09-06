@@ -28,9 +28,8 @@ class Event:
     time_created: float
 
     def to_event_for_saving(
-            self, road_user_id: int, road_user_class: RoadUserClass
-            ) -> EventForSaving:
-        
+        self, road_user_id: int, road_user_class: RoadUserClass
+    ) -> EventForSaving:
         event_dict = vars(self)
         event_dict["road_user_id"] = road_user_id
         event_dict["road_user_class"] = road_user_class
@@ -74,7 +73,7 @@ class EventForSaving:
             "time_created": self.time_created,
             "road_user_id": self.road_user_id,
             "road_user_type": self.road_user_class.get_name(),
-            "direction_vector": None
+            "direction_vector": None,
         }
 
     def get_road_user_id(self) -> int:
@@ -89,10 +88,13 @@ class EventParser:
         raise NotImplementedError
 
 
-class EventListParser():
-    def parse(self, otevent_file: Path,
-              sections_dict: dict[str, LineSection],
-              valid_road_user_classes: ValidRoadUserClasses) -> list[EventForSaving]:
+class EventListParser:
+    def parse(
+        self,
+        otevent_file: Path,
+        sections_dict: dict[str, LineSection],
+        valid_road_user_classes: ValidRoadUserClasses,
+    ) -> list[EventForSaving]:
         """Parse otevents file and convert its content to domain level objects namely
         `Events`s.
 
@@ -109,23 +111,31 @@ class EventListParser():
         for i in range(len(dets_list)):
             if dets_list[i]["section_id"] in list(sections_dict.keys()):
                 section = sections_dict[dets_list[i]["section_id"]]
-                coordinate = Coordinate(round(dets_list[i]["event_coordinate"][0]),
-                                        round(dets_list[i]["event_coordinate"][1]))
+                coordinate = Coordinate(
+                    round(dets_list[i]["event_coordinate"][0]),
+                    round(dets_list[i]["event_coordinate"][1]),
+                )
                 road_user_class = classes_by_name[dets_list[i]["road_user_type"]]
 
-                event_list.append(EventForSaving(coordinate=coordinate,
-                                  section=section,
-                                  frame_number=dets_list[i]["frame_number"],
-                                  timestamp=dets_list[i]["occurrence"],
-                                  video_file=Path(dets_list[i]["video_name"]),
-                                  time_created=0,
-                                  road_user_id=dets_list[i]["road_user_id"],
-                                  road_user_class=road_user_class))
+                event_list.append(
+                    EventForSaving(
+                        coordinate=coordinate,
+                        section=section,
+                        frame_number=dets_list[i]["frame_number"],
+                        timestamp=dets_list[i]["occurrence"],
+                        video_file=Path(dets_list[i]["video_name"]),
+                        time_created=0,
+                        road_user_id=dets_list[i]["road_user_id"],
+                        road_user_class=road_user_class,
+                    )
+                )
         return event_list
 
     def serialize(
-        self, events: Iterable[EventForSaving],
-        sections: Iterable[LineSection], file: Path
+        self,
+        events: Iterable[EventForSaving],
+        sections: Iterable[LineSection],
+        file: Path,
     ) -> None:
         """Serialize event list into file.
 
@@ -186,4 +196,3 @@ class EventListParser():
             list[dict]: list containing raw information of sections
         """
         return [section.to_dict() for section in sections.values()]
-    

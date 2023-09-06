@@ -43,7 +43,7 @@ class Presenter(PresenterInterface):
         if self._current_frame is None:
             return
         self._refresh_current_frame()
-    
+
     def save_otevents(self) -> None:
         event_list = self._model._count_repository.to_event_list()
         self._model.write_events_to_file(event_list)

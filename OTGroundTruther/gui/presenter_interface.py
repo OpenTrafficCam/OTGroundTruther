@@ -9,11 +9,11 @@ class PresenterInterface(ABC):
     @abstractmethod
     def load_otflow(self) -> None:
         raise NotImplementedError
-    
+
     @abstractmethod
     def load_otevents(self) -> None:
         raise NotImplementedError
-    
+
     @abstractmethod
     def save_otevents(self) -> None:
         raise NotImplementedError

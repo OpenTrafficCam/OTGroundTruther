@@ -152,7 +152,7 @@ class CountRepository:
             id (int): the count id to be removed
         """
         del self._counts[id]
-    
+
     def set_current_id(self, id: int):
         """set current id
 
@@ -179,7 +179,7 @@ class CountRepository:
         self._counts.clear()
 
     def to_event_list(self) -> list[EventForSaving]:
-        """"
+        """ "
         get an event list out of the CountRepo
         """
         event_list = []
@@ -187,10 +187,11 @@ class CountRepository:
             for event in count.get_events():
                 event_for_save = event.to_event_for_saving(
                     road_user_id=count.get_road_user_id(),
-                    road_user_class=count.get_road_user_class())
+                    road_user_class=count.get_road_user_class(),
+                )
                 event_list.append(event_for_save)
         return event_list
-    
+
     def from_event_list(self, event_list: list[EventForSaving]) -> None:
         """
         create count list from event list and the suitable list of the object ids
@@ -203,18 +204,19 @@ class CountRepository:
         self._counts = {}
         for id_ in event_dict.keys():
             if len(event_dict[id_]) >= 2:
-                self._counts[id_] = Count(road_user_id=id_,
-                                          events=event_dict[id_],
-                                          road_user_class=class_dict[id_])
+                self._counts[id_] = Count(
+                    road_user_id=id_,
+                    events=event_dict[id_],
+                    road_user_class=class_dict[id_],
+                )
             else:
                 pass  # todo
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[0])
 
     def _events_and_class_by_id(
-            self, event_list: list[EventForSaving]
-            ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
-        
+        self, event_list: list[EventForSaving]
+    ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
         event_dict: dict[int, list[Event]] = {}
         class_dict: dict[int, RoadUserClass] = {}
         for event_for_saving in event_list:
@@ -224,10 +226,5 @@ class CountRepository:
             else:
                 class_dict[id_] = event_for_saving.get_road_user_class()
                 event_dict[id_] = [event_for_saving.to_event()]
-                
+
         return event_dict, class_dict
-
-        
-
-
-

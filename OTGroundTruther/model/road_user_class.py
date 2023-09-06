@@ -27,7 +27,7 @@ class ValidRoadUserClasses:
 
     def get_by_key(self, key: str) -> RoadUserClass:
         return self._road_user_classes.get(key)
-    
+
     def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
         new_dict = {}
         for key, value in self._road_user_classes.items():
