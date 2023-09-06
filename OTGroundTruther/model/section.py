@@ -184,7 +184,7 @@ class SectionRepository:
 
     def clear(self) -> None:
         """
-        Clear the repository and inform the observers about the empty repository.
+        Clear the repository.
         """
         self._sections.clear()
         self._otanalytics_file_content.clear()

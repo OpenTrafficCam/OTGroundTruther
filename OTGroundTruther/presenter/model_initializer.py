@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from OTGroundTruther.cli import CliArgumentParser, CliArguments
 from OTGroundTruther.model.count import CountRepository
+from OTGroundTruther.model.event import EventListParser
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import SectionParser, SectionRepository
@@ -11,41 +14,51 @@ ROAD_USER_CLASSES_YAML_FILE = r"OTGroundTruther/road_user_classes_v1_2.yaml"
 class ModelInitializer:
     def __init__(self):
         parser = CliArgumentParser()
-        self._cli_args: CliArguments = parser.parse()
-        video_repository = self._get_video_repository()
-        section_repository = self._get_sections_repository()
-        count_repository = self._get_count_repository()
+        cli_args: CliArguments = parser.parse()
+        self._valid_road_user_classes: ValidRoadUserClasses = (
+            ValidRoadUserClasses.from_yaml(ROAD_USER_CLASSES_YAML_FILE)
+        )
+        self._create_repositories()
+        self._prefill_repositories(cli_args)
         active_count = None
-        valid_road_user_classes: ValidRoadUserClasses = ValidRoadUserClasses.from_yaml(
-            ROAD_USER_CLASSES_YAML_FILE
-        )
         self._model = Model(
-            video_repository=video_repository,
-            section_repository=section_repository,
-            count_repository=count_repository,
+            video_repository=self._video_repository,
+            section_repository=self._section_repository,
+            count_repository=self._count_repository,
             active_count=active_count,
-            valid_road_user_classes=valid_road_user_classes,
+            valid_road_user_classes=self._valid_road_user_classes,
         )
 
-    def _get_count_repository(self):
-        # TODO: Get events_file from self._cli_args
-        # TODO: Parse Counts from events_file and add_all to count_repository
-        return CountRepository()
+    def _create_repositories(self) -> None:
+        self._video_repository = VideoRepository()
+        self._section_repository = SectionRepository()
+        self._count_repository = CountRepository()
 
-    def _get_sections_repository(self):
-        sections, otanalytics_file_content = SectionParser().parse(
-            self._cli_args.sections_file
+    def _prefill_repositories(self, cli_args: CliArguments) -> None:
+        if cli_args.video_files:
+            self._prefill_video_repository(files=cli_args.video_files)
+        if cli_args.events_file is not None:
+            self._prefill_section_repository(file=cli_args.events_file)
+            self._prefill_count_repository(file=cli_args.events_file)
+        elif cli_args.sections_file is not None:
+            self._prefill_section_repository(file=cli_args.sections_file)
+
+    def _prefill_video_repository(self, files: list[Path]) -> None:
+        video_files = [Video(file) for file in files]
+        self._video_repository.add_all(video_files)
+
+    def _prefill_section_repository(self, file: Path) -> None:
+        sections, otanalytics_file_content = SectionParser().parse(file)
+        self._section_repository.add_all(sections)
+        self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
+
+    def _prefill_count_repository(self, file: Path) -> None:
+        event_list = EventListParser().parse(
+            otevent_file=file,
+            sections=self._section_repository.get_all_as_dict(),
+            valid_road_user_classes=self._valid_road_user_classes,
         )
-        section_repository = SectionRepository()
-        section_repository.add_all(sections)
-        section_repository.set_otanalytics_file_content(otanalytics_file_content)
-        return section_repository
-
-    def _get_video_repository(self):
-        video_files = [Video(file) for file in self._cli_args.video_files]
-        video_repository = VideoRepository()
-        video_repository.add_all(video_files)
-        return video_repository
+        self._count_repository.from_event_list(event_list)
 
     def get(self) -> Model:
         return self._model

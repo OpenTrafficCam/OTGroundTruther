@@ -29,8 +29,8 @@ class InvalidVideoFileType(Exception):
 @dataclass(frozen=True)
 class CliArguments:
     video_files: list[Path]
-    sections_file: Path
-    events_file: Path
+    sections_file: Path | None
+    events_file: Path | None
 
 
 class CliArgumentParser:
@@ -59,15 +59,16 @@ class CliArgumentParser:
             required=False,
         )
         self._parser.add_argument(
-            "--otflow",
+            "--sections",
             type=str,
-            help="otflow file containing sections.",
+            help=f"{OTANALYTICS_FILE_SUFFIX} file containing sections.",
             required=False,
         )
         self._parser.add_argument(
-            "--otevents",
+            "--events",
             type=str,
-            help="otevents file containing events.",
+            help=f"{GROUND_TRUTH_EVENTS_FILE_SUFFIX} or {OTEVENTS_FILE_SUFFIX} file"
+            "containing sections and events.",
             required=False,
         )
 
@@ -75,13 +76,18 @@ class CliArgumentParser:
         args = self._parser.parse_args()
         video_files = self._parse_video_file_paths(files=args.videos)
         sections_file = (
-            self._parse_file_path(file=args.otflow, file_type=OTANALYTICS_FILE_SUFFIX)
-            if args.otflow is not None
+            self._parse_file_path(
+                file=args.sections, file_types=[OTANALYTICS_FILE_SUFFIX]
+            )
+            if args.sections is not None
             else None
         )
         events_file = (
-            self._parse_file_path(file=args.otevents, file_type=OTANALYTICS_FILE_SUFFIX)
-            if args.otevents is not None
+            self._parse_file_path(
+                file=args.events,
+                file_types=[GROUND_TRUTH_EVENTS_FILE_SUFFIX, OTEVENTS_FILE_SUFFIX],
+            )
+            if args.events is not None
             else None
         )
         return CliArguments(
@@ -124,7 +130,7 @@ class CliArgumentParser:
         return video_files
 
     @staticmethod
-    def _parse_file_path(file: str, file_type: str) -> Path:
+    def _parse_file_path(file: str, file_types: list[str]) -> Path:
         """Parse file of specific type.
 
         Args:
@@ -139,15 +145,10 @@ class CliArgumentParser:
         """
         file_of_type = Path(file)
         if not file_of_type.exists():
-            raise SectionsFileDoesNotExist(
-                f"{file_type} file '{file_of_type}' does not exist."
-            )
-        if file_of_type.suffix not in [
-            f".{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
-            f".{OTEVENTS_FILE_SUFFIX}",
-        ]:
+            raise SectionsFileDoesNotExist(f"'{file_of_type}' does not exist.")
+        if file_of_type.suffix not in [f".{file_type}" for file_type in file_types]:
             raise InvalidSectionFileType(
-                f"{file_type} file {file_of_type} has wrong file type."
+                f"'{file_of_type}' has wrong file type, has to be one of {file_types}."
             )
 
         return file_of_type

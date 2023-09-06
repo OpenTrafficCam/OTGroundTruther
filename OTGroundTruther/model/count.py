@@ -190,7 +190,7 @@ class CountRepository:
         """
         events, classes = self._get_events_and_classes_by_id(event_list)
 
-        self._counts = {}
+        self.clear()
         for id_ in events.keys():
             if len(events[id_]) >= 2:
                 self._counts[id_] = Count(

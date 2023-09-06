@@ -62,15 +62,15 @@ class Presenter(PresenterInterface):
         self._refresh_current_frame()
 
     def load_events(self) -> None:
-        otevent_file = askopenfilename(
+        events_file = askopenfilename(
             defaultextension=f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
                 ("otgtevents", f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
                 ("otevents", f"*.{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
-        self._model.read_sections_from_file(Path(otevent_file))
-        self._model.read_events_from_file(Path(otevent_file))
+        self._model.read_sections_from_file(Path(events_file))
+        self._model.read_events_from_file(Path(events_file))
         if self._current_frame is None:
             return
         self._refresh_current_frame()
