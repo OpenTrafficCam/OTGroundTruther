@@ -25,6 +25,9 @@ class RoadUserClass:
 class ValidRoadUserClasses:
     _road_user_classes: dict[str, RoadUserClass]
 
+    def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
+        return {value.get_name(): value for value in self._road_user_classes.values()}
+
     def get_by_key(self, key: str) -> RoadUserClass:
         return self._road_user_classes.get(key)
 
