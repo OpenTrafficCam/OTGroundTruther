@@ -90,12 +90,6 @@ class ActiveCount:
         return self._road_user_class
 
 
-@dataclass
-class CountsOverlay:
-    # TODO
-    pass
-
-
 class CountRepository:
     def __init__(self):
         self._counts: dict[int, Count] = {}
