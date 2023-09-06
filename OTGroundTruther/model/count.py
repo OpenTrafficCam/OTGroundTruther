@@ -110,7 +110,7 @@ class CountRepository:
         Args:
             count (Count): the count to be added
         """
-        self._counts[count.id] = count
+        self._counts[count.road_user_id] = count
 
     def get_all(self) -> list[Count]:
         """Get all counts from the repository.

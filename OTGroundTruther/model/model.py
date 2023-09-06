@@ -170,7 +170,7 @@ class Model:
             return
         _id = self._count_repository.get_id()
         count = Count(
-            id=_id,
+            road_user_id=_id,
             events=self._active_count.get_events(),
             road_user_class=self._active_count.get_road_user_class(),
         )
