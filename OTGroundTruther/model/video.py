@@ -290,7 +290,7 @@ class VideoRepository:
         return list(self._videos.values())[0]
 
     def get_first_video_file(self) -> Path:
-        return self._videos.keys()[0]
+        return list(self._videos.keys())[0]
 
     def is_empty(self) -> bool:
         return not self._videos
