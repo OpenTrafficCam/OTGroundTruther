@@ -4,7 +4,7 @@ from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import SectionRepository
 from OTGroundTruther.model.video import VideoRepository
 
-ROAD_USER_CLASSES_YAML_FILE = r"OTGroundTruther/road_user_classes.yaml"
+ROAD_USER_CLASSES_YAML_FILE = r"OTGroundTruther/road_user_classes_v0_1.yaml"
 
 
 class ModelInitializer:
