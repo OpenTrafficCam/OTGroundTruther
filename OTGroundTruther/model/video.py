@@ -286,8 +286,11 @@ class VideoRepository:
     def get_video_by_file(self, file: Path) -> Video:
         return self._videos[file]
 
-    def get_first(self) -> Video:
+    def get_first_video(self) -> Video:
         return list(self._videos.values())[0]
+
+    def get_first_video_file(self) -> Path:
+        return list(self._videos.keys())[0]
 
     def is_empty(self) -> bool:
         return not self._videos

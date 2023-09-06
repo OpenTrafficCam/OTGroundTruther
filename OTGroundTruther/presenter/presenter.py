@@ -3,6 +3,12 @@ from tkinter.filedialog import askopenfilename, askopenfilenames
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
+from OTGroundTruther.model.config import (
+    DEFAULT_VIDEO_FILE_SUFFIX,
+    GROUND_TRUTH_EVENTS_FILE_SUFFIX,
+    OTANALYTICS_FILE_SUFFIX,
+    OTEVENTS_FILE_SUFFIX,
+)
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsError
 from OTGroundTruther.model.model import Model
@@ -21,7 +27,12 @@ class Presenter(PresenterInterface):
         self._gui.run()
 
     def load_video_files(self) -> None:
-        video_files = askopenfilenames(defaultextension="*.mp4")
+        video_files = askopenfilenames(
+            defaultextension=f"*.{DEFAULT_VIDEO_FILE_SUFFIX}",
+            filetypes=[
+                ("mp4", f"*.{DEFAULT_VIDEO_FILE_SUFFIX}"),
+            ],
+        )
         self._model.load_videos_from_files([Path(file) for file in video_files])
         self._display_first_frame()
 
@@ -30,11 +41,34 @@ class Presenter(PresenterInterface):
         self._update_canvas_image(first_frame)
 
     def load_otflow(self) -> None:
-        otflow_file = askopenfilename(defaultextension="*.otlfow")
+        otflow_file = askopenfilename(
+            defaultextension=f"*.{OTANALYTICS_FILE_SUFFIX}",
+            filetypes=[
+                ("otevents", f"*.{OTANALYTICS_FILE_SUFFIX}"),
+            ],
+        )
         self._model.read_sections_from_file(Path(otflow_file))
         if self._current_frame is None:
             return
         self._refresh_current_frame()
+
+    def load_events(self) -> None:
+        otevent_file = askopenfilename(
+            defaultextension=f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
+            filetypes=[
+                ("otgtevents", f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
+                ("otevents", f"*.{OTEVENTS_FILE_SUFFIX}"),
+            ],
+        )
+        self._model.read_sections_from_file(Path(otevent_file))
+        self._model.read_events_from_file(Path(otevent_file))
+        if self._current_frame is None:
+            return
+        self._refresh_current_frame()
+
+    def save_events(self) -> None:
+        event_list = self._model._count_repository.to_event_list()
+        self._model.write_events_to_file(event_list, GROUND_TRUTH_EVENTS_FILE_SUFFIX)
 
     def _refresh_current_frame(self) -> None:
         frame = self._model.get_current_frame(current_frame=self._current_frame)
@@ -77,8 +111,7 @@ class Presenter(PresenterInterface):
             print("Too few events, you need at least two events to finish a count")
         except MissingRoadUserClassError:
             print("Please specify a class for the road user")
-        finally:
-            return
+        return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()

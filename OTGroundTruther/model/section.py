@@ -54,6 +54,18 @@ class LineSection:
             if ellipse.contains(coordinate):
                 return True
 
+    def to_dict(self) -> dict:
+        coordinates = self._get_coordinate_list()
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": "line",
+            "coordinates": coordinates,
+        }
+
+    def _get_coordinate_list(self):
+        return [coordinate.to_dict() for coordinate in self.coordinates]
+
 
 @dataclass
 class SectionsOverlay:
@@ -121,13 +133,21 @@ class SectionRepository:
         """
         self._sections[section.id] = section
 
-    def get_all(self) -> list[LineSection]:
-        """Get all sections from the repository.
+    def get_all_as_list(self) -> list[LineSection]:
+        """Get all sections from the repository as list.
 
         Returns:
             Iterable[Section]: the sections
         """
         return list(self._sections.values())
+
+    def get_all_as_dict(self) -> dict[str, LineSection]:
+        """Get all sections from the repository as dict.
+
+        Returns:
+            dict[str, LineSection]: the sections
+        """
+        return self._sections
 
     def get(self, id: str) -> Optional[LineSection]:
         """Get the section for the given id or nothing, if the id is missing.
@@ -143,7 +163,7 @@ class SectionRepository:
     def get_by_coordinate(self, coordinate: Coordinate) -> LineSection | None:
         filtered_sections = [
             section
-            for section in self.get_all()
+            for section in self.get_all_as_list()
             if section.ellipses_contain(coordinate)
         ]
         if len(filtered_sections) > 1:
@@ -253,7 +273,4 @@ class SectionParser:
         Returns:
             Coordinate: coordinate
         """
-        return Coordinate(
-            x=data.get("x", 0),
-            y=data.get("y", 0),
-        )
+        return Coordinate(x=data["x"], y=data["y"])

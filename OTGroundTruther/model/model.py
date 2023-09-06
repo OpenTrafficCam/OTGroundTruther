@@ -3,7 +3,11 @@ from pathlib import Path
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import ActiveCount, Count, CountRepository
-from OTGroundTruther.model.event import Event
+from OTGroundTruther.model.event import (
+    Event,
+    EventForParsingSerializing,
+    EventListParser,
+)
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import (
@@ -39,23 +43,42 @@ class Model:
         self._active_count = active_count
         self._valid_road_user_classes = valid_road_user_classes
         self._section_parser: SectionParser = SectionParser()
+        self._eventlistparser: EventListParser = EventListParser()
 
     def load_videos_from_files(self, files: list[Path]):
         self._video_repository.clear()
         videos = [Video(file) for file in files]
         self._video_repository.add_all(videos)
+        print(f"Videos loaded: {files}")
 
     def read_sections_from_file(self, file: Path) -> None:
         self._section_repository.clear()
         sections, otanalytics_file_content = self._section_parser.parse(file=file)
         self._section_repository.add_all(sections)
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
+        print(f"Sections read from {file}")
 
     def read_events_from_file(self, file: Path) -> None:
-        pass  # TODO
+        event_list = self._eventlistparser.parse(
+            otevent_file=file,
+            sections=self._section_repository.get_all_as_dict(),
+            valid_road_user_classes=self._valid_road_user_classes,
+        )
+        self._count_repository.from_event_list(event_list)
+        print(f"Events read from {file}")
 
-    def write_events_to_file(self, file: Path) -> None:
-        pass  # TODO
+    def write_events_to_file(
+        self, event_list: list[EventForParsingSerializing], file_type: str
+    ) -> None:
+        file = self._video_repository.get_first_video_file().with_suffix(
+            f".{file_type}"
+        )
+        self._eventlistparser.serialize(
+            events=event_list,
+            sections=self._section_repository._sections,
+            file=file,
+        )
+        print(f"Events written to {file}")
 
     def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
         if self._video_repository == []:
@@ -81,7 +104,7 @@ class Model:
         return self._get_overlayed_frame(background_frame)
 
     def get_first_frame(self) -> OverlayedFrame:
-        first_video = self._video_repository.get_first()
+        first_video = self._video_repository.get_first_video()
         background_frame = first_video.get_frame_by_number(0)
         return self._get_overlayed_frame(background_frame)
 
@@ -96,7 +119,7 @@ class Model:
 
     def _get_overlayed_frame(self, background_frame: BackgroundFrame) -> OverlayedFrame:
         sections_overlay = SectionsOverlay(
-            sections=self._section_repository.get_all(),
+            sections=self._section_repository.get_all_as_list(),
             width=background_frame.get_width(),
             height=background_frame.get_height(),
         )
@@ -150,7 +173,7 @@ class Model:
             return
         _id = self._count_repository.get_id()
         count = Count(
-            id=_id,
+            road_user_id=_id,
             events=self._active_count.get_events(),
             road_user_class=self._active_count.get_road_user_class(),
         )

@@ -1,6 +1,11 @@
 import platform
 from pathlib import Path
 
+OTEVENTS_FILE_SUFFIX: str = "otevents"
+GROUND_TRUTH_EVENTS_FILE_SUFFIX: str = "otgtevents"
+OTANALYTICS_FILE_SUFFIX: str = "otflow"
+DEFAULT_VIDEO_FILE_SUFFIX: str = "mp4"
+
 LOG_DIR = Path(".logs").absolute()
 """The log save directory."""
 
