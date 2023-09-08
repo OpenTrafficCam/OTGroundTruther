@@ -74,7 +74,10 @@ class CliArgumentParser:
 
     def parse(self) -> CliArguments:
         args = self._parser.parse_args()
-        video_files = self._parse_video_file_paths(files=args.videos)
+        if args.videos is None:
+            video_files = None
+        else:
+            video_files = self._parse_video_file_paths(files=args.videos)
         sections_file = (
             self._parse_file_path(
                 file=args.sections, file_types=[OTANALYTICS_FILE_SUFFIX]

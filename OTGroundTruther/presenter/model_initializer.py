@@ -35,7 +35,7 @@ class ModelInitializer:
         self._count_repository = CountRepository()
 
     def _prefill_repositories(self, cli_args: CliArguments) -> None:
-        if cli_args.video_files:
+        if cli_args.video_files is not None:
             self._prefill_video_repository(files=cli_args.video_files)
         if cli_args.events_file is not None:
             self._prefill_section_repository(file=cli_args.events_file)
