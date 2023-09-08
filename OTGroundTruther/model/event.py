@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
@@ -144,8 +144,8 @@ class EventListParser:
 
     def serialize(
         self,
-        events: Iterable[EventForParsingSerializing],
-        sections: dict[str, LineSection],
+        events: list[EventForParsingSerializing],
+        sections: list[LineSection],
         file: Path,
     ) -> None:
         """Serialize event list into file.
@@ -160,8 +160,8 @@ class EventListParser:
 
     def _convert(
         self,
-        events: Iterable[EventForParsingSerializing],
-        sections: dict[str, LineSection],
+        events: list[EventForParsingSerializing],
+        sections: list[LineSection],
     ) -> dict[str, Any]:
         """Convert events to dictionary.
 
@@ -188,9 +188,7 @@ class EventListParser:
             EVENT_FORMAT_VERSION: None,
         }
 
-    def _convert_events(
-        self, events: Iterable[EventForParsingSerializing]
-    ) -> list[dict]:
+    def _convert_events(self, events: list[EventForParsingSerializing]) -> list[dict]:
         """Convert events to dictionary.
 
         Args:
@@ -201,7 +199,7 @@ class EventListParser:
         """
         return [event.to_dict() for event in events]
 
-    def _convert_sections(self, sections: dict[str, LineSection]) -> list[dict]:
+    def _convert_sections(self, sections: list[LineSection]) -> list[dict]:
         """Convert sections to dictionary
 
         Args:
@@ -210,4 +208,4 @@ class EventListParser:
         Returns:
             list[dict]: list containing raw information of sections
         """
-        return [section.to_dict() for section in sections.values()]
+        return [section.to_dict() for section in sections]

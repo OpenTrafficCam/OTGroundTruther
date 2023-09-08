@@ -134,7 +134,7 @@ class SectionRepository:
         """
         self._sections[section.id] = section
 
-    def get_all_as_list(self) -> list[LineSection]:
+    def to_list(self) -> list[LineSection]:
         """Get all sections from the repository as list.
 
         Returns:
@@ -142,7 +142,7 @@ class SectionRepository:
         """
         return list(self._sections.values())
 
-    def get_all_as_dict(self) -> dict[str, LineSection]:
+    def to_dict(self) -> dict[str, LineSection]:
         """Get all sections from the repository as dict.
 
         Returns:
@@ -164,7 +164,7 @@ class SectionRepository:
     def get_by_coordinate(self, coordinate: Coordinate) -> LineSection | None:
         filtered_sections = [
             section
-            for section in self.get_all_as_list()
+            for section in self.to_list()
             if section.ellipses_contain(coordinate)
         ]
         if len(filtered_sections) > 1:

@@ -76,8 +76,11 @@ class Presenter(PresenterInterface):
         self._refresh_current_frame()
 
     def save_events(self) -> None:
+        sections = self._model._section_repository.to_list()
         event_list = self._model._count_repository.to_event_list()
-        self._model.write_events_to_file(event_list, GROUND_TRUTH_EVENTS_FILE_SUFFIX)
+        self._model.write_events_to_file(
+            event_list, sections, GROUND_TRUTH_EVENTS_FILE_SUFFIX
+        )
 
     def _refresh_current_frame(self) -> None:
         if self._current_frame is None:

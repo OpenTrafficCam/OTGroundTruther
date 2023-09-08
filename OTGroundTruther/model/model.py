@@ -67,21 +67,24 @@ class Model:
     def read_events_from_file(self, file: Path) -> None:
         event_list = self._eventlistparser.parse(
             otevent_file=file,
-            sections=self._section_repository.get_all_as_dict(),
+            sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
         self._count_repository.from_event_list(event_list)
         print(f"Events read from {file}")
 
     def write_events_to_file(
-        self, event_list: list[EventForParsingSerializing], file_type: str
+        self,
+        event_list: list[EventForParsingSerializing],
+        sections: list[LineSection],
+        file_type: str,
     ) -> None:
         file = self._video_repository.get_first_video_file().with_suffix(
             f".{file_type}"
         )
         self._eventlistparser.serialize(
             events=event_list,
-            sections=self._section_repository._sections,
+            sections=sections,
             file=file,
         )
         print(f"Events written to {file}")
@@ -127,7 +130,7 @@ class Model:
 
     def _get_overlayed_frame(self, background_frame: BackgroundFrame) -> OverlayedFrame:
         sections_overlay = SectionsOverlay(
-            sections=self._section_repository.get_all_as_list(),
+            sections=self._section_repository.to_list(),
             width=background_frame.get_width(),
             height=background_frame.get_height(),
         )
