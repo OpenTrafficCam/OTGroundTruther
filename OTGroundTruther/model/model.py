@@ -73,7 +73,7 @@ class Model:
         self._count_repository.from_event_list(event_list)
         print(f"Events read from {file}")
 
-    def write_events_to_file(
+    def write_events_and_sections_to_file(
         self,
         event_list: list[EventForParsingSerializing],
         sections: list[LineSection],

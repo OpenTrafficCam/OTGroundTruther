@@ -78,7 +78,7 @@ class Presenter(PresenterInterface):
     def save_events(self) -> None:
         sections = self._model._section_repository.to_list()
         event_list = self._model._count_repository.to_event_list()
-        self._model.write_events_to_file(
+        self._model.write_events_and_sections_to_file(
             event_list, sections, GROUND_TRUTH_EVENTS_FILE_SUFFIX
         )
 
