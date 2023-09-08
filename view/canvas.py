@@ -57,20 +57,19 @@ class OtcCanvas(tk.Canvas):
                     detector["coordinates"][i + 1]["y"],
                 )
 
-                if self._coordinate_in_section_ellipse(
-                    section_p0=p0, section_p1=p1
-                ):
+                if self._coordinate_in_section_ellipse(section_p0=p0, section_p1=p1):
                     print(f"Coordinate in the gate: {detector}")
 
-                    if (not self._there_is_an_active_count() or (
+                    if not self._there_is_an_active_count() or (
                         self._there_is_an_active_count()
                         and not self._is_same_gate_as_before(detector)
-                    )):
+                    ):
                         self._append_new_event(detector)
 
-                    elif (self._there_is_an_active_count() and
-                          self._is_same_gate_as_before(detector)
-                          ):
+                    elif (
+                        self._there_is_an_active_count()
+                        and self._is_same_gate_as_before(detector)
+                    ):
                         self._update_event()
                     in_detector_ellipse = True
                     break

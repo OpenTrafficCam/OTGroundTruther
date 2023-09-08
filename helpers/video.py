@@ -236,7 +236,6 @@ class Video(FileVideoStream):
         self.np_image[:, :, 3] = 255
 
         if np_image:
-
             return self.np_image
 
         # copy is important or else original image will be changed

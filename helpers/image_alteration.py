@@ -102,11 +102,13 @@ def _draw_arrow(
     p0_canvas = get_canvas_coordinate_for(p0_video)
     p1_canvas = get_canvas_coordinate_for(p1_video)
     tiplength = _tiplength_for_same_size(p0_canvas, p1_canvas, 18)
-    np_image = cv2.arrowedLine(np_image, p0_canvas, p1_canvas, (10, 10, 10, 255), 2,
-                               tipLength=tiplength)
+    np_image = cv2.arrowedLine(
+        np_image, p0_canvas, p1_canvas, (10, 10, 10, 255), 2, tipLength=tiplength
+    )
     tiplength = _tiplength_for_same_size(p0_canvas, p1_canvas, 17)
-    np_image = cv2.arrowedLine(np_image, p0_canvas, p1_canvas, color, 1,
-                               tipLength=tiplength)
+    np_image = cv2.arrowedLine(
+        np_image, p0_canvas, p1_canvas, color, 1, tipLength=tiplength
+    )
     if label_text is not None:
         np_image = cv2.putText(
             np_image,
@@ -127,9 +129,11 @@ def _draw_arrow(
 
 
 def _tiplength_for_same_size(p0_canvas, p1_canvas, size=20):
-    length = ((p0_canvas[0] - p1_canvas[0])**2 + (p0_canvas[1] - p1_canvas[1])**2)**0.5
+    length = (
+        (p0_canvas[0] - p1_canvas[0]) ** 2 + (p0_canvas[1] - p1_canvas[1]) ** 2
+    ) ** 0.5
 
-    return size/length
+    return size / length
 
 
 def draw_detectors_from_dict(np_image):

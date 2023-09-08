@@ -2,10 +2,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: OTGroundTruther __main__.py",
+            "name": "Python: OTGroundTruther App",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/__main__.py",
+            "module": "OTGroundTruther",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Pre-filled OTGroundTruther App",
+            "type": "python",
+            "request": "launch",
+            "module": "OTGroundTruther",
+            "args": [
+                "--videos",
+                "${workspaceFolder}/tests/data",
+                "--events",
+                "${workspaceFolder}/tests/data/Testvideo.otevents"
+            ],
             "console": "integratedTerminal",
             "justMyCode": false
         },
