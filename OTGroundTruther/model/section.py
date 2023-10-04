@@ -22,10 +22,10 @@ RELATIVE_OFFSET_COORDINATES: str = "relative_offset_coordinates"
 PLUGIN_DATA: str = "plugin_data"
 METADATA: str = "metadata"
 
-SECTION_COLOR = (200, 125, 125, 255)
+SECTION_COLOR = (127, 255, 0, 255)
 ELLIPSE_COLOR = (127, 255, 0, 255)
-SECTION_THICKNESS = 2
-ELLIPSE_THICKNESS = 1
+SECTION_THICKNESS = 1
+ELLIPSE_THICKNESS = 2
 
 
 class UnambigousSectionEllipsesError(Exception):
