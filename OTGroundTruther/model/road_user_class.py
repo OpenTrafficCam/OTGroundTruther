@@ -20,6 +20,9 @@ class RoadUserClass:
     def get_name(self) -> str:
         return self.name
 
+    def get_short_label(self) -> str:
+        return self.short_label
+
 
 @dataclass
 class ValidRoadUserClasses:

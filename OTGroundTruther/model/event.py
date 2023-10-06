@@ -56,6 +56,9 @@ class Event:
             TIME_CREATED: self.time_created,
         }
 
+    def get_coordinate(self):
+        return self.coordinate
+
 
 @dataclass
 class EventForParsingSerializing:

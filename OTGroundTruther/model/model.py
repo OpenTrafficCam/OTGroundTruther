@@ -6,6 +6,7 @@ from OTGroundTruther.model.count import (
     ActiveCount,
     Count,
     CountRepository,
+    CountsOverlay,
     MissingRoadUserClassError,
 )
 from OTGroundTruther.model.event import (
@@ -134,8 +135,15 @@ class Model:
             width=background_frame.get_width(),
             height=background_frame.get_height(),
         )
+        counts_overlay = CountsOverlay(
+            count_repository=self._count_repository,
+            width=background_frame.get_width(),
+            height=background_frame.get_height(),
+        )
         return OverlayedFrame(
-            background_frame=background_frame, sections_overlay=sections_overlay
+            background_frame=background_frame,
+            sections_overlay=sections_overlay,
+            counts_overlay=counts_overlay,
         )
 
     def get_event_for(

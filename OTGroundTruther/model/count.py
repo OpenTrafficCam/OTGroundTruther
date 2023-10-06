@@ -1,10 +1,28 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
+import cv2
+import numpy as np
+from PIL import Image
+
+from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.event import Event, EventForParsingSerializing
 from OTGroundTruther.model.road_user_class import RoadUserClass
 
-ACTIVE_COUNT_ID = "active-count-id"
+ACTIVE_COUNT_ID: str = "active-count-id"
+
+ARROW_OUTLINE_SIZE: int = 18
+COUNT_OUTLINE_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
+COUNT_OUTLINE_THICKNESS: int = 2
+COUNT_LINE_THICKNESS: int = 1
+COUNT_LINE_COLOR: tuple[int, int, int, int] = (255, 185, 15, 255)
+
+
+COUNT_TEXT_FONT: int = cv2.FONT_HERSHEY_SIMPLEX
+COUNT_TEXT_FONTSCALE: float = 0.5
+COUNT_TEXT_COLOR: tuple[int, int, int, int] = (255, 185, 15, 255)
+COUNT_TEXT_THICKNESS: int = 1
+COUNT_LINETYPE: int = cv2.LINE_AA
 
 
 class TooFewEventsError(Exception):
@@ -217,3 +235,87 @@ class CountRepository:
                 events[id_] = [event_for_saving.to_event()]
 
         return events, classes
+
+
+@dataclass
+class CountsOverlay:
+    count_repository: CountRepository
+    width: int
+    height: int
+    image_array: np.ndarray = field(init=False)
+    image: Image.Image = field(init=False)
+
+    def __post_init__(self) -> None:
+        self._get_image()
+
+    def get(self) -> Image.Image:
+        return self.image
+
+    def _draw_arrow_with_text(
+        self,
+        p0: Coordinate,
+        p1: Coordinate,
+        road_user_class: RoadUserClass,
+    ) -> None:
+        tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_OUTLINE_SIZE)
+        cv2.arrowedLine(
+            img=self.image_array,
+            pt1=p0.as_list(),
+            pt2=p1.as_list(),
+            color=COUNT_OUTLINE_COLOR,
+            thickness=COUNT_OUTLINE_THICKNESS,
+            line_type=COUNT_LINETYPE,
+            tipLength=tiplength,
+        )
+        tiplength = self._tiplength_for_same_arrow_size(
+            p0,
+            p1,
+            ARROW_OUTLINE_SIZE - (COUNT_OUTLINE_THICKNESS - COUNT_LINE_THICKNESS),
+        )
+        cv2.arrowedLine(
+            img=self.image_array,
+            pt1=p0.as_list(),
+            pt2=p1.as_list(),
+            color=COUNT_LINE_COLOR,
+            thickness=COUNT_LINE_THICKNESS,
+            line_type=COUNT_LINETYPE,
+            tipLength=tiplength,
+        )
+        cv2.putText(
+            img=self.image_array,
+            text=road_user_class.get_short_label(),
+            org=self._get_text_position(p0, p1),
+            fontFace=COUNT_TEXT_FONT,
+            fontScale=COUNT_TEXT_FONTSCALE,
+            color=COUNT_TEXT_COLOR,
+            thickness=COUNT_TEXT_THICKNESS,
+            lineType=COUNT_LINETYPE,
+            bottomLeftOrigin=False,
+        )
+
+    def _tiplength_for_same_arrow_size(
+        self, p0: Coordinate, p1: Coordinate, size: int = 20
+    ):
+        length = (
+            (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
+        ) ** 0.5
+        return size / length
+
+    def _get_text_position(self, p0: Coordinate, p1: Coordinate):
+        return (
+            int((p0.get_x() + p1.get_x()) / 2),
+            int((p0.get_y() + p1.get_y()) / 2),
+        )
+
+    def _get_image(self) -> Image.Image:
+        self.image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
+        for count in self.count_repository.get_all_as_list():
+            for event, next_event in zip(
+                count.get_events()[:-1], count.get_events()[1:]
+            ):
+                self._draw_arrow_with_text(
+                    p0=event.get_coordinate(),
+                    p1=next_event.get_coordinate(),
+                    road_user_class=count.get_road_user_class(),
+                )
+        self.image = Image.fromarray(self.image_array)
