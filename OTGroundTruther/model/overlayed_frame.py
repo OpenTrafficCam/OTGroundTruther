@@ -1,3 +1,4 @@
+import copy
 from dataclasses import dataclass
 
 from PIL import Image
@@ -16,7 +17,7 @@ class OverlayedFrame:
     def get(
         self, overlay_sections: bool = True, overlay_counts: bool = True
     ) -> Image.Image:
-        image = self.background_frame
+        image = copy.deepcopy(self.background_frame)
         if overlay_sections:
             image.add_overlay(overlay=self.sections_overlay.get())
         if overlay_counts:

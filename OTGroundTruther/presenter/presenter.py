@@ -114,9 +114,19 @@ class Presenter(PresenterInterface):
         if event is None:
             return
         self._model.add_event_to_active_count(event)
+        self._update_canvas_image_with_new_overlay()
+
+    def _update_canvas_image_with_new_overlay(self):
+        if self._current_frame is not None:
+            frame = self._model._get_overlayed_frame(
+                background_frame=self._current_frame.background_frame
+            )
+            self._update_canvas_image(frame)
 
     def set_road_user_class_for_active_count(self, key: str) -> None:
         self._model.set_road_user_class_for_active_count(key)
+
+        self._update_canvas_image_with_new_overlay()
 
     def finsh_active_count(self) -> None:
         try:
@@ -125,7 +135,11 @@ class Presenter(PresenterInterface):
             print("Too few events, you need at least two events to finish a count")
         except MissingRoadUserClassError:
             print("Please specify a class for the road user")
+        else:
+            self._update_canvas_image_with_new_overlay()
         return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
+
+        self._update_canvas_image_with_new_overlay()
