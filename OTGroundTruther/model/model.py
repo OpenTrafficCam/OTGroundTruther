@@ -137,6 +137,7 @@ class Model:
         )
         counts_overlay = CountsOverlay(
             count_repository=self._count_repository,
+            active_count=self._active_count,
             width=background_frame.get_width(),
             height=background_frame.get_height(),
         )
