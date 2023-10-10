@@ -108,6 +108,9 @@ class Video:
     def get_height(self) -> int:
         return self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
+    def get_filepath(self) -> Path:
+        return self.file
+
     def _set_frame_rate(self) -> None:
         self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
 
