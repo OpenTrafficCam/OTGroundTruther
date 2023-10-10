@@ -140,6 +140,7 @@ class Model:
             active_count=self._active_count,
             width=background_frame.get_width(),
             height=background_frame.get_height(),
+            current_unix_timestamp=background_frame.get_unix_timestamp(),
         )
         return OverlayedFrame(
             background_frame=background_frame,

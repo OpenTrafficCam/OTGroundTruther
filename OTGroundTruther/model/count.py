@@ -30,6 +30,22 @@ ACTIVE_COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 ACTIVE_COUNT_EVENTPOINT_THICKNESS: int = 1
 PLACEHOLDER_ROAD_USER_CLASS: str = "X"
 
+TIME_WINDOW_SHOW_COUNT: float = 1
+TIME_WINDOW_EVENT_MOMENT: float = 0.25
+
+
+COUNT_EVENTPOINT_RADIUS: int = 5
+COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
+COUNT_EVENTPOINT_THICKNESS = 1
+
+EVENTPOINT_MOMENT_BG_RADIUS: int = COUNT_EVENTPOINT_RADIUS
+EVENTPOINT_MOMENT_BG_COLOR: tuple[int, int, int, int] = (0, 0, 0, 255)
+EVENTPOINT_MOMENT_BG_THICKNESS: int = 2
+
+EVENTPOINT_MOMENT_RADIUS: int = COUNT_EVENTPOINT_RADIUS
+EVENTPOINT_MOMENT_COLOR: tuple[int, int, int, int] = COUNT_EVENTPOINT_COLOR
+EVENTPOINT_MOMENT_THICKNESS: int = EVENTPOINT_MOMENT_BG_THICKNESS - 1
+
 
 class TooFewEventsError(Exception):
     pass
@@ -251,6 +267,7 @@ class CountsOverlay:
     height: int
     image_array: np.ndarray = field(init=False)
     image: Image.Image = field(init=False)
+    current_unix_timestamp: float
 
     def __post_init__(self) -> None:
         self._get_image()
@@ -267,11 +284,57 @@ class CountsOverlay:
 
     def _draw_finished_counts(self):
         for count in self.count_repository.get_all_as_list():
-            self._draw_single_count(
-                events=count.get_events(),
-                road_user_class=count.get_road_user_class(),
-                color=COUNT_LINE_AND_TEXT_COLOR,
-            )
+            draw_count = self.draw_events(count)
+            if draw_count:
+                self._draw_single_count(
+                    events=count.get_events(),
+                    road_user_class=count.get_road_user_class(),
+                    color=COUNT_LINE_AND_TEXT_COLOR,
+                )
+
+    def draw_events(self, count: Count):
+        draw_count = False
+        for event in count.get_events():
+            if self._is_in_time_window(
+                event=event, time_window=TIME_WINDOW_EVENT_MOMENT
+            ):
+                cv2.circle(
+                    img=self.image_array,
+                    center=event.get_coordinate().as_list(),
+                    radius=EVENTPOINT_MOMENT_BG_RADIUS,
+                    color=EVENTPOINT_MOMENT_BG_COLOR,
+                    thickness=EVENTPOINT_MOMENT_BG_THICKNESS,
+                    lineType=COUNT_LINETYPE,
+                )
+                cv2.circle(
+                    img=self.image_array,
+                    center=event.get_coordinate().as_list(),
+                    radius=EVENTPOINT_MOMENT_RADIUS,
+                    color=EVENTPOINT_MOMENT_COLOR,
+                    thickness=EVENTPOINT_MOMENT_THICKNESS,
+                    lineType=COUNT_LINETYPE,
+                )
+                draw_count = True
+            elif self._is_in_time_window(
+                event=event, time_window=TIME_WINDOW_SHOW_COUNT
+            ):
+                cv2.circle(
+                    img=self.image_array,
+                    center=event.get_coordinate().as_list(),
+                    radius=COUNT_EVENTPOINT_RADIUS,
+                    color=COUNT_EVENTPOINT_COLOR,
+                    thickness=COUNT_EVENTPOINT_THICKNESS,
+                    lineType=COUNT_LINETYPE,
+                )
+                draw_count = True
+        return draw_count
+
+    def _is_in_time_window(self, event: Event, time_window: float):
+        return (
+            self.current_unix_timestamp - time_window / 2
+            <= event.get_timestamp()
+            <= self.current_unix_timestamp + time_window / 2
+        )
 
     def _draw_single_count(
         self,

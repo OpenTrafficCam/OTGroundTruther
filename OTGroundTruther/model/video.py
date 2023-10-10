@@ -78,6 +78,9 @@ class BackgroundFrame:
     def get(self) -> Image.Image:
         return self.image
 
+    def get_unix_timestamp(self) -> float:
+        return self.unix_timestamp
+
     def add_overlay(self, overlay: Image.Image) -> None:
         self.image = Image.alpha_composite(
             self.image.convert("RGBA"), overlay.convert(mode="RGBA")
