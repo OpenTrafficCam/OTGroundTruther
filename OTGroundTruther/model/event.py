@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,7 @@ ROAD_USER_CLASS_OTEVENTS: str = "road_user_type"
 ROAD_USER_ID: str = "road_user_id"
 FRAME_NUMBER: str = "frame_number"
 TIME_CREATED: str = "time_created"
+DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 
 
 @dataclass
@@ -58,6 +60,12 @@ class Event:
 
     def get_coordinate(self):
         return self.coordinate
+
+    def get_timestamp(self) -> float:
+        return self.timestamp
+
+    def get_frame_number(self) -> int:
+        return self.frame_number
 
 
 @dataclass
@@ -109,7 +117,8 @@ class EventListParser:
         sections: dict[str, LineSection],
         valid_road_user_classes: ValidRoadUserClasses,
     ) -> list[EventForParsingSerializing]:
-        """Parse otevents file and convert its content to domain level objects namely
+        """Parse (load) otevents file and convert its content to
+        domain level objects namely
         `Events`s.
 
         Args:
@@ -136,7 +145,9 @@ class EventListParser:
                         coordinate=coordinate,
                         section=section,
                         frame_number=event[FRAME_NUMBER],
-                        timestamp=event[OCCURENCE],
+                        timestamp=self._convert_datetime_to_unix(
+                            time_input=event[OCCURENCE]
+                        ),
                         video_file=Path(event[VIDEO_NAME]),
                         time_created=event.get(TIME_CREATED, None),
                         road_user_id=event[ROAD_USER_ID],
@@ -144,6 +155,13 @@ class EventListParser:
                     )
                 )
         return parsed_events
+
+    def _convert_datetime_to_unix(self, time_input: float | str) -> float:
+        if isinstance(time_input, float):
+            return time_input
+        else:
+            date_object = datetime.strptime(time_input, DATETIME_FORMAT)
+            return date_object.timestamp()
 
     def serialize(
         self,
