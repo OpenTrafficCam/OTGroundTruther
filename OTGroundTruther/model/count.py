@@ -344,24 +344,43 @@ class CountsOverlay:
     def _draw_single_count(
         self,
         events: list[Event],
-        road_user_class: RoadUserClass,
+        road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
     ):
         for event, next_event in zip(events[:-1], events[1:]):
-            self._draw_arrow_with_text(
-                p0=event.get_coordinate(),
-                p1=next_event.get_coordinate(),
-                road_user_class=road_user_class,
-                color=color,
+            p0 = event.get_coordinate()
+            p1 = next_event.get_coordinate()
+            self._draw_arrow_with_outline(p0=p0, p1=p1, color=color)
+            self._draw_class_text_next_to_arrow(
+                p0=p0, p1=p1, road_user_class=road_user_class, color=color
             )
 
-    def _draw_arrow_with_text(
+    def _draw_class_text_next_to_arrow(
         self,
         p0: Coordinate,
         p1: Coordinate,
         road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
-    ) -> None:
+    ):
+        if road_user_class is None:
+            text = PLACEHOLDER_ROAD_USER_CLASS
+        else:
+            text = road_user_class.get_short_label()
+        cv2.putText(
+            img=self.image_array,
+            text=text,
+            org=self._get_text_position(p0, p1),
+            fontFace=COUNT_TEXT_FONT,
+            fontScale=COUNT_TEXT_FONTSCALE,
+            color=color,
+            thickness=COUNT_TEXT_THICKNESS,
+            lineType=COUNT_LINETYPE,
+            bottomLeftOrigin=False,
+        )
+
+    def _draw_arrow_with_outline(
+        self, p0: Coordinate, p1: Coordinate, color: tuple[int, int, int, int]
+    ):
         tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_OUTLINE_SIZE)
         cv2.arrowedLine(
             img=self.image_array,
@@ -385,21 +404,6 @@ class CountsOverlay:
             thickness=COUNT_LINE_THICKNESS,
             line_type=COUNT_LINETYPE,
             tipLength=tiplength,
-        )
-        if road_user_class is None:
-            text = PLACEHOLDER_ROAD_USER_CLASS
-        else:
-            text = road_user_class.get_short_label()
-        cv2.putText(
-            img=self.image_array,
-            text=text,
-            org=self._get_text_position(p0, p1),
-            fontFace=COUNT_TEXT_FONT,
-            fontScale=COUNT_TEXT_FONTSCALE,
-            color=color,
-            thickness=COUNT_TEXT_THICKNESS,
-            lineType=COUNT_LINETYPE,
-            bottomLeftOrigin=False,
         )
 
     def _draw_active_count(self):
