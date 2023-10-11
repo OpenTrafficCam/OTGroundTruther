@@ -26,9 +26,14 @@ COUNT_LINETYPE: int = cv2.LINE_AA
 
 ACTIVE_COUNT_EVENTPOINT_RADIUS: int = 5
 ACTIVE_COUNT_COLOR: tuple[int, int, int, int] = (255, 255, 0, 255)
-ACTIVE_COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
+ACTIVE_COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = ACTIVE_COUNT_COLOR
 ACTIVE_COUNT_EVENTPOINT_THICKNESS: int = 1
 PLACEHOLDER_ROAD_USER_CLASS: str = "X"
+
+ACTIVE_COUNT_EVENTPOINT_BG_RADIUS: int = ACTIVE_COUNT_EVENTPOINT_RADIUS
+ACTIVE_COUNT_EVENTPOINT_BG_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
+ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS: int = ACTIVE_COUNT_EVENTPOINT_THICKNESS + 1
+
 
 TIME_WINDOW_SHOW_COUNT: float = 1
 TIME_WINDOW_EVENT_MOMENT: float = 0.25
@@ -39,7 +44,7 @@ COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 COUNT_EVENTPOINT_THICKNESS = 1
 
 EVENTPOINT_MOMENT_BG_RADIUS: int = COUNT_EVENTPOINT_RADIUS
-EVENTPOINT_MOMENT_BG_COLOR: tuple[int, int, int, int] = (0, 0, 0, 255)
+EVENTPOINT_MOMENT_BG_COLOR: tuple[int, int, int, int] = ACTIVE_COUNT_EVENTPOINT_BG_COLOR
 EVENTPOINT_MOMENT_BG_THICKNESS: int = 2
 
 EVENTPOINT_MOMENT_RADIUS: int = COUNT_EVENTPOINT_RADIUS
@@ -404,14 +409,24 @@ class CountsOverlay:
                 road_user_class=self.active_count.get_road_user_class(),
                 color=ACTIVE_COUNT_COLOR,
             )
-        for event in self.active_count.get_events():
-            cv2.circle(
-                img=self.image_array,
-                center=event.get_coordinate().as_list(),
-                radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
-                color=ACTIVE_COUNT_EVENTPOINT_COLOR,
-                thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
-            )
+        else:
+            for event in self.active_count.get_events():
+                cv2.circle(
+                    img=self.image_array,
+                    center=event.get_coordinate().as_list(),
+                    radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
+                    color=ACTIVE_COUNT_EVENTPOINT_BG_COLOR,
+                    thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
+                    lineType=COUNT_LINETYPE,
+                )
+                cv2.circle(
+                    img=self.image_array,
+                    center=event.get_coordinate().as_list(),
+                    radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
+                    color=ACTIVE_COUNT_EVENTPOINT_COLOR,
+                    thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
+                    lineType=COUNT_LINETYPE,
+                )
 
     def _tiplength_for_same_arrow_size(
         self, p0: Coordinate, p1: Coordinate, size: int = 20
