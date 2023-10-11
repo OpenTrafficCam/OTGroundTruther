@@ -113,7 +113,7 @@ class ActiveCount:
         return event.section == self._events[-1].section
 
     def _new_event_earlier_than_previous(self, event: Event):
-        return event.frame_number < self._events[-1].frame_number
+        return event.get_timestamp() < self._events[-1].get_timestamp()
 
     def get_events(self) -> list[Event]:
         return self._events
