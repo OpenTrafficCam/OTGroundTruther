@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 
 from OTGroundTruther.gui.constants import PADX, STICKY, tk_events
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
+from OTGroundTruther.model.config import ON_WINDOWS
 
 PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
 
@@ -143,6 +144,9 @@ class CanvasEventTranslator:
 
     def _on_mouse_wheel_scrolled(self, event: Any) -> None:
         scroll_delta = event.delta
+        if ON_WINDOWS:
+            scroll_delta = scroll_delta / 120
+
         self._presenter.scroll_through_videos(
             scroll_delta=scroll_delta,
             mouse_wheel_pressed=self._middle_button_pressed,
