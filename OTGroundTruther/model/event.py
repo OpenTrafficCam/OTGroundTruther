@@ -51,7 +51,7 @@ class Event:
     def to_dict(self) -> dict:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
-            SECTION_ID: self.section.name,
+            SECTION_ID: self.section.id,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file.stem,
