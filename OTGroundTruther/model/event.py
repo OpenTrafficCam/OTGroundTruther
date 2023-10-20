@@ -17,6 +17,7 @@ EVENT_FORMAT_VERSION: str = "event_file_version"
 EVENT_LIST = "event_list"
 SECTIONS: str = "sections"
 SECTION_ID: str = "section_id"
+SECTION_NAME: str = "section_name"
 EVENT_COORDINATE: str = "event_coordinate"
 EVENT_TYPE: str = "event_type"
 DIRECTION_VECTOR: str = "direction_vector"
@@ -52,6 +53,7 @@ class Event:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
             SECTION_ID: self.section.id,
+            SECTION_NAME: self.section.name,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file.stem,
@@ -88,7 +90,7 @@ class EventForParsingSerializing:
     def to_dict(self) -> dict:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
-            SECTION_ID: self.section.name,
+            SECTION_ID: self.section.id,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file.stem,
