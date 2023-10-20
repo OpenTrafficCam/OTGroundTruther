@@ -136,11 +136,9 @@ class Model:
             height=background_frame.get_height(),
         )
         counts_overlay = CountsOverlay(
+            background_frame=background_frame,
             count_repository=self._count_repository,
             active_count=self._active_count,
-            width=background_frame.get_width(),
-            height=background_frame.get_height(),
-            current_unix_timestamp=background_frame.get_unix_timestamp(),
         )
         return OverlayedFrame(
             background_frame=background_frame,
@@ -162,7 +160,7 @@ class Model:
             section,
             frame_number=current_frame.background_frame.frame_number,
             timestamp=current_frame.background_frame.unix_timestamp,
-            video_file=current_frame.background_frame.video_file,
+            video_file=current_frame.background_frame.video_file.stem,
             time_created=now,
         )
 

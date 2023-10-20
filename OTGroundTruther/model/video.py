@@ -86,6 +86,12 @@ class BackgroundFrame:
             self.image.convert("RGBA"), overlay.convert(mode="RGBA")
         )
 
+    def get_frame_number(self) -> int:
+        return self.frame_number
+
+    def get_video_file(self) -> Path:
+        return self.video_file
+
 
 class Video:
     def __init__(self, file: Path):

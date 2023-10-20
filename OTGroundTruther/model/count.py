@@ -8,6 +8,7 @@ from PIL import Image
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.event import Event, EventForParsingSerializing
 from OTGroundTruther.model.road_user_class import RoadUserClass
+from OTGroundTruther.model.video import BackgroundFrame
 
 ACTIVE_COUNT_ID: str = "active-count-id"
 
@@ -268,11 +269,9 @@ class CountRepository:
 class CountsOverlay:
     count_repository: CountRepository
     active_count: ActiveCount | None
-    width: int
-    height: int
+    background_frame: BackgroundFrame
     image_array: np.ndarray = field(init=False)
     image: Image.Image = field(init=False)
-    current_unix_timestamp: float
 
     def __post_init__(self) -> None:
         self._get_image()
@@ -281,7 +280,10 @@ class CountsOverlay:
         return self.image
 
     def _get_image(self) -> Image.Image:
-        self.image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
+        self.image_array = np.zeros(
+            (self.background_frame.get_height(), self.background_frame.get_width(), 4),
+            dtype=np.uint8,
+        )
         self._draw_finished_counts()
         if self.active_count is not None:
             self._draw_active_count()
@@ -300,9 +302,7 @@ class CountsOverlay:
     def draw_events(self, count: Count):
         draw_count = False
         for event in count.get_events():
-            if self._is_in_time_window(
-                event=event, time_window=TIME_WINDOW_EVENT_MOMENT
-            ):
+            if self._is_at_current_frame(event=event):
                 cv2.circle(
                     img=self.image_array,
                     center=event.get_coordinate().as_list(),
@@ -334,11 +334,18 @@ class CountsOverlay:
                 draw_count = True
         return draw_count
 
-    def _is_in_time_window(self, event: Event, time_window: float):
+    def _is_at_current_frame(self, event: Event) -> bool:
+        print(self.background_frame.get_video_file())
+        print(event.get_video_file_name())
         return (
-            self.current_unix_timestamp - time_window / 2
+            self.background_frame.get_frame_number() == event.get_frame_number()
+        ) & (self.background_frame.get_video_file().stem == event.get_video_file_name())
+
+    def _is_in_time_window(self, event: Event, time_window: float) -> bool:
+        return (
+            self.background_frame.get_unix_timestamp() - time_window / 2
             <= event.get_timestamp()
-            <= self.current_unix_timestamp + time_window / 2
+            <= self.background_frame.get_unix_timestamp() + time_window / 2
         )
 
     def _draw_single_count(

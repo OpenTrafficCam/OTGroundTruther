@@ -38,7 +38,7 @@ class Event:
     section: LineSection
     frame_number: int
     timestamp: float
-    video_file: Path
+    video_file_name: str
     time_created: float | None
 
     def to_event_for_serializing(
@@ -56,7 +56,7 @@ class Event:
             SECTION_NAME: self.section.name,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
-            VIDEO_NAME: self.video_file.stem,
+            VIDEO_NAME: self.video_file_name,
             TIME_CREATED: self.time_created,
         }
 
@@ -69,6 +69,9 @@ class Event:
     def get_frame_number(self) -> int:
         return self.frame_number
 
+    def get_video_file_name(self) -> str:
+        return self.video_file_name
+
 
 @dataclass
 class EventForParsingSerializing:
@@ -76,7 +79,7 @@ class EventForParsingSerializing:
     section: LineSection
     frame_number: int
     timestamp: float
-    video_file: Path
+    video_file_name: str
     time_created: float | None
     road_user_id: int
     road_user_class: RoadUserClass
@@ -93,7 +96,7 @@ class EventForParsingSerializing:
             SECTION_ID: self.section.id,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
-            VIDEO_NAME: self.video_file.stem,
+            VIDEO_NAME: self.video_file_name,
             TIME_CREATED: self.time_created,
             ROAD_USER_ID: self.road_user_id,
             ROAD_USER_CLASS_OTEVENTS: self.road_user_class.get_name(),
@@ -150,7 +153,7 @@ class EventListParser:
                         timestamp=self._convert_datetime_to_unix(
                             time_input=event[OCCURENCE]
                         ),
-                        video_file=Path(event[VIDEO_NAME]),
+                        video_file_name=event[VIDEO_NAME],
                         time_created=event.get(TIME_CREATED, None),
                         road_user_id=event[ROAD_USER_ID],
                         road_user_class=road_user_class,
