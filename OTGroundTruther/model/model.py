@@ -80,8 +80,10 @@ class Model:
         sections: list[LineSection],
         file_type: str,
     ) -> None:
-        file = self._video_repository.get_first_video_file().with_suffix(
-            f".{file_type}"
+        file = (
+            self._video_repository.get_first_video()
+            .get_filepath()
+            .with_suffix(f".{file_type}")
         )
         self._eventlistparser.serialize(
             events=event_list,
@@ -108,7 +110,7 @@ class Model:
             video,
             frame_number,
         ) = self._video_repository.get_video_and_frame_by_delta_of_frames(
-            current_file=current_frame.background_frame.video_file,
+            current_file_name=current_frame.background_frame.get_video_name(),
             current_frame_number=current_frame.background_frame.frame_number,
             delta_of_frames=delta_of_frames,
         )
@@ -121,8 +123,8 @@ class Model:
         return self._get_overlayed_frame(background_frame)
 
     def refresh_current_frame(self, current_frame: OverlayedFrame) -> OverlayedFrame:
-        current_video = self._video_repository.get_video_by_file(
-            current_frame.background_frame.video_file
+        current_video = self._video_repository.get_video_by_name(
+            current_frame.background_frame.get_video_name()
         )
         background_frame = current_video.get_frame_by_number(
             current_frame.background_frame.frame_number
@@ -160,7 +162,7 @@ class Model:
             section,
             frame_number=current_frame.background_frame.frame_number,
             timestamp=current_frame.background_frame.unix_timestamp,
-            video_file=current_frame.background_frame.video_file.stem,
+            video_file_name=current_frame.background_frame.video_file.stem,
             time_created=now,
         )
 
@@ -210,11 +212,17 @@ class Model:
     def delete_count(self, id: int) -> None:
         self._count_repository.remove(id)
 
-    def get_counts_by_frame(self, frame: int) -> list[Count]:
-        return self._count_repository.get_by_frame_of_events(frame)
+    def get_counts_by_frame(self, frame_number: int) -> list[Count]:
+        return self._count_repository.get_by_frame_of_events(frame_number)
 
     def clear_repositories(self) -> None:
         self._section_repository.clear()
         self._count_repository.clear()
         self._video_repository.clear()
         self.active_count = None
+
+    def get_startframe_of_last_count(self) -> OverlayedFrame:
+        event = self._count_repository.get_first_event_of_last_added_count()
+        video = self._video_repository.get_video_by_name(event.get_video_file_name())
+        background_frame = video.get_frame_by_number(event.get_frame_number())
+        return self._get_overlayed_frame(background_frame=background_frame)

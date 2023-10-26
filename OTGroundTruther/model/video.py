@@ -92,6 +92,9 @@ class BackgroundFrame:
     def get_video_file(self) -> Path:
         return self.video_file
 
+    def get_video_name(self) -> str:
+        return self.video_file.stem
+
 
 class Video:
     def __init__(self, file: Path):
@@ -116,6 +119,9 @@ class Video:
 
     def get_filepath(self) -> Path:
         return self.file
+
+    def get_name(self) -> str:
+        return self.file.stem
 
     def _set_frame_rate(self) -> None:
         self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
@@ -197,7 +203,7 @@ class Video:
 
 class VideoRepository:
     def __init__(self) -> None:
-        self._videos: dict[Path, Video] = {}
+        self._videos: dict[str, Video] = {}
 
     def add(self, video: Video) -> None:
         """Add one video to the repository.
@@ -222,7 +228,7 @@ class VideoRepository:
         Args:
             video (Video): the video to be added
         """
-        self._videos[video.file] = video
+        self._videos[video.get_name()] = video
 
     def get_by_timestamp(self, unix_timestamp: float) -> Video | None:
         for video in self._videos.values():
@@ -231,9 +237,9 @@ class VideoRepository:
         return None
 
     def get_video_and_frame_by_delta_of_frames(
-        self, current_file: Path, current_frame_number: int, delta_of_frames: int
+        self, current_file_name: str, current_frame_number: int, delta_of_frames: int
     ) -> tuple[Video, int]:
-        current_video = self.get_video_by_file(current_file)
+        current_video = self.get_video_by_name(file_name=current_file_name)
         new_frame_number = current_frame_number + delta_of_frames
         current_video_number_of_frames = current_video.get_number_of_frames()
 
@@ -265,7 +271,7 @@ class VideoRepository:
             current_video.get_number_of_frames() - current_frame_number
         )
         return self.get_video_and_frame_by_delta_of_frames(
-            current_file=new_video.file,
+            current_file_name=new_video.get_name(),
             current_frame_number=0,
             delta_of_frames=new_delta_of_frames,
         )
@@ -280,7 +286,7 @@ class VideoRepository:
         new_video = self._get_video_by_index(new_video_index)
         new_delta_of_frames = delta_of_frames + current_frame_number
         return self.get_video_and_frame_by_delta_of_frames(
-            current_file=new_video.file,
+            current_file_name=new_video.get_name(),
             current_frame_number=new_video.get_number_of_frames(),
             delta_of_frames=new_delta_of_frames,
         )
@@ -288,20 +294,17 @@ class VideoRepository:
     def _get_video_by_index(self, index: int) -> Video:
         return list(self._videos.values())[index]
 
-    def _get_index_by_file(self, file: Path) -> int:
-        return list(self._videos.keys()).index(file)
+    def _get_index_by_file_name(self, file_name: str) -> int:
+        return list(self._videos.keys()).index(file_name)
 
     def _get_index_by_video(self, video: Video) -> int:
         return list(self._videos.values()).index(video)
 
-    def get_video_by_file(self, file: Path) -> Video:
-        return self._videos[file]
+    def get_video_by_name(self, file_name: str) -> Video:
+        return self._videos[file_name]
 
     def get_first_video(self) -> Video:
         return list(self._videos.values())[0]
-
-    def get_first_video_file(self) -> Path:
-        return list(self._videos.keys())[0]
 
     def is_empty(self) -> bool:
         return not self._videos

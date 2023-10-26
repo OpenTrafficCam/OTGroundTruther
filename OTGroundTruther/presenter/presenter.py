@@ -46,8 +46,8 @@ class Presenter(PresenterInterface):
         self._display_first_frame()
 
     def _display_first_frame(self) -> None:
-        first_frame = self._model.get_first_frame()
-        self._update_canvas_image(first_frame)
+        overlayed_first_frame = self._model.get_first_frame()
+        self._update_canvas_image(overlayed_frame=overlayed_first_frame)
 
     def load_otflow(self) -> None:
         otflow_file = askopenfilename(
@@ -85,8 +85,10 @@ class Presenter(PresenterInterface):
     def _refresh_current_frame(self) -> None:
         if self._current_frame is None:
             return
-        frame = self._model.refresh_current_frame(current_frame=self._current_frame)
-        self._update_canvas_image(frame=frame)
+        overlayed_frame = self._model.refresh_current_frame(
+            current_frame=self._current_frame
+        )
+        self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def scroll_through_videos(
         self, scroll_delta: int, mouse_wheel_pressed: bool
@@ -97,14 +99,16 @@ class Presenter(PresenterInterface):
             capped_scroll_delta = max(scroll_delta, -MAX_SCROLL_STEP)
         else:
             capped_scroll_delta = min(scroll_delta, MAX_SCROLL_STEP)
-        frame = self._model.get_frame_by_delta_of_frames(
+        overlayed_frame = self._model.get_frame_by_delta_of_frames(
             current_frame=self._current_frame, delta_of_frames=capped_scroll_delta
         )
-        self._update_canvas_image(frame)
+        self._update_canvas_image(overlayed_frame=overlayed_frame)
 
-    def _update_canvas_image(self, frame: OverlayedFrame) -> None:
-        self._gui.frame_canvas.canvas_background.update_image(image=frame.get())
-        self._current_frame = frame
+    def _update_canvas_image(self, overlayed_frame: OverlayedFrame) -> None:
+        self._gui.frame_canvas.canvas_background.update_image(
+            image=overlayed_frame.get()
+        )
+        self._current_frame = overlayed_frame
 
     def try_add_event(self, x: int, y: int) -> None:
         coordinate = Coordinate(x, y)
@@ -118,10 +122,10 @@ class Presenter(PresenterInterface):
 
     def _update_canvas_image_with_new_overlay(self):
         if self._current_frame is not None:
-            frame = self._model._get_overlayed_frame(
+            overlayed_frame = self._model._get_overlayed_frame(
                 background_frame=self._current_frame.background_frame
             )
-            self._update_canvas_image(frame)
+            self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def set_road_user_class_for_active_count(self, key: str) -> None:
         self._model.set_road_user_class_for_active_count(key)
@@ -136,10 +140,10 @@ class Presenter(PresenterInterface):
         except MissingRoadUserClassError:
             print("Please specify a class for the road user")
         else:
-            self._update_canvas_image_with_new_overlay()
+            overlayed_frame = self._model.get_startframe_of_last_count()
+            self._update_canvas_image(overlayed_frame=overlayed_frame)
         return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
-
         self._update_canvas_image_with_new_overlay()

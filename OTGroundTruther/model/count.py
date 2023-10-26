@@ -92,6 +92,9 @@ class Count:
     def get_road_user_class(self) -> RoadUserClass:
         return self.road_user_class
 
+    def get_first_event(self) -> Event:
+        return self.events[0]
+
 
 class ActiveCount:
     def __init__(
@@ -249,6 +252,10 @@ class CountRepository:
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[0])
 
+    def get_first_event_of_last_added_count(self) -> Event:
+        last_added_count = list(self._counts.values())[-1]
+        return last_added_count.get_first_event()
+
     def _get_events_and_classes_by_id(
         self, event_list: list[EventForParsingSerializing]
     ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
@@ -285,8 +292,7 @@ class CountsOverlay:
             dtype=np.uint8,
         )
         self._draw_finished_counts()
-        if self.active_count is not None:
-            self._draw_active_count()
+        self._draw_active_count()
         self.image = Image.fromarray(self.image_array)
 
     def _draw_finished_counts(self):
@@ -335,8 +341,6 @@ class CountsOverlay:
         return draw_count
 
     def _is_at_current_frame(self, event: Event) -> bool:
-        print(self.background_frame.get_video_file())
-        print(event.get_video_file_name())
         return (
             self.background_frame.get_frame_number() == event.get_frame_number()
         ) & (self.background_frame.get_video_file().stem == event.get_video_file_name())
@@ -353,7 +357,7 @@ class CountsOverlay:
         events: list[Event],
         road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
-    ):
+    ) -> None:
         for event, next_event in zip(events[:-1], events[1:]):
             p0 = event.get_coordinate()
             p1 = next_event.get_coordinate()
@@ -368,7 +372,7 @@ class CountsOverlay:
         p1: Coordinate,
         road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
-    ):
+    ) -> None:
         if road_user_class is None:
             text = PLACEHOLDER_ROAD_USER_CLASS
         else:
@@ -387,7 +391,7 @@ class CountsOverlay:
 
     def _draw_arrow_with_outline(
         self, p0: Coordinate, p1: Coordinate, color: tuple[int, int, int, int]
-    ):
+    ) -> None:
         tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_OUTLINE_SIZE)
         cv2.arrowedLine(
             img=self.image_array,
@@ -413,41 +417,42 @@ class CountsOverlay:
             tipLength=tiplength,
         )
 
-    def _draw_active_count(self):
-        if len(self.active_count.get_events()) >= 2:
-            self._draw_single_count(
-                events=self.active_count.get_events(),
-                road_user_class=self.active_count.get_road_user_class(),
-                color=ACTIVE_COUNT_COLOR,
-            )
-        else:
-            for event in self.active_count.get_events():
-                cv2.circle(
-                    img=self.image_array,
-                    center=event.get_coordinate().as_list(),
-                    radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
-                    color=ACTIVE_COUNT_EVENTPOINT_BG_COLOR,
-                    thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
-                    lineType=COUNT_LINETYPE,
+    def _draw_active_count(self) -> None:
+        if self.active_count is not None:
+            if len(self.active_count.get_events()) >= 2:
+                self._draw_single_count(
+                    events=self.active_count.get_events(),
+                    road_user_class=self.active_count.get_road_user_class(),
+                    color=ACTIVE_COUNT_COLOR,
                 )
-                cv2.circle(
-                    img=self.image_array,
-                    center=event.get_coordinate().as_list(),
-                    radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
-                    color=ACTIVE_COUNT_EVENTPOINT_COLOR,
-                    thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
-                    lineType=COUNT_LINETYPE,
-                )
+            else:
+                for event in self.active_count.get_events():
+                    cv2.circle(
+                        img=self.image_array,
+                        center=event.get_coordinate().as_list(),
+                        radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
+                        color=ACTIVE_COUNT_EVENTPOINT_BG_COLOR,
+                        thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
+                        lineType=COUNT_LINETYPE,
+                    )
+                    cv2.circle(
+                        img=self.image_array,
+                        center=event.get_coordinate().as_list(),
+                        radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
+                        color=ACTIVE_COUNT_EVENTPOINT_COLOR,
+                        thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
+                        lineType=COUNT_LINETYPE,
+                    )
 
     def _tiplength_for_same_arrow_size(
         self, p0: Coordinate, p1: Coordinate, size: int = 20
-    ):
+    ) -> float:
         length = (
             (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
         ) ** 0.5
         return size / length
 
-    def _get_text_position(self, p0: Coordinate, p1: Coordinate):
+    def _get_text_position(self, p0: Coordinate, p1: Coordinate) -> tuple[int, int]:
         return (
             int((p0.get_x() + p1.get_x()) / 2),
             int((p0.get_y() + p1.get_y()) / 2),
