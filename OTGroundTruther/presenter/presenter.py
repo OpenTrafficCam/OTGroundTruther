@@ -99,10 +99,21 @@ class Presenter(PresenterInterface):
             capped_scroll_delta = max(scroll_delta, -MAX_SCROLL_STEP)
         else:
             capped_scroll_delta = min(scroll_delta, MAX_SCROLL_STEP)
-        overlayed_frame = self._model.get_frame_by_delta_of_frames(
-            current_frame=self._current_frame, delta_of_frames=capped_scroll_delta
+        overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
+            current_frame=self._current_frame,
+            delta_of_frames=capped_scroll_delta,
+            delta_of_time=0,
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
+
+    def jump_by_delta_time_in_sec(self, delta_of_time: float) -> None:
+        if self._current_frame is not None:
+            overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
+                current_frame=self._current_frame,
+                delta_of_frames=0,
+                delta_of_time=delta_of_time,
+            )
+            self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def _update_canvas_image(self, overlayed_frame: OverlayedFrame) -> None:
         self._gui.frame_canvas.canvas_background.update_image(

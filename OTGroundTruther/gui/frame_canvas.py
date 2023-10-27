@@ -156,10 +156,12 @@ class CanvasEventTranslator:
         pass
 
     def _on_left_key(self, event: Any) -> None:
-        pass
+        delta_of_time = -10
+        self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_right_key(self, event: Any) -> None:
-        pass
+        delta_of_time = 10
+        self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_return_key(self, event: Any) -> None:
         self._presenter.finsh_active_count()

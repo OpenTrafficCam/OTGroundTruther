@@ -101,18 +101,20 @@ class Model:
         background_frame = video.get_frame_by_timestamp(unix_timestamp)
         return self._get_overlayed_frame(background_frame)
 
-    def get_frame_by_delta_of_frames(
-        self, current_frame: OverlayedFrame, delta_of_frames: int
+    def get_frame_by_delta_frames_or_time(
+        self,
+        current_frame: OverlayedFrame,
+        delta_of_frames: int = 0,
+        delta_of_time: float = 0,
     ) -> OverlayedFrame:
-        video: Video
-        frame_number: int
         (
             video,
             frame_number,
-        ) = self._video_repository.get_video_and_frame_by_delta_of_frames(
+        ) = self._video_repository.get_video_and_frame_by_delta_frame_or_time(
             current_file_name=current_frame.background_frame.get_video_name(),
             current_frame_number=current_frame.background_frame.frame_number,
             delta_of_frames=delta_of_frames,
+            delta_of_time=delta_of_time,
         )
         background_frame = video.get_frame_by_number(frame_number)
         return self._get_overlayed_frame(background_frame)

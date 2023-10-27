@@ -123,6 +123,9 @@ class Video:
     def get_name(self) -> str:
         return self.file.stem
 
+    def get_frame_rate(self) -> float:
+        return self.frame_rate
+
     def _set_frame_rate(self) -> None:
         self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
 
@@ -236,10 +239,29 @@ class VideoRepository:
                 return video
         return None
 
-    def get_video_and_frame_by_delta_of_frames(
-        self, current_file_name: str, current_frame_number: int, delta_of_frames: int
+    def get_video_and_frame_by_delta_frame_or_time(
+        self,
+        current_file_name: str,
+        current_frame_number: int,
+        delta_of_frames: int = 0,
+        delta_of_time: float = 0,
     ) -> tuple[Video, int]:
         current_video = self.get_video_by_name(file_name=current_file_name)
+        delta_of_frames += round(delta_of_time * current_video.get_frame_rate())
+        return self.get_video_and_frame_by_delta_frame(
+            current_file_name=current_file_name,
+            current_frame_number=current_frame_number,
+            delta_of_frames=delta_of_frames,
+        )
+
+    def get_video_and_frame_by_delta_frame(
+        self,
+        current_file_name: str,
+        current_frame_number: int,
+        delta_of_frames: int = 0,
+    ) -> tuple[Video, int]:
+        current_video = self.get_video_by_name(file_name=current_file_name)
+
         new_frame_number = current_frame_number + delta_of_frames
         current_video_number_of_frames = current_video.get_number_of_frames()
 
@@ -270,7 +292,7 @@ class VideoRepository:
         new_delta_of_frames = delta_of_frames - (
             current_video.get_number_of_frames() - current_frame_number
         )
-        return self.get_video_and_frame_by_delta_of_frames(
+        return self.get_video_and_frame_by_delta_frame(
             current_file_name=new_video.get_name(),
             current_frame_number=0,
             delta_of_frames=new_delta_of_frames,
@@ -285,7 +307,7 @@ class VideoRepository:
             return self._get_video_by_index(current_video_index), 0
         new_video = self._get_video_by_index(new_video_index)
         new_delta_of_frames = delta_of_frames + current_frame_number
-        return self.get_video_and_frame_by_delta_of_frames(
+        return self.get_video_and_frame_by_delta_frame(
             current_file_name=new_video.get_name(),
             current_frame_number=new_video.get_number_of_frames(),
             delta_of_frames=new_delta_of_frames,

@@ -43,3 +43,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def abort_active_count(self) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def jump_by_delta_time_in_sec(self, delta_of_time: float) -> None:
+        raise NotImplementedError
