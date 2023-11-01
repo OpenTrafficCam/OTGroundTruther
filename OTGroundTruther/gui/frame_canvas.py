@@ -9,6 +9,11 @@ from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.config import ON_WINDOWS
 
 PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
+JUMP_TIME_STEPS: dict[int, float] = {
+    0: 1,
+    1: 20,
+    2: 600,
+}
 
 
 class FrameCanvas(ctk.CTkFrame):
@@ -86,7 +91,8 @@ class CanvasEventTranslator:
     def __init__(self, canvas: CanvasBackground, presenter: PresenterInterface):
         self._canvas = canvas
         self._presenter = presenter
-        self._middle_button_pressed = False
+        self._middle_button_pressed: bool = False
+        self._current_jump_time_step: int = 0
         self._bind_events()
 
     def _bind_events(self) -> None:
@@ -113,6 +119,7 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.BACKSPACE_KEY, self._on_delete_keys)
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
+        self._canvas.bind(tk_events.CONTROL_RIGHT, self._on_control_right_key)
 
     def _on_left_button_down(self, event: Any) -> None:
         pass
@@ -155,12 +162,21 @@ class CanvasEventTranslator:
     def _on_plus(self, event: Any) -> None:
         pass
 
+    def _on_control_right_key(self, event: Any) -> None:
+        if self._current_jump_time_step == list(JUMP_TIME_STEPS.keys())[-1]:
+            self._current_jump_time_step = list(JUMP_TIME_STEPS.keys())[0]
+        else:
+            self._current_jump_time_step += 1
+        print(
+            f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+        )
+
     def _on_left_key(self, event: Any) -> None:
-        delta_of_time = -10
+        delta_of_time = -1 * JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_right_key(self, event: Any) -> None:
-        delta_of_time = 10
+        delta_of_time = JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_return_key(self, event: Any) -> None:

@@ -51,6 +51,8 @@ class TkEvents:
         "<Command-ButtonRelease-1>" if ON_MAC else "<Control-ButtonRelease-1>"
     )
     MOUSE_WHEEL_SCROLLED: ClassVar[str] = "<MouseWheel>"
+    CONTROL_LEFT: ClassVar[str] = "<Control_L>"
+    CONTROL_RIGHT: ClassVar[str] = "<Control_R>"
 
 
 tk_events = TkEvents()
