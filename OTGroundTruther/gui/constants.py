@@ -45,6 +45,7 @@ class TkEvents:
     KEYPAD_RETURN_KEY: ClassVar[str] = "<KP_Enter>"
     DELETE_KEY: ClassVar[str] = "<Delete>"
     BACKSPACE_KEY: ClassVar[str] = "<BackSpace>"
+    SPACE_KEY: ClassVar[str] = "<space>"
     ESCAPE_KEY: ClassVar[str] = "<Escape>"
     ALPHANUMERIC_KEY: ClassVar[str] = "<Key>"
     MULTI_SELECT_SINGLE: ClassVar[str] = (
