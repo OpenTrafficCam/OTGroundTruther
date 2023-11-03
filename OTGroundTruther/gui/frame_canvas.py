@@ -4,7 +4,7 @@ from typing import Any
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
-from OTGroundTruther.gui.constants import PADX, STICKY, tk_events
+from OTGroundTruther.gui.constants import PADX, PADY, STICKY, tk_events
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.config import ON_WINDOWS
 
@@ -14,14 +14,19 @@ JUMP_TIME_STEPS: dict[int, float] = {
     1: 20,
     2: 600,
 }
+
 MINIMUM_WINDOWS_SCROLL_VALUE = 120
 FACTOR_LARGE_SCROLLING = 10
+
+FRAME_CANVAS_ROW = 0
+FRAME_CANVAS_COLUMN = 0
 
 
 class FrameCanvas(ctk.CTkFrame):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._presenter = presenter
+        self.columnconfigure(0)
         self._get_widgets()
         self._place_widgets()
 
@@ -31,9 +36,12 @@ class FrameCanvas(ctk.CTkFrame):
         )
 
     def _place_widgets(self) -> None:
-        PADY = 10
         self.canvas_background.grid(
-            row=2, column=0, padx=PADX, pady=PADY, sticky=STICKY
+            row=FRAME_CANVAS_ROW,
+            column=FRAME_CANVAS_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
         )
 
     def clear_image(self) -> None:

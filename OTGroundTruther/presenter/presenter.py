@@ -33,6 +33,7 @@ class Presenter(PresenterInterface):
         if self._model._section_repository.is_empty():
             return
         self._refresh_current_frame()
+
         # TODO: Also refresh when count_repository not empty
 
     def load_video_files(self) -> None:
@@ -74,6 +75,7 @@ class Presenter(PresenterInterface):
         if self._current_frame is None:
             return
         self._refresh_current_frame()
+        self.update_treeview()
 
     def save_events(self) -> None:
         sections = self._model._section_repository.to_list()
@@ -120,6 +122,11 @@ class Presenter(PresenterInterface):
             image=overlayed_frame.get()
         )
         self._current_frame = overlayed_frame
+
+    def update_treeview(self):
+        self._gui.frame_treeview.treeview_count.update_treeview(
+            count_repository=self._model._count_repository
+        )
 
     def try_add_event(self, x: int, y: int) -> None:
         coordinate = Coordinate(x, y)

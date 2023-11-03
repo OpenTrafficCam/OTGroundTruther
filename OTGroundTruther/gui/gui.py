@@ -4,6 +4,7 @@ import customtkinter as ctk
 
 from OTGroundTruther.gui.constants import PADX, PADY
 from OTGroundTruther.gui.frame_canvas import FrameCanvas
+from OTGroundTruther.gui.frame_treeview_counts import FrameTreeview
 from OTGroundTruther.gui.menu import MenuBar
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 
@@ -32,7 +33,13 @@ class Gui(ctk.CTk):
     def _get_widgets(self) -> None:
         self.menu_bar = MenuBar(master=self, presenter=self._presenter)
         self.frame_canvas = FrameCanvas(master=self, presenter=self._presenter)
+        self.frame_treeview = FrameTreeview(master=self, presenter=self._presenter)
 
     def _place_widgets(self) -> None:
         self.config(menu=self.menu_bar)
-        self.frame_canvas.pack(fill=ctk.BOTH, expand=True, padx=PADX, pady=PADY)
+        self.frame_canvas.pack(
+            side=ctk.LEFT, fill=ctk.BOTH, expand=True, padx=PADX, pady=PADY
+        )
+        self.frame_treeview.pack(
+            side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=PADX, pady=PADY
+        )
