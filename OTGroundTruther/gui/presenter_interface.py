@@ -47,3 +47,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def jump_by_delta_time_in_sec(self, delta_of_time: float) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def refresh_treeview(self) -> None:
+        raise NotImplementedError

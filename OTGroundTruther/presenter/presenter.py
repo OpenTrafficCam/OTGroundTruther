@@ -33,6 +33,7 @@ class Presenter(PresenterInterface):
         if self._model._section_repository.is_empty():
             return
         self._refresh_current_frame()
+        self.refresh_treeview()
 
         # TODO: Also refresh when count_repository not empty
 
@@ -75,7 +76,6 @@ class Presenter(PresenterInterface):
         if self._current_frame is None:
             return
         self._refresh_current_frame()
-        self.update_treeview()
 
     def save_events(self) -> None:
         sections = self._model._section_repository.to_list()
@@ -123,8 +123,8 @@ class Presenter(PresenterInterface):
         )
         self._current_frame = overlayed_frame
 
-    def update_treeview(self):
-        self._gui.frame_treeview.treeview_count.update_treeview(
+    def refresh_treeview(self) -> None:
+        self._gui.frame_treeview.treeview_count.refresh_treeview(
             count_repository=self._model._count_repository
         )
 
@@ -152,14 +152,16 @@ class Presenter(PresenterInterface):
 
     def finsh_active_count(self) -> None:
         try:
-            self._model.add_active_count_to_repository()
+            count = self._model.add_active_count_to_repository()
         except TooFewEventsError:
             print("Too few events, you need at least two events to finish a count")
         except MissingRoadUserClassError:
             print("Please specify a class for the road user")
         else:
-            overlayed_frame = self._model.get_startframe_of_last_count()
-            self._update_canvas_image(overlayed_frame=overlayed_frame)
+            if count is not None:
+                overlayed_frame = self._model.get_startframe_of_last_count()
+                self._update_canvas_image(overlayed_frame=overlayed_frame)
+                self._gui.frame_treeview.treeview_count.add_count(count)
         return
 
     def abort_active_count(self) -> None:

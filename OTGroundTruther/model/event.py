@@ -66,6 +66,10 @@ class Event:
     def get_timestamp(self) -> float:
         return self.timestamp
 
+    def get_time_as_str(self) -> str:
+        datetime_ = datetime.fromtimestamp(self.timestamp)
+        return datetime_.strftime("%Y-%m-%d %H:%M:%S")
+
     def get_frame_number(self) -> int:
         return self.frame_number
 

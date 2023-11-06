@@ -95,6 +95,9 @@ class Count:
     def get_first_event(self) -> Event:
         return self.events[0]
 
+    def get_last_event(self) -> Event:
+        return self.events[-1]
+
 
 class ActiveCount:
     def __init__(
