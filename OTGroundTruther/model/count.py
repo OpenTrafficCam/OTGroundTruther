@@ -167,6 +167,9 @@ class CountRepository:
         """
         return list(self._counts.values())
 
+    def get_all_as_dict(self) -> dict[int, Count]:
+        return self._counts
+
     def get(self, id: int) -> Optional[Count]:
         """Get the count for the given id or nothing, if the id is missing.
 
@@ -186,12 +189,18 @@ class CountRepository:
             )
         return list(set(filtered_counts))
 
-    def remove(self, id: int) -> None:
+    def delete(self, id: int) -> None:
         """Remove count from the repository.
 
         Args:
             id (int): the count id to be removed
         """
+        print(
+            (
+                f"deleted count {str(self._counts[id].get_road_user_id())}"
+                f" ({self._counts[id].get_road_user_class().get_name()})"
+            )
+        )
         del self._counts[id]
 
     def set_current_id(self, id: int):

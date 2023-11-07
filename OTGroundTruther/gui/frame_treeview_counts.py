@@ -50,6 +50,7 @@ class Treeview(ttk.Treeview):
             self.heading(key, text=value)
         self._current_id: Any = None
         self.add_scrollbar()
+        self.counts_line_ids: dict[str, int] = {}
 
     def add_scrollbar(self) -> None:
         self.scrollbar = ctk.CTkScrollbar(
@@ -61,11 +62,12 @@ class Treeview(ttk.Treeview):
         )
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
-        for count in count_repository.get_all_as_list():
-            self.add_count(count)
+        for count_id, count in count_repository.get_all_as_dict().items():
+            line_id = self.add_count(count)
+            self.counts_line_ids[line_id] = count_id
 
-    def add_count(self, count: Count) -> None:
-        self.insert(
+    def add_count(self, count: Count) -> str:
+        return self.insert(
             parent="",
             index=count.get_road_user_id(),
             # text=str(count.get_road_user_id()),
@@ -75,3 +77,11 @@ class Treeview(ttk.Treeview):
                 count.get_first_event().get_time_as_str(),
             ],
         )
+
+    def delete_selected_count(self) -> list[int]:
+        to_delete_count_ids = []
+        for selected_line_id in self.selection():
+            self.delete(selected_line_id)
+            to_delete_count_ids.append(self.counts_line_ids[selected_line_id])
+            del self.counts_line_ids[selected_line_id]
+        return to_delete_count_ids

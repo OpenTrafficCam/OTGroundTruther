@@ -126,8 +126,6 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.RIGHT_ARROW_KEY, self._on_right_key)
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
-        self._canvas.bind(tk_events.DELETE_KEY, self._on_delete_key)
-        self._canvas.bind(tk_events.BACKSPACE_KEY, self._on_delete_key)
         self._canvas.bind(tk_events.SPACE_KEY, self._on_space_key)
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
@@ -207,9 +205,6 @@ class CanvasEventTranslator:
 
     def _on_return_key(self, event: Any) -> None:
         self._presenter.finsh_active_count()
-
-    def _on_delete_key(self, event: Any) -> None:
-        pass
 
     def _on_escape_key(self, event: Any) -> None:
         self._presenter.abort_active_count()

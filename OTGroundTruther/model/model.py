@@ -213,7 +213,11 @@ class Model:
         return self._count_repository.get_all_as_list()
 
     def delete_count(self, id: int) -> None:
-        self._count_repository.remove(id)
+        self._count_repository.delete(id=id)
+
+    def delete_counts(self, ids: list[int]) -> None:
+        for id in ids:
+            self.delete_count(id=id)
 
     def get_counts_by_frame(self, frame_number: int) -> list[Count]:
         return self._count_repository.get_by_frame_of_events(frame_number)

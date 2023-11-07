@@ -2,7 +2,7 @@ from typing import Any
 
 import customtkinter as ctk
 
-from OTGroundTruther.gui.constants import PADX, PADY
+from OTGroundTruther.gui.constants import PADX, PADY, tk_events
 from OTGroundTruther.gui.frame_canvas import FrameCanvas
 from OTGroundTruther.gui.frame_treeview_counts import FrameTreeview
 from OTGroundTruther.gui.menu import MenuBar
@@ -16,6 +16,7 @@ class Gui(ctk.CTk):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._presenter = presenter
+        self._event_translator = GuiEventTranslator(gui=self, presenter=self._presenter)
 
     def run(self):
         self.title(TITLE)
@@ -43,3 +44,16 @@ class Gui(ctk.CTk):
         self.frame_treeview.pack(
             side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=PADX, pady=PADY
         )
+
+
+class GuiEventTranslator:
+    def __init__(self, gui: Gui, presenter: PresenterInterface):
+        self._gui = gui
+        self._presenter = presenter
+        self._bind_events()
+
+    def _bind_events(self) -> None:
+        self._gui.bind(tk_events.DELETE_KEY, self._on_delete_key)
+
+    def _on_delete_key(self, event: Any) -> None:
+        self._presenter.delete_selected_counts()
