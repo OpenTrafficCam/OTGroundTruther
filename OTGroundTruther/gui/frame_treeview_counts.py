@@ -1,3 +1,4 @@
+import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
 
@@ -50,9 +51,7 @@ class Treeview(ttk.Treeview):
         # )
         for key, value in COLUMNS_HEADINGS.items():
             self.heading(key, text=value)
-        self._current_id: Any = None
         self.add_scrollbar()
-        self.counts_line_ids: dict[str, int] = {}
         self._event_translator = TreeviewTranslator(
             treeview=self, presenter=self._presenter
         )
@@ -71,31 +70,26 @@ class Treeview(ttk.Treeview):
             self.add_count(count=count)
 
     def add_count(self, count: Count) -> None:
-        line_id = self.insert(
+        self.insert(
             parent="",
-            index=count.get_road_user_id(),
-            # text=str(count.get_road_user_id()),
+            index=tk.END,
+            iid=str(count.get_road_user_id()),
             values=[
                 count.get_road_user_id(),
                 count.get_road_user_class().get_short_label(),
                 count.get_first_event().get_time_as_str(),
             ],
         )
-        self.counts_line_ids[line_id] = count.get_road_user_id()
 
     def delete_selected_count(self) -> list[int]:
         to_delete_count_ids = []
-        for selected_line_id in self.selection():
-            self.delete(selected_line_id)
-            to_delete_count_ids.append(self.counts_line_ids[selected_line_id])
-            del self.counts_line_ids[selected_line_id]
+        for selected_count_id in self.selection():
+            self.delete(selected_count_id)
+            to_delete_count_ids.append(int(selected_count_id))
         return to_delete_count_ids
 
     def get_selected_count_ids(self) -> list[int]:
-        selected_count_ids = []
-        for selected_line_id in self.selection():
-            selected_count_ids.append(self.counts_line_ids[selected_line_id])
-        return selected_count_ids
+        return [int(count_id) for count_id in self.selection()]
 
 
 class TreeviewTranslator:
