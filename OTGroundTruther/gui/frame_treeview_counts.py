@@ -12,6 +12,8 @@ TREEVIEW_FRAME_COLUMN = 0
 
 COLUMNS_HEADINGS = {"ID": "ID", "Class": "Class", "Starttime": "Starttime"}
 
+TREEVIEW_SELECT = "<<TreeviewSelect>>"
+
 
 class FrameTreeview(ctk.CTkFrame):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any) -> None:
@@ -51,6 +53,9 @@ class Treeview(ttk.Treeview):
         self._current_id: Any = None
         self.add_scrollbar()
         self.counts_line_ids: dict[str, int] = {}
+        self._event_translator = TreeviewTranslator(
+            treeview=self, presenter=self._presenter
+        )
 
     def add_scrollbar(self) -> None:
         self.scrollbar = ctk.CTkScrollbar(
@@ -85,3 +90,24 @@ class Treeview(ttk.Treeview):
             to_delete_count_ids.append(self.counts_line_ids[selected_line_id])
             del self.counts_line_ids[selected_line_id]
         return to_delete_count_ids
+
+    def get_selected_count_ids(self) -> list[int]:
+        selected_count_ids = []
+        for selected_line_id in self.selection():
+            selected_count_ids.append(self.counts_line_ids[selected_line_id])
+        return selected_count_ids
+
+
+class TreeviewTranslator:
+    def __init__(self, treeview: Treeview, presenter: PresenterInterface):
+        self._treeview = treeview
+        self._presenter = presenter
+        self._bind_events()
+
+    def _bind_events(self) -> None:
+        self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
+
+    def _show_selected_count(self, event: Any) -> None:
+        selected_count_ids = self._treeview.get_selected_count_ids()
+        if selected_count_ids:
+            self._presenter.show_start_of_count(selected_count_ids[0])

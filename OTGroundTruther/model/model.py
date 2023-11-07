@@ -228,8 +228,16 @@ class Model:
         self._video_repository.clear()
         self.active_count = None
 
-    def get_startframe_of_last_count(self) -> OverlayedFrame:
-        event = self._count_repository.get_first_event_of_last_added_count()
+    def get_start_frame_of_last_count(self) -> OverlayedFrame:
+        last_added_count = list(self._count_repository.get_all_as_dict().values())[-1]
+        event = last_added_count.get_first_event()
+        return self.get_frame_by_event(event)
+
+    def get_frame_by_event(self, event: Event) -> OverlayedFrame:
         video = self._video_repository.get_video_by_name(event.get_video_file_name())
         background_frame = video.get_frame_by_number(event.get_frame_number())
         return self._get_overlayed_frame(background_frame=background_frame)
+
+    def get_start_frame_of_count(self, count_id: int):
+        event = self._count_repository.get_all_as_dict()[count_id].get_first_event()
+        return self.get_frame_by_event(event)

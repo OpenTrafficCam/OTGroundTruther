@@ -159,7 +159,7 @@ class Presenter(PresenterInterface):
             print("Please specify a class for the road user")
         else:
             if count is not None:
-                overlayed_frame = self._model.get_startframe_of_last_count()
+                overlayed_frame = self._model.get_start_frame_of_last_count()
                 self._update_canvas_image(overlayed_frame=overlayed_frame)
                 self._gui.frame_treeview.treeview_count.add_count(count)
         return
@@ -174,3 +174,7 @@ class Presenter(PresenterInterface):
         )
         self._model.delete_counts(to_delete_count_ids)
         self._update_canvas_image_with_new_overlay()
+
+    def show_start_of_count(self, count_id: int):
+        overlayed_frame = self._model.get_start_frame_of_count(count_id=count_id)
+        self._update_canvas_image(overlayed_frame=overlayed_frame)

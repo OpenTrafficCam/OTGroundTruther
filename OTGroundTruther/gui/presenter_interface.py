@@ -51,6 +51,9 @@ class PresenterInterface(ABC):
     @abstractmethod
     def refresh_treeview(self) -> None:
         raise NotImplementedError
-    
+
     def delete_selected_counts(self) -> None:
+        raise NotImplementedError
+
+    def show_start_of_count(self, count_id: int) -> None:
         raise NotImplementedError

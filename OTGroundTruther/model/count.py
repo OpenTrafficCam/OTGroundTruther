@@ -264,10 +264,6 @@ class CountRepository:
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[0])
 
-    def get_first_event_of_last_added_count(self) -> Event:
-        last_added_count = list(self._counts.values())[-1]
-        return last_added_count.get_first_event()
-
     def _get_events_and_classes_by_id(
         self, event_list: list[EventForParsingSerializing]
     ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
