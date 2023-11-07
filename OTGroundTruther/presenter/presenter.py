@@ -161,7 +161,7 @@ class Presenter(PresenterInterface):
             if count is not None:
                 overlayed_frame = self._model.get_start_frame_of_last_count()
                 self._update_canvas_image(overlayed_frame=overlayed_frame)
-                self._gui.frame_treeview.treeview_count.add_count(count)
+                self._gui.frame_treeview.treeview_count.add_count(count=count)
         return
 
     def abort_active_count(self) -> None:

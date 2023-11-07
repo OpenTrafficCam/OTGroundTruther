@@ -68,11 +68,10 @@ class Treeview(ttk.Treeview):
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
         for count_id, count in count_repository.get_all_as_dict().items():
-            line_id = self.add_count(count)
-            self.counts_line_ids[line_id] = count_id
+            self.add_count(count=count)
 
-    def add_count(self, count: Count) -> str:
-        return self.insert(
+    def add_count(self, count: Count) -> None:
+        line_id = self.insert(
             parent="",
             index=count.get_road_user_id(),
             # text=str(count.get_road_user_id()),
@@ -82,6 +81,7 @@ class Treeview(ttk.Treeview):
                 count.get_first_event().get_time_as_str(),
             ],
         )
+        self.counts_line_ids[line_id] = count.get_road_user_id()
 
     def delete_selected_count(self) -> list[int]:
         to_delete_count_ids = []
