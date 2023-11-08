@@ -99,20 +99,16 @@ class Treeview(ttk.Treeview):
 
     def sort_by_column(self, sort_column: str) -> None:
         column_values_and_row_index = [
-            (self.set(index, sort_column), index) for index in self.get_children("")
+            (self.set(tv_index, sort_column), tv_index)
+            for tv_index in self.get_children("")
         ]
         column_values_and_row_index.sort(
             reverse=self.next_column_sort_direction[sort_column]
         )
         # rearrange items in sorted positions
-        for index, (value, index) in enumerate(column_values_and_row_index):
-            self.move(index, "", index)
+        for order_index, (value, tv_index) in enumerate(column_values_and_row_index):
+            self.move(tv_index, "", order_index)
         self.update_next_column_sort_direction(sort_column=sort_column)
-
-        # self.heading(
-        #     column,
-        #     command=lambda: self.sort_by_column(column=column, reverse=not reverse),
-        # )
 
     def update_next_column_sort_direction(self, sort_column: str) -> None:
         self.next_column_sort_direction[
@@ -131,6 +127,7 @@ class TreeviewTranslator:
 
     def _bind_events(self) -> None:
         self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
+
         for column in list(COLUMNS_HEADINGS.keys()):
             self._treeview.heading(
                 column,
