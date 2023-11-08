@@ -55,6 +55,7 @@ class Treeview(ttk.Treeview):
         self._event_translator = TreeviewTranslator(
             treeview=self, presenter=self._presenter
         )
+        self.add_next_column_sort_direction()
 
     def add_scrollbar(self) -> None:
         self.scrollbar = ctk.CTkScrollbar(
@@ -64,6 +65,11 @@ class Treeview(ttk.Treeview):
         self.scrollbar.grid(
             row=TREEVIEW_FRAME_ROW, column=TREEVIEW_FRAME_COLUMN + 1, sticky="ns"
         )
+
+    def add_next_column_sort_direction(self):
+        self.next_column_sort_direction = {}
+        for column in list(COLUMNS_HEADINGS.keys()):
+            self.next_column_sort_direction[column] = False
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
         for count_id, count in count_repository.get_all_as_dict().items():
@@ -91,6 +97,31 @@ class Treeview(ttk.Treeview):
     def get_selected_count_ids(self) -> list[int]:
         return [int(count_id) for count_id in self.selection()]
 
+    def sort_by_column(self, sort_column: str) -> None:
+        column_values_and_row_index = [
+            (self.set(index, sort_column), index) for index in self.get_children("")
+        ]
+        column_values_and_row_index.sort(
+            reverse=self.next_column_sort_direction[sort_column]
+        )
+        # rearrange items in sorted positions
+        for index, (value, index) in enumerate(column_values_and_row_index):
+            self.move(index, "", index)
+        self.update_next_column_sort_direction(sort_column=sort_column)
+
+        # self.heading(
+        #     column,
+        #     command=lambda: self.sort_by_column(column=column, reverse=not reverse),
+        # )
+
+    def update_next_column_sort_direction(self, sort_column: str) -> None:
+        self.next_column_sort_direction[
+            sort_column
+        ] = not self.next_column_sort_direction[sort_column]
+        for column in list(COLUMNS_HEADINGS.keys()):
+            if column != sort_column:
+                self.next_column_sort_direction[column] = False
+
 
 class TreeviewTranslator:
     def __init__(self, treeview: Treeview, presenter: PresenterInterface):
@@ -100,6 +131,12 @@ class TreeviewTranslator:
 
     def _bind_events(self) -> None:
         self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
+        for column in list(COLUMNS_HEADINGS.keys()):
+            self._treeview.heading(
+                column,
+                text=column,
+                command=lambda _column=column: self._treeview.sort_by_column(_column),
+            )
 
     def _show_selected_count(self, event: Any) -> None:
         selected_count_ids = self._treeview.get_selected_count_ids()
