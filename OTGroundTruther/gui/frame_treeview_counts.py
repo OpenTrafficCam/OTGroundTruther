@@ -86,6 +86,7 @@ class Treeview(ttk.Treeview):
                 count.get_first_event().get_time_as_str(),
             ],
         )
+        self.scroll_to_the_end()
 
     def delete_selected_count(self) -> list[int]:
         to_delete_count_ids = []
@@ -117,6 +118,9 @@ class Treeview(ttk.Treeview):
         for column in list(COLUMNS_HEADINGS.keys()):
             if column != sort_column:
                 self.next_column_sort_direction[column] = False
+
+    def scroll_to_the_end(self) -> None:
+        self.yview_moveto(1)
 
 
 class TreeviewTranslator:
