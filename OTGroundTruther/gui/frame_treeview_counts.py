@@ -104,6 +104,7 @@ class Combobox(ctk.CTkComboBox):
         else:
             self.selected_classes = [selected_option]
         self._presenter.update_canvas_image_with_new_overlay()
+        self._presenter.refresh_treeview()
 
     def get_selected_classes(self) -> list[str]:
         return self.selected_classes
@@ -141,21 +142,32 @@ class Treeview(ttk.Treeview):
             self.next_column_sort_direction[column] = False
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
+        self.delete(*self.get_children())
+        selected_classes = self._presenter.get_selected_classes_from_gui()
         for count_id, count in count_repository.get_all_as_dict().items():
+            if count.get_road_user_class().get_name() in selected_classes:
+                self.add_count(
+                    count=count,
+                )
+
+    def add_count_if_in_selection(self, count: Count) -> None:
+        if (
+            count.get_road_user_class().get_name()
+            in self._presenter.get_selected_classes_from_gui()
+        ):
             self.add_count(count=count)
 
     def add_count(self, count: Count) -> None:
         properties_random_order = count.get_properties_to_show_as_dict()
-        properties_in_correct_order: dict[str, str] = {}
+        values_in_correct_order: list[str] = []
         for count_property in COUNT_PROPERTIES_ORDER:
-            properties_in_correct_order[count_property] = properties_random_order[
-                count_property
-            ]
+            values_in_correct_order.append(properties_random_order[count_property])
+
         self.insert(
             parent="",
             index=tk.END,
             iid=str(count.get_road_user_id()),
-            values=list(properties_in_correct_order.values()),
+            values=list(values_in_correct_order),
         )
         self.scroll_to_the_end()
 

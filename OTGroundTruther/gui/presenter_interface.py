@@ -63,3 +63,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def update_canvas_image_with_new_overlay(self) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def get_selected_classes_from_gui(self) -> list[str]:
+        raise NotImplementedError

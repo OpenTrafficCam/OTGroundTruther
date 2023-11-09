@@ -171,7 +171,9 @@ class Presenter(PresenterInterface):
                     selected_classes=self.get_selected_classes_from_gui(),
                 )
                 self._update_canvas_image(overlayed_frame=overlayed_frame)
-                self._gui.frame_treeview.treeview_counts.add_count(count=count)
+                self._gui.frame_treeview.treeview_counts.add_count_if_in_selection(
+                    count=count
+                )
         return
 
     def abort_active_count(self) -> None:
