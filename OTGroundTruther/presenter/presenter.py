@@ -27,6 +27,9 @@ class Presenter(PresenterInterface):
         self._gui.run()
 
     def after_run_gui(self) -> None:
+        self._gui.frame_treeview.combobox_counts.fill_and_set(
+            class_names=self._model._valid_road_user_classes.get_class_names()
+        )
         if self._model._video_repository.is_empty():
             return
         self._display_first_frame()
@@ -48,7 +51,9 @@ class Presenter(PresenterInterface):
         self._display_first_frame()
 
     def _display_first_frame(self) -> None:
-        overlayed_first_frame = self._model.get_first_frame()
+        overlayed_first_frame = self._model.get_first_frame(
+            selected_classes=self.get_selected_classes_from_gui()
+        )
         self._update_canvas_image(overlayed_frame=overlayed_first_frame)
 
     def load_otflow(self) -> None:
@@ -88,7 +93,8 @@ class Presenter(PresenterInterface):
         if self._current_frame is None:
             return
         overlayed_frame = self._model.refresh_current_frame(
-            current_frame=self._current_frame
+            current_frame=self._current_frame,
+            selected_classes=self.get_selected_classes_from_gui(),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -103,6 +109,7 @@ class Presenter(PresenterInterface):
             capped_scroll_delta = min(scroll_delta, MAX_SCROLL_STEP)
         overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
             current_frame=self._current_frame,
+            selected_classes=self.get_selected_classes_from_gui(),
             delta_of_frames=capped_scroll_delta,
             delta_of_time=0,
         )
@@ -112,6 +119,7 @@ class Presenter(PresenterInterface):
         if self._current_frame is not None:
             overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
                 current_frame=self._current_frame,
+                selected_classes=self.get_selected_classes_from_gui(),
                 delta_of_frames=0,
                 delta_of_time=delta_of_time,
             )
@@ -124,7 +132,7 @@ class Presenter(PresenterInterface):
         self._current_frame = overlayed_frame
 
     def refresh_treeview(self) -> None:
-        self._gui.frame_treeview.treeview_count.refresh_treeview(
+        self._gui.frame_treeview.treeview_counts.refresh_treeview(
             count_repository=self._model._count_repository
         )
 
@@ -136,19 +144,19 @@ class Presenter(PresenterInterface):
         if event is None:
             return
         self._model.add_event_to_active_count(event)
-        self._update_canvas_image_with_new_overlay()
+        self.update_canvas_image_with_new_overlay()
 
-    def _update_canvas_image_with_new_overlay(self):
+    def update_canvas_image_with_new_overlay(self) -> None:
         if self._current_frame is not None:
             overlayed_frame = self._model._get_overlayed_frame(
-                background_frame=self._current_frame.background_frame
+                background_frame=self._current_frame.background_frame,
+                selected_classes=self.get_selected_classes_from_gui(),
             )
             self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def set_road_user_class_for_active_count(self, key: str) -> None:
         self._model.set_road_user_class_for_active_count(key)
-
-        self._update_canvas_image_with_new_overlay()
+        self.update_canvas_image_with_new_overlay()
 
     def finsh_active_count(self) -> None:
         try:
@@ -159,22 +167,29 @@ class Presenter(PresenterInterface):
             print("Please specify a class for the road user")
         else:
             if count is not None:
-                overlayed_frame = self._model.get_start_frame_of_last_count()
+                overlayed_frame = self._model.get_start_frame_of_last_count(
+                    selected_classes=self.get_selected_classes_from_gui(),
+                )
                 self._update_canvas_image(overlayed_frame=overlayed_frame)
-                self._gui.frame_treeview.treeview_count.add_count(count=count)
+                self._gui.frame_treeview.treeview_counts.add_count(count=count)
         return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
-        self._update_canvas_image_with_new_overlay()
+        self.update_canvas_image_with_new_overlay()
 
     def delete_selected_counts(self) -> None:
         to_delete_count_ids = (
-            self._gui.frame_treeview.treeview_count.delete_selected_count()
+            self._gui.frame_treeview.treeview_counts.delete_selected_count()
         )
         self._model.delete_counts(to_delete_count_ids)
-        self._update_canvas_image_with_new_overlay()
+        self.update_canvas_image_with_new_overlay()
 
     def show_start_of_count(self, count_id: int):
-        overlayed_frame = self._model.get_start_frame_of_count(count_id=count_id)
+        overlayed_frame = self._model.get_start_frame_of_count(
+            count_id=count_id, selected_classes=self.get_selected_classes_from_gui()
+        )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
+
+    def get_selected_classes_from_gui(self) -> list[str]:
+        return self._gui.frame_treeview.combobox_counts.get_selected_classes()

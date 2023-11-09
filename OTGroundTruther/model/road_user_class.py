@@ -34,6 +34,12 @@ class ValidRoadUserClasses:
     def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
         return {value.get_name(): value for value in self._road_user_classes.values()}
 
+    def get_class_names(self) -> list[str]:
+        name_list: list[str] = []
+        for road_user_class in list(self._road_user_classes.values()):
+            name_list.append(road_user_class.get_name())
+        return name_list
+
     @staticmethod
     def _parse(yaml_content: list[dict[str, dict[str, str]]]):
         road_user_classes = {}

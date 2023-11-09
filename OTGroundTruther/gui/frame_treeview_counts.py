@@ -1,3 +1,4 @@
+import copy
 import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any
@@ -17,8 +18,11 @@ from OTGroundTruther.model.count import (
     CountRepository,
 )
 
-TREEVIEW_FRAME_ROW: int = 0
+TREEVIEW_FRAME_ROW: int = 1
 TREEVIEW_FRAME_COLUMN: int = 0
+
+COMBOBOX_FRAME_ROW: int = 0
+COMBOBOX_FRAME_COLUMN: int = 0
 
 TREEVIEW_SELECT: str = "<<TreeviewSelect>>"
 
@@ -39,6 +43,8 @@ COLUMN_WIDTHS: dict[str, int] = {
     COUNT_EXIT_GATE_NAME: 80,
 }
 
+ALL_CLASSES_SELECTION = "All"
+
 
 class FrameTreeview(ctk.CTkFrame):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any) -> None:
@@ -49,21 +55,58 @@ class FrameTreeview(ctk.CTkFrame):
         self._place_widgets()
 
     def _get_widgets(self) -> None:
-        self.treeview_count = Treeview(
+        self.treeview_counts = Treeview(
             master=self,
             presenter=self._presenter,
             columns=COUNT_PROPERTIES_ORDER,
             show="headings",
         )
+        self.combobox_counts = Combobox(
+            master=self, presenter=self._presenter, state="readonly"
+        )
 
     def _place_widgets(self) -> None:
-        self.treeview_count.grid(
+        self.treeview_counts.grid(
             row=TREEVIEW_FRAME_ROW,
             column=TREEVIEW_FRAME_COLUMN,
             padx=PADX,
             pady=PADY,
             sticky=STICKY,
         )
+        self.combobox_counts.grid(
+            row=COMBOBOX_FRAME_ROW,
+            column=COMBOBOX_FRAME_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
+        )
+
+
+class Combobox(ctk.CTkComboBox):
+    def __init__(self, presenter: PresenterInterface, **kwargs: Any):
+        super().__init__(**kwargs)
+        self._presenter = presenter
+        self.combobox_var = ctk.StringVar()
+
+    def fill_and_set(self, class_names: list[str]) -> None:
+        self.class_names = class_names
+        self.configure(
+            variable=self.combobox_var,
+            values=[ALL_CLASSES_SELECTION] + class_names,
+            command=self.combobox_callback,
+        )
+        self.set(value=ALL_CLASSES_SELECTION)
+        self.selected_classes: list[str] = copy.deepcopy(class_names)
+
+    def combobox_callback(self, selected_option: str) -> None:
+        if selected_option == ALL_CLASSES_SELECTION:
+            self.selected_classes = self.class_names
+        else:
+            self.selected_classes = [selected_option]
+        self._presenter.update_canvas_image_with_new_overlay()
+
+    def get_selected_classes(self) -> list[str]:
+        return self.selected_classes
 
 
 class Treeview(ttk.Treeview):

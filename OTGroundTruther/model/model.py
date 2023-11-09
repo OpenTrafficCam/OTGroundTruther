@@ -92,18 +92,23 @@ class Model:
         )
         print(f"Events written to {file}")
 
-    def get_frame_by_timestamp(self, unix_timestamp) -> OverlayedFrame:
+    def get_frame_by_timestamp(
+        self, unix_timestamp: float, selected_classes: list[str]
+    ) -> OverlayedFrame:
         if self._video_repository == []:
             raise NoVideoError
         video = self._video_repository.get_by_timestamp(unix_timestamp)
         if video is None:
             raise TimestampNotFoundInVideosError
         background_frame = video.get_frame_by_timestamp(unix_timestamp)
-        return self._get_overlayed_frame(background_frame)
+        return self._get_overlayed_frame(
+            background_frame=background_frame, selected_classes=selected_classes
+        )
 
     def get_frame_by_delta_frames_or_time(
         self,
         current_frame: OverlayedFrame,
+        selected_classes: list[str],
         delta_of_frames: int = 0,
         delta_of_time: float = 0,
     ) -> OverlayedFrame:
@@ -117,23 +122,33 @@ class Model:
             delta_of_time=delta_of_time,
         )
         background_frame = video.get_frame_by_number(frame_number)
-        return self._get_overlayed_frame(background_frame)
+        return self._get_overlayed_frame(
+            background_frame=background_frame, selected_classes=selected_classes
+        )
 
-    def get_first_frame(self) -> OverlayedFrame:
+    def get_first_frame(self, selected_classes: list[str]) -> OverlayedFrame:
         first_video = self._video_repository.get_first_video()
         background_frame = first_video.get_frame_by_number(0)
-        return self._get_overlayed_frame(background_frame)
+        return self._get_overlayed_frame(
+            background_frame=background_frame, selected_classes=selected_classes
+        )
 
-    def refresh_current_frame(self, current_frame: OverlayedFrame) -> OverlayedFrame:
+    def refresh_current_frame(
+        self, current_frame: OverlayedFrame, selected_classes: list[str]
+    ) -> OverlayedFrame:
         current_video = self._video_repository.get_video_by_name(
             current_frame.background_frame.get_video_name()
         )
         background_frame = current_video.get_frame_by_number(
             current_frame.background_frame.frame_number
         )
-        return self._get_overlayed_frame(background_frame)
+        return self._get_overlayed_frame(
+            background_frame=background_frame, selected_classes=selected_classes
+        )
 
-    def _get_overlayed_frame(self, background_frame: BackgroundFrame) -> OverlayedFrame:
+    def _get_overlayed_frame(
+        self, background_frame: BackgroundFrame, selected_classes: list[str]
+    ) -> OverlayedFrame:
         sections_overlay = SectionsOverlay(
             sections=self._section_repository.to_list(),
             width=background_frame.get_width(),
@@ -143,6 +158,7 @@ class Model:
             background_frame=background_frame,
             count_repository=self._count_repository,
             active_count=self._active_count,
+            selected_classes=selected_classes,
         )
         return OverlayedFrame(
             background_frame=background_frame,
@@ -228,16 +244,22 @@ class Model:
         self._video_repository.clear()
         self.active_count = None
 
-    def get_start_frame_of_last_count(self) -> OverlayedFrame:
+    def get_start_frame_of_last_count(
+        self, selected_classes: list[str]
+    ) -> OverlayedFrame:
         last_added_count = list(self._count_repository.get_all_as_dict().values())[-1]
         event = last_added_count.get_first_event()
-        return self.get_frame_by_event(event)
+        return self.get_frame_by_event(event=event, selected_classes=selected_classes)
 
-    def get_frame_by_event(self, event: Event) -> OverlayedFrame:
+    def get_frame_by_event(
+        self, event: Event, selected_classes: list[str]
+    ) -> OverlayedFrame:
         video = self._video_repository.get_video_by_name(event.get_video_file_name())
         background_frame = video.get_frame_by_number(event.get_frame_number())
-        return self._get_overlayed_frame(background_frame=background_frame)
+        return self._get_overlayed_frame(
+            background_frame=background_frame, selected_classes=selected_classes
+        )
 
-    def get_start_frame_of_count(self, count_id: int):
+    def get_start_frame_of_count(self, count_id: int, selected_classes: list[str]):
         event = self._count_repository.get_all_as_dict()[count_id].get_first_event()
-        return self.get_frame_by_event(event)
+        return self.get_frame_by_event(event=event, selected_classes=selected_classes)

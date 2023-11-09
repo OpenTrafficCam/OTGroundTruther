@@ -52,8 +52,14 @@ class PresenterInterface(ABC):
     def refresh_treeview(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def delete_selected_counts(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def show_start_of_count(self, count_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_canvas_image_with_new_overlay(self) -> None:
         raise NotImplementedError

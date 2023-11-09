@@ -21,9 +21,9 @@ COUNT_EXIT_TIME_NAME: str = "Exit Time"
 COUNT_EXIT_GATE_NAME: str = "Exit Gate"
 
 
-ARROW_OUTLINE_SIZE: int = 18
-COUNT_OUTLINE_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
-COUNT_OUTLINE_THICKNESS: int = 2
+ARROW_CONTOUR_SIZE: int = 18
+COUNT_CONTOUR_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
+COUNT_CONTOUR_THICKNESS: int = 2
 COUNT_LINE_THICKNESS: int = 1
 COUNT_LINE_AND_TEXT_COLOR: tuple[int, int, int, int] = (255, 185, 15, 255)
 
@@ -304,6 +304,7 @@ class CountsOverlay:
     count_repository: CountRepository
     active_count: ActiveCount | None
     background_frame: BackgroundFrame
+    selected_classes: list[str]
     image_array: np.ndarray = field(init=False)
     image: Image.Image = field(init=False)
 
@@ -324,7 +325,7 @@ class CountsOverlay:
 
     def _draw_finished_counts(self):
         for count in self.count_repository.get_all_as_list():
-            draw_count = self.draw_events(count)
+            draw_count = self._draw_events_if_in_time_and_class(count)
             if draw_count:
                 self._draw_single_count(
                     events=count.get_events(),
@@ -332,40 +333,47 @@ class CountsOverlay:
                     color=COUNT_LINE_AND_TEXT_COLOR,
                 )
 
-    def draw_events(self, count: Count):
+    def _draw_events_if_in_time_and_class(self, count: Count):
         draw_count = False
-        for event in count.get_events():
-            if self._is_at_current_frame(event=event):
-                cv2.circle(
-                    img=self.image_array,
-                    center=event.get_coordinate().as_list(),
-                    radius=EVENTPOINT_MOMENT_BG_RADIUS,
-                    color=EVENTPOINT_MOMENT_BG_COLOR,
-                    thickness=EVENTPOINT_MOMENT_BG_THICKNESS,
-                    lineType=COUNT_LINETYPE,
-                )
-                cv2.circle(
-                    img=self.image_array,
-                    center=event.get_coordinate().as_list(),
-                    radius=EVENTPOINT_MOMENT_RADIUS,
-                    color=EVENTPOINT_MOMENT_COLOR,
-                    thickness=EVENTPOINT_MOMENT_THICKNESS,
-                    lineType=COUNT_LINETYPE,
-                )
-                draw_count = True
-            elif self._is_in_time_window(
-                event=event, time_window=TIME_WINDOW_SHOW_COUNT
-            ):
-                cv2.circle(
-                    img=self.image_array,
-                    center=event.get_coordinate().as_list(),
-                    radius=COUNT_EVENTPOINT_RADIUS,
-                    color=COUNT_EVENTPOINT_COLOR,
-                    thickness=COUNT_EVENTPOINT_THICKNESS,
-                    lineType=COUNT_LINETYPE,
-                )
-                draw_count = True
+        if count.get_road_user_class().get_name() in self.selected_classes:
+            for event in count.get_events():
+                if self._is_at_current_frame(event=event):
+                    self._draw_event_circle_with_contour(event)
+                    draw_count = True
+                elif self._is_in_time_window(
+                    event=event, time_window=TIME_WINDOW_SHOW_COUNT
+                ):
+                    self._draw_simple_event_circle(event)
+                    draw_count = True
         return draw_count
+
+    def _draw_simple_event_circle(self, event):
+        cv2.circle(
+            img=self.image_array,
+            center=event.get_coordinate().as_list(),
+            radius=COUNT_EVENTPOINT_RADIUS,
+            color=COUNT_EVENTPOINT_COLOR,
+            thickness=COUNT_EVENTPOINT_THICKNESS,
+            lineType=COUNT_LINETYPE,
+        )
+
+    def _draw_event_circle_with_contour(self, event):
+        cv2.circle(
+            img=self.image_array,
+            center=event.get_coordinate().as_list(),
+            radius=EVENTPOINT_MOMENT_BG_RADIUS,
+            color=EVENTPOINT_MOMENT_BG_COLOR,
+            thickness=EVENTPOINT_MOMENT_BG_THICKNESS,
+            lineType=COUNT_LINETYPE,
+        )
+        cv2.circle(
+            img=self.image_array,
+            center=event.get_coordinate().as_list(),
+            radius=EVENTPOINT_MOMENT_RADIUS,
+            color=EVENTPOINT_MOMENT_COLOR,
+            thickness=EVENTPOINT_MOMENT_THICKNESS,
+            lineType=COUNT_LINETYPE,
+        )
 
     def _is_at_current_frame(self, event: Event) -> bool:
         return (
@@ -419,20 +427,20 @@ class CountsOverlay:
     def _draw_arrow_with_outline(
         self, p0: Coordinate, p1: Coordinate, color: tuple[int, int, int, int]
     ) -> None:
-        tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_OUTLINE_SIZE)
+        tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_CONTOUR_SIZE)
         cv2.arrowedLine(
             img=self.image_array,
             pt1=p0.as_list(),
             pt2=p1.as_list(),
-            color=COUNT_OUTLINE_COLOR,
-            thickness=COUNT_OUTLINE_THICKNESS,
+            color=COUNT_CONTOUR_COLOR,
+            thickness=COUNT_CONTOUR_THICKNESS,
             line_type=COUNT_LINETYPE,
             tipLength=tiplength,
         )
         tiplength = self._tiplength_for_same_arrow_size(
             p0,
             p1,
-            ARROW_OUTLINE_SIZE - (COUNT_OUTLINE_THICKNESS - COUNT_LINE_THICKNESS),
+            ARROW_CONTOUR_SIZE - (COUNT_CONTOUR_THICKNESS - COUNT_LINE_THICKNESS),
         )
         cv2.arrowedLine(
             img=self.image_array,
