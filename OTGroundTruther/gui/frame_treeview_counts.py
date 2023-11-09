@@ -6,14 +6,38 @@ import customtkinter as ctk
 
 from OTGroundTruther.gui.constants import PADX, PADY, STICKY
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
-from OTGroundTruther.model.count import Count, CountRepository
+from OTGroundTruther.model.count import (
+    COUNT_CLASS_NAME,
+    COUNT_ENTER_GATE_NAME,
+    COUNT_ENTER_TIME_NAME,
+    COUNT_EXIT_GATE_NAME,
+    COUNT_EXIT_TIME_NAME,
+    COUNT_ID_NAME,
+    Count,
+    CountRepository,
+)
 
-TREEVIEW_FRAME_ROW = 0
-TREEVIEW_FRAME_COLUMN = 0
+TREEVIEW_FRAME_ROW: int = 0
+TREEVIEW_FRAME_COLUMN: int = 0
 
-COLUMNS_HEADINGS = {"ID": "ID", "Class": "Class", "Starttime": "Starttime"}
+TREEVIEW_SELECT: str = "<<TreeviewSelect>>"
 
-TREEVIEW_SELECT = "<<TreeviewSelect>>"
+COUNT_PROPERTIES_ORDER: list[str] = [
+    COUNT_ID_NAME,
+    COUNT_CLASS_NAME,
+    COUNT_ENTER_TIME_NAME,
+    COUNT_ENTER_GATE_NAME,
+    COUNT_EXIT_TIME_NAME,
+    COUNT_EXIT_GATE_NAME,
+]
+COLUMN_WIDTHS: dict[str, int] = {
+    COUNT_ID_NAME: 40,
+    COUNT_CLASS_NAME: 100,
+    COUNT_ENTER_TIME_NAME: 100,
+    COUNT_ENTER_GATE_NAME: 80,
+    COUNT_EXIT_TIME_NAME: 100,
+    COUNT_EXIT_GATE_NAME: 80,
+}
 
 
 class FrameTreeview(ctk.CTkFrame):
@@ -28,7 +52,7 @@ class FrameTreeview(ctk.CTkFrame):
         self.treeview_count = Treeview(
             master=self,
             presenter=self._presenter,
-            columns=list(COLUMNS_HEADINGS.keys()),
+            columns=COUNT_PROPERTIES_ORDER,
             show="headings",
         )
 
@@ -46,16 +70,18 @@ class Treeview(ttk.Treeview):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
         self._presenter = presenter
-        # self._event_translator = CanvasEventTranslator(
-        #     canvas=self, presenter=self._presenter
-        # )
-        for key, value in COLUMNS_HEADINGS.items():
-            self.heading(key, text=value)
+        self.add_columns()
+
         self.add_scrollbar()
         self._event_translator = TreeviewTranslator(
             treeview=self, presenter=self._presenter
         )
         self.add_next_column_sort_direction()
+
+    def add_columns(self) -> None:
+        for key in COUNT_PROPERTIES_ORDER:
+            self.heading(key, text=key)
+            self.column(key, width=COLUMN_WIDTHS[key])
 
     def add_scrollbar(self) -> None:
         self.scrollbar = ctk.CTkScrollbar(
@@ -68,7 +94,7 @@ class Treeview(ttk.Treeview):
 
     def add_next_column_sort_direction(self):
         self.next_column_sort_direction = {}
-        for column in list(COLUMNS_HEADINGS.keys()):
+        for column in COUNT_PROPERTIES_ORDER:
             self.next_column_sort_direction[column] = False
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
@@ -76,15 +102,17 @@ class Treeview(ttk.Treeview):
             self.add_count(count=count)
 
     def add_count(self, count: Count) -> None:
+        properties_random_order = count.get_properties_to_show_as_dict()
+        properties_in_correct_order: dict[str, str] = {}
+        for count_property in COUNT_PROPERTIES_ORDER:
+            properties_in_correct_order[count_property] = properties_random_order[
+                count_property
+            ]
         self.insert(
             parent="",
             index=tk.END,
             iid=str(count.get_road_user_id()),
-            values=[
-                count.get_road_user_id(),
-                count.get_road_user_class().get_short_label(),
-                count.get_first_event().get_time_as_str(),
-            ],
+            values=list(properties_in_correct_order.values()),
         )
         self.scroll_to_the_end()
 
@@ -115,7 +143,7 @@ class Treeview(ttk.Treeview):
         self.next_column_sort_direction[
             sort_column
         ] = not self.next_column_sort_direction[sort_column]
-        for column in list(COLUMNS_HEADINGS.keys()):
+        for column in COUNT_PROPERTIES_ORDER:
             if column != sort_column:
                 self.next_column_sort_direction[column] = False
 
@@ -132,7 +160,7 @@ class TreeviewTranslator:
     def _bind_events(self) -> None:
         self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
 
-        for column in list(COLUMNS_HEADINGS.keys()):
+        for column in COUNT_PROPERTIES_ORDER:
             self._treeview.heading(
                 column,
                 text=column,

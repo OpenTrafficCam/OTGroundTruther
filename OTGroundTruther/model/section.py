@@ -66,6 +66,9 @@ class LineSection:
     def _get_coordinate_list(self):
         return [coordinate.to_dict() for coordinate in self.coordinates]
 
+    def get_name(self) -> str:
+        return self.name
+
 
 @dataclass
 class SectionsOverlay:

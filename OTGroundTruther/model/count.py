@@ -12,6 +12,15 @@ from OTGroundTruther.model.video import BackgroundFrame
 
 ACTIVE_COUNT_ID: str = "active-count-id"
 
+
+COUNT_ID_NAME: str = "ID"
+COUNT_CLASS_NAME: str = "Class"
+COUNT_ENTER_TIME_NAME: str = "Enter Time"
+COUNT_ENTER_GATE_NAME: str = "Enter Gate"
+COUNT_EXIT_TIME_NAME: str = "Exit Time"
+COUNT_EXIT_GATE_NAME: str = "Exit Gate"
+
+
 ARROW_OUTLINE_SIZE: int = 18
 COUNT_OUTLINE_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
 COUNT_OUTLINE_THICKNESS: int = 2
@@ -97,6 +106,16 @@ class Count:
 
     def get_last_event(self) -> Event:
         return self.events[-1]
+
+    def get_properties_to_show_as_dict(self) -> dict[str, str]:
+        return {
+            COUNT_ID_NAME: str(self.get_road_user_id()),
+            COUNT_CLASS_NAME: self.get_road_user_class().get_name(),
+            COUNT_ENTER_TIME_NAME: self.get_first_event().get_time_as_str(),
+            COUNT_ENTER_GATE_NAME: self.get_first_event().get_section().get_name(),
+            COUNT_EXIT_TIME_NAME: self.get_last_event().get_time_as_str(),
+            COUNT_EXIT_GATE_NAME: self.get_last_event().get_section().get_name(),
+        }
 
 
 class ActiveCount:

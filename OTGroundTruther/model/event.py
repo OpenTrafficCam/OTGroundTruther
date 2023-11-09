@@ -24,6 +24,7 @@ DIRECTION_VECTOR: str = "direction_vector"
 VIDEO_NAME: str = "video_name"
 OCCURENCE: str = "occurrence"
 HOSTNAME: str = "hostname"
+
 ROAD_USER_CLASS: str = "road_user_class"
 ROAD_USER_CLASS_OTEVENTS: str = "road_user_type"
 ROAD_USER_ID: str = "road_user_id"
@@ -68,13 +69,16 @@ class Event:
 
     def get_time_as_str(self) -> str:
         datetime_ = datetime.fromtimestamp(self.timestamp)
-        return datetime_.strftime("%Y-%m-%d %H:%M:%S")
+        return datetime_.strftime("%Y-%m-%d %H:%M:%S")[5:]
 
     def get_frame_number(self) -> int:
         return self.frame_number
 
     def get_video_file_name(self) -> str:
         return self.video_file_name
+
+    def get_section(self) -> LineSection:
+        return self.section
 
 
 @dataclass
