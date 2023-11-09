@@ -43,7 +43,42 @@ COLUMN_WIDTHS: dict[str, int] = {
     COUNT_EXIT_GATE_NAME: 80,
 }
 
-ALL_CLASSES_SELECTION = "All"
+ALL_CLASSES_SELECTION: str = "All"
+CLASS_GROUPS: dict[str, list[str]] = {
+    "All Pedestrians, Bicyclists, Scooter Drivers": [
+        "pedestrian",
+        "bicyclist",
+        "bicyclist_with_trailer",
+        "cargo_bike_driver",
+        "scooter_driver",
+    ],
+    "All Bicyclists": ["bicyclist", "bicyclist_with_trailer", "cargo_bike_driver"],
+    "Motorised Vehicles": [
+        "train",
+        "truck_with_semitrailer",
+        "truck_with_trailer",
+        "truck",
+        "bus",
+        "delivery_van_with_trailer",
+        "delivery_van",
+        "private_van_with_trailer",
+        "private_van",
+        "car_with_trailer",
+        "car",
+        "motorcyclist",
+    ],
+    "Light Vehicles": [
+        "delivery_van_with_trailer",
+        "delivery_van",
+        "private_van_with_trailer",
+        "private_van",
+        "car_with_trailer",
+        "car",
+        "motorcyclist",
+    ],
+    "Heavy Vehicles": ["truck_with_semitrailer", "truck_with_trailer", "truck", "bus"],
+    "All Trucks": ["truck_with_semitrailer", "truck_with_trailer", "truck"],
+}
 
 
 class FrameTreeview(ctk.CTkFrame):
@@ -92,7 +127,7 @@ class Combobox(ctk.CTkComboBox):
         self.class_names = class_names
         self.configure(
             variable=self.combobox_var,
-            values=[ALL_CLASSES_SELECTION] + class_names,
+            values=[ALL_CLASSES_SELECTION] + list(CLASS_GROUPS.keys()) + class_names,
             command=self.combobox_callback,
         )
         self.set(value=ALL_CLASSES_SELECTION)
@@ -101,6 +136,8 @@ class Combobox(ctk.CTkComboBox):
     def combobox_callback(self, selected_option: str) -> None:
         if selected_option == ALL_CLASSES_SELECTION:
             self.selected_classes = self.class_names
+        elif selected_option in list(CLASS_GROUPS.keys()):
+            self.selected_classes = CLASS_GROUPS[selected_option]
         else:
             self.selected_classes = [selected_option]
         self._presenter.update_canvas_image_with_new_overlay()
