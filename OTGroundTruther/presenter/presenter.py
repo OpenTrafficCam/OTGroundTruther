@@ -192,10 +192,6 @@ class Presenter(PresenterInterface):
             print("Please specify a class for the road user")
         else:
             if count is not None:
-                # overlayed_frame = self._model.get_start_frame_of_last_count(
-                #     selected_classes=self.get_selected_classes_from_gui(),
-                # )
-                # self._update_canvas_image(overlayed_frame=overlayed_frame)
                 self._gui.frame_treeview.treeview_counts.add_and_select_count_if_in(
                     count=count
                 )
