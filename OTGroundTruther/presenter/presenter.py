@@ -159,8 +159,13 @@ class Presenter(PresenterInterface):
         )
         if event is None:
             return
+
         self._model.add_event_to_active_count(event)
         self.update_canvas_image_with_new_overlay()
+
+        if not self._model.active_count_class_is_set():
+            self._gui.frame_treeview.treeview_counts.selection_set("")
+            self._gui.frame_treeview.class_label.set_blank()
 
     def update_canvas_image_with_new_overlay(self) -> None:
         if self._current_frame is not None:
@@ -171,8 +176,12 @@ class Presenter(PresenterInterface):
             self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def set_road_user_class_for_active_count(self, key: str) -> None:
-        self._model.set_road_user_class_for_active_count(key)
-        self.update_canvas_image_with_new_overlay()
+        road_user_class = self._model.set_road_user_class_for_active_count(key)
+        if road_user_class is not None:
+            self.update_canvas_image_with_new_overlay()
+            self._gui.frame_treeview.class_label.show_class_img(
+                road_user_class=road_user_class
+            )
 
     def finsh_active_count(self) -> None:
         try:
@@ -183,24 +192,27 @@ class Presenter(PresenterInterface):
             print("Please specify a class for the road user")
         else:
             if count is not None:
-                overlayed_frame = self._model.get_start_frame_of_last_count(
-                    selected_classes=self.get_selected_classes_from_gui(),
-                )
-                self._update_canvas_image(overlayed_frame=overlayed_frame)
-                self._gui.frame_treeview.treeview_counts.add_count_if_in_selection(
+                # overlayed_frame = self._model.get_start_frame_of_last_count(
+                #     selected_classes=self.get_selected_classes_from_gui(),
+                # )
+                # self._update_canvas_image(overlayed_frame=overlayed_frame)
+                self._gui.frame_treeview.treeview_counts.add_and_select_count_if_in(
                     count=count
                 )
+
         return
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
         self.update_canvas_image_with_new_overlay()
+        self._gui.frame_treeview.class_label.set_blank()
 
     def delete_selected_counts(self) -> None:
         to_delete_count_ids = (
             self._gui.frame_treeview.treeview_counts.delete_selected_count()
         )
         self._model.delete_counts(to_delete_count_ids)
+        self._gui.frame_treeview.class_label.set_blank()
         self.update_canvas_image_with_new_overlay()
 
     def show_start_of_count(self, count_id: int):
@@ -211,3 +223,11 @@ class Presenter(PresenterInterface):
 
     def get_selected_classes_from_gui(self) -> list[str]:
         return self._gui.frame_treeview.combobox_counts.get_selected_classes()
+
+    def show_class_image_by_count_id(self, count_id: int) -> None:
+        road_user_class = self._model._count_repository.get_all_as_dict()[
+            count_id
+        ].get_road_user_class()
+        self._gui.frame_treeview.class_label.show_class_img(
+            road_user_class=road_user_class
+        )

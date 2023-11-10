@@ -67,3 +67,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def get_selected_classes_from_gui(self) -> list[str]:
         raise NotImplementedError
+
+    @abstractmethod
+    def show_class_image_by_count_id(self, count_id: int) -> None:
+        raise NotImplementedError

@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from typing import Any
 
 import customtkinter as ctk
+from PIL import Image
 
 from OTGroundTruther.gui.constants import PADX, PADY, STICKY
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
@@ -17,12 +18,16 @@ from OTGroundTruther.model.count import (
     Count,
     CountRepository,
 )
-
-TREEVIEW_FRAME_ROW: int = 1
-TREEVIEW_FRAME_COLUMN: int = 0
+from OTGroundTruther.model.road_user_class import RoadUserClass
 
 COMBOBOX_FRAME_ROW: int = 0
 COMBOBOX_FRAME_COLUMN: int = 0
+
+TREEVIEW_FRAME_ROW: int = COMBOBOX_FRAME_ROW + 1
+TREEVIEW_FRAME_COLUMN: int = COMBOBOX_FRAME_COLUMN
+
+CLASS_LABEL_FRAME_ROW: int = TREEVIEW_FRAME_ROW + 1
+CLASS_LABEL_FRAME_COLUMN: int = COMBOBOX_FRAME_COLUMN
 
 TREEVIEW_SELECT: str = "<<TreeviewSelect>>"
 
@@ -90,14 +95,19 @@ class FrameTreeview(ctk.CTkFrame):
         self._place_widgets()
 
     def _get_widgets(self) -> None:
+        self.combobox_counts = Combobox(
+            master=self, presenter=self._presenter, state="readonly"
+        )
         self.treeview_counts = Treeview(
             master=self,
             presenter=self._presenter,
             columns=COUNT_PROPERTIES_ORDER,
             show="headings",
         )
-        self.combobox_counts = Combobox(
-            master=self, presenter=self._presenter, state="readonly"
+        self.class_label = Class_Label(
+            master=self,
+            presenter=self._presenter,
+            text="",
         )
 
     def _place_widgets(self) -> None:
@@ -111,6 +121,13 @@ class FrameTreeview(ctk.CTkFrame):
         self.combobox_counts.grid(
             row=COMBOBOX_FRAME_ROW,
             column=COMBOBOX_FRAME_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
+        )
+        self.class_label.grid(
+            row=CLASS_LABEL_FRAME_ROW,
+            column=CLASS_LABEL_FRAME_COLUMN,
             padx=PADX,
             pady=PADY,
             sticky=STICKY,
@@ -187,12 +204,13 @@ class Treeview(ttk.Treeview):
                     count=count,
                 )
 
-    def add_count_if_in_selection(self, count: Count) -> None:
+    def add_and_select_count_if_in(self, count: Count) -> None:
         if (
             count.get_road_user_class().get_name()
             in self._presenter.get_selected_classes_from_gui()
         ):
             self.add_count(count=count)
+            self.selection_set([str(count.get_road_user_id())])
 
     def add_count(self, count: Count) -> None:
         properties_random_order = count.get_properties_to_show_as_dict()
@@ -262,4 +280,23 @@ class TreeviewTranslator:
     def _show_selected_count(self, event: Any) -> None:
         selected_count_ids = self._treeview.get_selected_count_ids()
         if selected_count_ids:
-            self._presenter.show_start_of_count(selected_count_ids[0])
+            self._presenter.show_start_of_count(count_id=selected_count_ids[0])
+            self._presenter.show_class_image_by_count_id(count_id=selected_count_ids[0])
+
+
+class Class_Label(ctk.CTkLabel):
+    def __init__(self, presenter: PresenterInterface, **kwargs: Any):
+        super().__init__(**kwargs)
+        self._presenter = presenter
+        # self.configure(bg="white")
+
+    def show_class_img(self, road_user_class: RoadUserClass):
+        self.image = ctk.CTkImage(light_image=road_user_class.get_icon(), size=(80, 80))
+        self.configure(image=self.image)
+
+    def set_blank(self):
+        white_image = Image.new("RGB", (1, 1), color="white")
+        white_image_tk = ctk.CTkImage(light_image=white_image, size=(1, 1))
+
+        self.configure(image=white_image_tk)
+        self.image = white_image_tk

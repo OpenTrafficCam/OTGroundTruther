@@ -8,25 +8,31 @@ KEY_YAML_KEY = "key"
 SHORT_LABEL_ENG_YAML_KEY = "short_label_eng"
 LABEL_YAML_KEY = "label"
 ICON_FILE_YAML_KEY = "icon_file"
+CLASS_IMAGE_SIZE: int = 80
 
 
 @dataclass
 class RoadUserClass:
     name: str
-    label: str
+    label_ger: str
     short_label_eng: str
     key: str | None
     icon_file: Path
     icon: Image = field(init=False)
 
     def __post_init__(self):
-        self.icon = Image.open(self.icon_file)
+        self.icon = Image.open(self.icon_file).resize(
+            (CLASS_IMAGE_SIZE, CLASS_IMAGE_SIZE)
+        )
 
     def get_name(self) -> str:
         return self.name
 
     def get_short_label(self) -> str:
         return self.short_label_eng
+
+    def get_icon(self) -> Image:
+        return self.icon
 
 
 @dataclass
@@ -53,7 +59,7 @@ class ValidRoadUserClasses:
                 key = properties[KEY_YAML_KEY]
                 road_user_classes[key] = RoadUserClass(
                     name=name,
-                    label=properties[LABEL_YAML_KEY],
+                    label_ger=properties[LABEL_YAML_KEY],
                     short_label_eng=properties[SHORT_LABEL_ENG_YAML_KEY],
                     key=key,
                     icon_file=Path(properties[ICON_FILE_YAML_KEY]),

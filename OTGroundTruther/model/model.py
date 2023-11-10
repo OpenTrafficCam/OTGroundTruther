@@ -15,7 +15,7 @@ from OTGroundTruther.model.event import (
     EventListParser,
 )
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
-from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
+from OTGroundTruther.model.road_user_class import RoadUserClass, ValidRoadUserClasses
 from OTGroundTruther.model.section import (
     LineSection,
     SectionParser,
@@ -190,14 +190,15 @@ class Model:
             self._active_count.add_event(event)
         print(f"New event: {event.to_dict()}")
 
-    def set_road_user_class_for_active_count(self, key: str):
+    def set_road_user_class_for_active_count(self, key: str) -> RoadUserClass | None:
         if self._active_count is None:
-            return
+            return None
         road_user_class = self._valid_road_user_classes.get_by_key(key)
         if road_user_class is None:
-            return
+            return None
         self._active_count.set_road_user_class(road_user_class)
-        print(f"Road user class: {road_user_class.label}")
+        print(f"Road user class: {road_user_class.get_name()}")
+        return road_user_class
 
     def add_active_count_to_repository(self) -> Count | None:
         if self._active_count is None:
@@ -215,6 +216,15 @@ class Model:
         self._active_count = None
         print("Active count finished")
         return count
+
+    def active_count_class_is_set(self) -> bool:
+        if (
+            self._active_count is None
+            or self._active_count.get_road_user_class() is None
+        ):
+            return False
+        else:
+            return True
 
     def clear_active_count(self) -> None:
         self._active_count = None
