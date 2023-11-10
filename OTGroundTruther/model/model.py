@@ -76,21 +76,16 @@ class Model:
 
     def write_events_and_sections_to_file(
         self,
+        event_file_path: Path,
         event_list: list[EventForParsingSerializing],
         sections: list[LineSection],
-        file_type: str,
     ) -> None:
-        file = (
-            self._video_repository.get_first_video()
-            .get_filepath()
-            .with_suffix(f".{file_type}")
-        )
         self._eventlistparser.serialize(
             events=event_list,
             sections=sections,
-            file=file,
+            file=event_file_path,
         )
-        print(f"Events written to {file}")
+        print(f"Events written to {str(event_file_path)}")
 
     def get_frame_by_timestamp(
         self, unix_timestamp: float, selected_classes: list[str]

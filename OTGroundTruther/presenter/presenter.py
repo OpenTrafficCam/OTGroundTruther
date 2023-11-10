@@ -1,5 +1,5 @@
 from pathlib import Path
-from tkinter.filedialog import askopenfilename, askopenfilenames
+from tkinter.filedialog import askopenfilename, askopenfilenames, asksaveasfilename
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
@@ -41,14 +41,15 @@ class Presenter(PresenterInterface):
         # TODO: Also refresh when count_repository not empty
 
     def load_video_files(self) -> None:
-        video_files = askopenfilenames(
+        output_askfile = askopenfilenames(
             defaultextension=f"*.{DEFAULT_VIDEO_FILE_SUFFIX}",
             filetypes=[
                 ("mp4", f"*.{DEFAULT_VIDEO_FILE_SUFFIX}"),
             ],
         )
-        self._model.load_videos_from_files([Path(file) for file in video_files])
-        self._display_first_frame()
+        if output_askfile:
+            self._model.load_videos_from_files([Path(file) for file in output_askfile])
+            self._display_first_frame()
 
     def _display_first_frame(self) -> None:
         overlayed_first_frame = self._model.get_first_frame(
@@ -57,37 +58,52 @@ class Presenter(PresenterInterface):
         self._update_canvas_image(overlayed_frame=overlayed_first_frame)
 
     def load_otflow(self) -> None:
-        otflow_file = askopenfilename(
+        output_askfile = askopenfilename(
             defaultextension=f"*.{OTANALYTICS_FILE_SUFFIX}",
             filetypes=[
                 ("otevents", f"*.{OTANALYTICS_FILE_SUFFIX}"),
             ],
         )
-        self._model.read_sections_from_file(Path(otflow_file))
-        if self._current_frame is None:
-            return
-        self._refresh_current_frame()
+        if output_askfile:
+            self._model.read_sections_from_file(Path(output_askfile))
+            if self._current_frame is None:
+                return
+            self._refresh_current_frame()
 
     def load_events(self) -> None:
-        events_file = askopenfilename(
+        output_askfile = askopenfilename(
             defaultextension=f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
                 ("otgtevents", f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
                 ("otevents", f"*.{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
-        self._model.read_sections_from_file(Path(events_file))
-        self._model.read_events_from_file(Path(events_file))
-        if self._current_frame is None:
-            return
-        self._refresh_current_frame()
+        if output_askfile:
+            self._model.read_sections_from_file(Path(output_askfile))
+            self._model.read_events_from_file(Path(output_askfile))
+            if self._current_frame is None:
+                return
+            self._refresh_current_frame()
 
     def save_events(self) -> None:
-        sections = self._model._section_repository.to_list()
-        event_list = self._model._count_repository.to_event_list()
-        self._model.write_events_and_sections_to_file(
-            event_list, sections, GROUND_TRUTH_EVENTS_FILE_SUFFIX
+        first_video_file = (
+            self._model._video_repository.get_first_video().get_filepath()
         )
+        output_asksave = asksaveasfilename(
+            initialdir=first_video_file.parent,
+            initialfile=first_video_file.stem,
+            defaultextension=GROUND_TRUTH_EVENTS_FILE_SUFFIX,
+            filetypes=[("OTGTEvent file", GROUND_TRUTH_EVENTS_FILE_SUFFIX)],
+            title="Save all Events",
+        )
+        if output_asksave:
+            sections = self._model._section_repository.to_list()
+            event_list = self._model._count_repository.to_event_list()
+            self._model.write_events_and_sections_to_file(
+                event_file_path=Path(output_asksave),
+                event_list=event_list,
+                sections=sections,
+            )
 
     def _refresh_current_frame(self) -> None:
         if self._current_frame is None:
