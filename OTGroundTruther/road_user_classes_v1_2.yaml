@@ -1,90 +1,108 @@
 - pedestrian:
         label: Person
-        short_label: Person
+        short_label_eng: pedestrian
+        short_label_ger: Person
         key: f
         icon_file: assets/pedestrian.png
 - bicyclist:
         label: Fahrrad ohne Anhänger
-        short_label: Fahrrad
+        short_label_eng: bike
+        short_label_ger: Fahrrad
         key: d
         icon_file: assets/cyclist.png
 - bicyclist_with_trailer:
         label: Fahrrad mit Anhänger
-        short_label: Fahrrad mA
+        short_label_eng: bike w t
+        short_label_ger: Fahrrad mA
         key: D
         icon_file: assets/cyclist-trailer.png
 - cargo_bike_driver:
         label: Lastenrad
-        short_label: Lastenrad
+        short_label_eng: cargo bike
+        short_label_ger: Lastenrad
         key: s
         icon_file: assets/cargo_cyclist.png
 - scooter_driver:
         label: Scooter
-        short_label: Scooter
+        short_label_eng: scooter
+        short_label_ger: Scooter
         key: a
         icon_file: assets/scooter_rider.png
 - motorcyclist:
         label: Motorisierte Zweiräder
-        short_label: Motorrad
+        short_label_eng: motorcyc
+        short_label_ger: Motorrad
         key: q
         icon_file: assets/motorcycle_rider.png
 - car:
         label: Pkw ohne Anhänger
-        short_label: Pkw
+        short_label_eng: car
+        short_label_ger: Pkw
         key: r
         icon_file: assets/car.png
 - car_with_trailer:
         label: Pkw mit Anhänger
-        short_label: Pkw mA
+        short_label_eng: car w t
+        short_label_ger: Pkw mA
         key: R
         icon_file: assets/car_trailer.png
 - private_van:
         label: Kleinbus ohne Anhänger
-        short_label: Kleinbus
+        short_label_eng: private van
+        short_label_ger: Kleinbus
         key: e
         icon_file: assets/van.png
 - private_van_with_trailer:
         label: Kleinbus mit Anhänger
-        short_label: Kleinbus mA
+        short_label_eng: priv van w t
+        short_label_ger: Kleinbus mA
         key: E
         icon_file: assets/van_trailer.png
 - delivery_van:
         label: Lieferwagen ohne Anhänger
-        short_label: Lieferwagen
+        short_label_eng: delivery van
+        short_label_ger: Lieferwagen
         key: w
         icon_file: assets/van.png
 - delivery_van_with_trailer:
         label: Lieferwagen mit Anhänger
-        short_label: Lieferwagen mA
+        short_label_eng: deli van w t
+        short_label_ger: Lieferwagen mA
         key: W
         icon_file: assets/van_trailer.png
 - bus:
         label: Bus
-        short_label: Bus
+        short_label_eng: bus
+        short_label_ger: Bus
         key: t
         icon_file: assets/bus.png
 - truck:
         label: Lkw ohne Anhänger
-        short_label: Lkw
+        short_label_eng: truck
+        short_label_ger: Lkw
         key: "5"
         icon_file: assets/truck.png
 - truck_with_trailer:
         label: Lkw mit Anhänger
-        short_label: Lkw mA
+        short_label_eng: truck w t
+        short_label_ger: Lkw mA
         key: "4"
         icon_file: assets/truck_trailer.png
 - truck_with_semitrailer:
         label: Sattelzug
-        short_label: Sattelzug
+        short_label_eng: semi
+        short_label_ger: Sattelzug
         key: "3"
         icon_file: assets/truck_trailer.png
 - train:
         label: Schienenfahrzeug
-        short_label: Zug
+        short_label_eng: train
+        short_label_ger: Zug
         key: "2"
         icon_file: assets/tram_train.png
 - other:
         label: Kinderwagen, Rollstuhl, Rolator, Bagger
-        short_label: Anderes
+        short_label_eng: other
+        short_label_ger: Anderes
         key: g
         icon_file: assets/tram_train.png

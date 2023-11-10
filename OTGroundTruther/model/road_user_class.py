@@ -4,12 +4,17 @@ from pathlib import Path
 import yaml
 from PIL import Image
 
+KEY_YAML_KEY = "key"
+SHORT_LABEL_ENG_YAML_KEY = "short_label_eng"
+LABEL_YAML_KEY = "label"
+ICON_FILE_YAML_KEY = "icon_file"
+
 
 @dataclass
 class RoadUserClass:
     name: str
     label: str
-    short_label: str
+    short_label_eng: str
     key: str | None
     icon_file: Path
     icon: Image = field(init=False)
@@ -21,7 +26,7 @@ class RoadUserClass:
         return self.name
 
     def get_short_label(self) -> str:
-        return self.short_label
+        return self.short_label_eng
 
 
 @dataclass
@@ -45,13 +50,13 @@ class ValidRoadUserClasses:
         road_user_classes = {}
         for road_user_class in yaml_content:
             for name, properties in road_user_class.items():
-                key = properties["key"]
+                key = properties[KEY_YAML_KEY]
                 road_user_classes[key] = RoadUserClass(
                     name=name,
-                    label=properties["label"],
-                    short_label=properties["short_label"],
+                    label=properties[LABEL_YAML_KEY],
+                    short_label_eng=properties[SHORT_LABEL_ENG_YAML_KEY],
                     key=key,
-                    icon_file=Path(properties["icon_file"]),
+                    icon_file=Path(properties[ICON_FILE_YAML_KEY]),
                 )
         return ValidRoadUserClasses(road_user_classes)
 
