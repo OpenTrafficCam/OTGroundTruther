@@ -34,6 +34,9 @@ class RoadUserClass:
     def get_icon(self) -> Image:
         return self.icon
 
+    def get_key(self) -> str | None:
+        return self.key
+
 
 @dataclass
 class ValidRoadUserClasses:
@@ -44,6 +47,12 @@ class ValidRoadUserClasses:
 
     def to_dict_with_name_as_key(self) -> dict[str, RoadUserClass]:
         return {value.get_name(): value for value in self._road_user_classes.values()}
+
+    def to_dict_key_with_name(self) -> dict[str, str]:
+        return {
+            class_.get_key(): class_.get_name()
+            for class_ in self._road_user_classes.values()
+        }
 
     def get_class_names(self) -> list[str]:
         name_list: list[str] = []

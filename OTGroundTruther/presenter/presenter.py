@@ -227,3 +227,8 @@ class Presenter(PresenterInterface):
         self._gui.frame_treeview.class_label.show_class_img(
             road_user_class=road_user_class
         )
+
+    def show_key_assignment(self) -> None:
+        self._gui.build_key_assignment_window(
+            key_assignment_text=self._model.get_key_assignment_text()
+        )

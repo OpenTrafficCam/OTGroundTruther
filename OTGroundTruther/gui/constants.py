@@ -10,6 +10,27 @@ STICKY = "NESW"
 STATE_DISABLED = "disabled"
 STATE_NORMAL = "normal"
 
+PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
+JUMP_TIME_STEPS: dict[int, float] = {
+    0: 1,
+    1: 20,
+    2: 600,
+}
+
+MINIMUM_WINDOWS_SCROLL_VALUE: int = 120
+FACTOR_LARGE_SCROLLING: int = 10
+
+
+LEFT_MOUSE_UP: str = "#left mouse button#"
+RIGHT_MOUSE_UP: str = "#right mouse button#"
+MOUSE_WHEEL_UP: str = "#middle mouse button#"
+
+KEY_NAME_CORRECTION: dict[str, str] = {
+    LEFT_MOUSE_UP: "<ButtonRelease-1>",
+    RIGHT_MOUSE_UP: "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>",
+    MOUSE_WHEEL_UP: "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>",
+}
+
 
 @dataclass
 class TkEvents:
@@ -20,15 +41,11 @@ class TkEvents:
     """
 
     RIGHT_BUTTON_DOWN: ClassVar[str] = "<Button-2>" if ON_MAC else "<Button-3>"
-    RIGHT_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>"
-    )
+    RIGHT_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[RIGHT_MOUSE_UP]
     MIDDLE_BUTTON_DOWN: ClassVar[str] = "<Button-3>" if ON_MAC else "<Button-2>"
-    MIDDLE_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>"
-    )
+    MIDDLE_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[MOUSE_WHEEL_UP]
     LEFT_BUTTON_DOWN: ClassVar[str] = "<Button-1>"
-    LEFT_BUTTON_UP: ClassVar[str] = "<ButtonRelease-1>"
+    LEFT_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[LEFT_MOUSE_UP]
     LEFT_BUTTON_DOUBLE: ClassVar[str] = "<Double-1>"
     MOUSE_MOTION: ClassVar[str] = "<Motion>"
     MOUSE_MOTION_WHILE_LEFT_BUTTON_DOWN: ClassVar[str] = "<B1-Motion>"
@@ -55,5 +72,42 @@ class TkEvents:
     CONTROL_LEFT: ClassVar[str] = "<Control_L>"
     CONTROL_RIGHT: ClassVar[str] = "<Control_R>"
 
+    def get_key_assignment(self) -> None:
+        self.key_assignment: dict[str, str] = {
+            self.RIGHT_BUTTON_DOWN: "",
+            RIGHT_MOUSE_UP: "finish active count if possible",
+            self.MIDDLE_BUTTON_DOWN: "",
+            MOUSE_WHEEL_UP: (
+                f"Squitch beween 1 and "
+                f"{str(FACTOR_LARGE_SCROLLING)}"
+                f" frames as small jumps"
+            ),
+            self.LEFT_BUTTON_DOWN: "",
+            LEFT_MOUSE_UP: "Set new Event for the Active Count",
+            self.LEFT_BUTTON_DOUBLE: "",
+            self.MOUSE_MOTION: "",
+            self.MOUSE_MOTION_WHILE_LEFT_BUTTON_DOWN: "",
+            self.MOUSE_ENTERS_WIDGET: "",
+            self.MOUSE_LEAVES_WIDGET: "",
+            self.TREEVIEW_SELECT: "",
+            self.PLUS_KEY: "",
+            self.KEYPAD_PLUS_KEY: "",
+            self.LEFT_ARROW_KEY: "Big jump backward in the videos",
+            self.RIGHT_ARROW_KEY: "Big jump forward in the videos",
+            self.UP_ARROW_KEY: "",
+            self.DOWN_ARROW_KEY: "",
+            self.RETURN_KEY: "finish active count if possible",
+            self.KEYPAD_RETURN_KEY: "",
+            self.DELETE_KEY: "",
+            self.BACKSPACE_KEY: "",
+            self.SPACE_KEY: "Small jump forward",
+            self.ESCAPE_KEY: "Abort active count",
+            self.MULTI_SELECT_SINGLE: "",
+            self.MOUSE_WHEEL_SCROLLED: "Small jump forward / backward in the videos",
+            self.CONTROL_LEFT: "",
+            self.CONTROL_RIGHT: "",
+        }
+
 
 tk_events = TkEvents()
+tk_events.get_key_assignment()

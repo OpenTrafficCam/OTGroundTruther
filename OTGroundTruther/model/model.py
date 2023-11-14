@@ -1,6 +1,11 @@
 import datetime as dt
 from pathlib import Path
 
+from OTGroundTruther.gui.constants import tk_events
+from OTGroundTruther.gui.key_assignment import (
+    KEY_ASSIGNMENT_ACTIONS,
+    KEY_ASSIGNMENT_KEYS,
+)
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import (
     ActiveCount,
@@ -268,3 +273,36 @@ class Model:
     def get_start_frame_of_count(self, count_id: int, selected_classes: list[str]):
         event = self._count_repository.get_all_as_dict()[count_id].get_first_event()
         return self.get_frame_by_event(event=event, selected_classes=selected_classes)
+
+    def get_key_assignment_text(self) -> dict[str, str]:
+        key_assignment_lists = {
+            KEY_ASSIGNMENT_ACTIONS: ["General", ""],
+            KEY_ASSIGNMENT_KEYS: ["", ""],
+        }
+        for button_name, action in tk_events.key_assignment.items():
+            if action != "":
+                key_assignment_lists[KEY_ASSIGNMENT_ACTIONS].append(f"{action}   -")
+                key_assignment_lists[KEY_ASSIGNMENT_KEYS].append(f"{button_name[1:-1]}")
+        key_assignment_lists[KEY_ASSIGNMENT_ACTIONS] += ["", "", "Class assignment", ""]
+        key_assignment_lists[KEY_ASSIGNMENT_KEYS] += ["", "", "", ""]
+        for (
+            key,
+            class_name,
+        ) in self._valid_road_user_classes.to_dict_key_with_name().items():
+            key_assignment_lists[KEY_ASSIGNMENT_ACTIONS].append(f"{class_name}   -")
+            key_assignment_lists[KEY_ASSIGNMENT_KEYS].append(f"{key}")
+        key_assignment_lists[KEY_ASSIGNMENT_ACTIONS] = [
+            string + "\n" for string in key_assignment_lists[KEY_ASSIGNMENT_ACTIONS]
+        ]
+        key_assignment_lists[KEY_ASSIGNMENT_KEYS] = [
+            string + "\n" for string in key_assignment_lists[KEY_ASSIGNMENT_KEYS]
+        ]
+        key_assignment_text = {}
+        key_assignment_text[KEY_ASSIGNMENT_ACTIONS] = "".join(
+            key_assignment_lists[KEY_ASSIGNMENT_ACTIONS]
+        )
+        key_assignment_text[KEY_ASSIGNMENT_KEYS] = "".join(
+            key_assignment_lists[KEY_ASSIGNMENT_KEYS]
+        )
+
+        return key_assignment_text

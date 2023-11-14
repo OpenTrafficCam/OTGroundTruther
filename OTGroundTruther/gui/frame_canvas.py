@@ -4,19 +4,18 @@ from typing import Any
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
-from OTGroundTruther.gui.constants import PADX, PADY, STICKY, tk_events
+from OTGroundTruther.gui.constants import (
+    FACTOR_LARGE_SCROLLING,
+    JUMP_TIME_STEPS,
+    MINIMUM_WINDOWS_SCROLL_VALUE,
+    PADX,
+    PADY,
+    PREVIEW_IMAGE_FILE,
+    STICKY,
+    tk_events,
+)
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.config import ON_WINDOWS
-
-PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
-JUMP_TIME_STEPS: dict[int, float] = {
-    0: 1,
-    1: 20,
-    2: 600,
-}
-
-MINIMUM_WINDOWS_SCROLL_VALUE = 120
-FACTOR_LARGE_SCROLLING = 10
 
 FRAME_CANVAS_ROW = 0
 FRAME_CANVAS_COLUMN = 0
@@ -122,8 +121,12 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.MOUSE_WHEEL_SCROLLED, self._on_mouse_wheel_scrolled)
         self._canvas.bind(tk_events.PLUS_KEY, self._on_plus)
         self._canvas.bind(tk_events.KEYPAD_PLUS_KEY, self._on_plus)
+
         self._canvas.bind(tk_events.LEFT_ARROW_KEY, self._on_left_key)
         self._canvas.bind(tk_events.RIGHT_ARROW_KEY, self._on_right_key)
+        # self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
+        # self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
+
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.SPACE_KEY, self._on_space_key)
