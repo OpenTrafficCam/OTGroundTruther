@@ -62,6 +62,7 @@ class GuiEventTranslator:
 
     def _bind_events(self) -> None:
         self._gui.bind(tk_events.DELETE_KEY, self._on_delete_key)
+        self._gui.bind(tk_events.BACKSPACE_KEY, self._on_delete_key)
 
     def _on_delete_key(self, event: Any) -> None:
         self._presenter.delete_selected_counts()
