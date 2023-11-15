@@ -211,6 +211,8 @@ class Treeview(ttk.Treeview):
         ):
             self.add_count(count=count)
             self.selection_set([str(count.get_road_user_id())])
+        else:
+            self._presenter.update_canvas_image_with_new_overlay()
 
     def add_count(self, count: Count) -> None:
         properties_random_order = count.get_properties_to_show_as_dict()
