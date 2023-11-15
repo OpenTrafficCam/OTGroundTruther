@@ -17,8 +17,8 @@ COUNT_ID_NAME: str = "ID"
 COUNT_CLASS_NAME: str = "Class"
 COUNT_ENTER_TIME_NAME: str = "Enter Time"
 COUNT_ENTER_GATE_NAME: str = "Enter Gate"
-COUNT_EXIT_TIME_NAME: str = "Exit Time"
 COUNT_EXIT_GATE_NAME: str = "Exit Gate"
+COUNT_TIME_SPAN: str = "Time Span"
 
 
 ARROW_CONTOUR_SIZE: int = 18
@@ -76,9 +76,16 @@ class EventBeforePreviouseEventError(Exception):
 
 @dataclass
 class Count:
-    road_user_id: int
-    events: list[Event]
-    road_user_class: RoadUserClass
+    def __init__(
+        self,
+        road_user_id: int,
+        events: list[Event],
+        road_user_class: RoadUserClass,
+    ):
+        self.road_user_id = road_user_id
+        self.events = events
+        self.road_user_class = road_user_class
+        self.get_time_span()
 
     def __post_init__(self) -> None:
         self._validate()
@@ -88,6 +95,15 @@ class Count:
             raise TooFewEventsError
         if self.road_user_class is None:
             raise MissingRoadUserClassError
+
+    def get_time_span(self) -> None:
+        if len(self.events) > 1:
+            self.time_span: float = (
+                self.get_last_event().get_timestamp()
+                - self.get_first_event().get_timestamp()
+            )
+        else:
+            self.time_span = 0
 
     def add_event(self, event: Event) -> None:
         self.events.append(event)
@@ -113,8 +129,8 @@ class Count:
             COUNT_CLASS_NAME: self.get_road_user_class().get_name(),
             COUNT_ENTER_TIME_NAME: self.get_first_event().get_time_as_str(),
             COUNT_ENTER_GATE_NAME: self.get_first_event().get_section().get_name(),
-            COUNT_EXIT_TIME_NAME: self.get_last_event().get_time_as_str(),
             COUNT_EXIT_GATE_NAME: self.get_last_event().get_section().get_name(),
+            COUNT_TIME_SPAN: str(round(self.time_span, 1)),
         }
 
 
