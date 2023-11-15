@@ -63,6 +63,7 @@ class TkEvents:
     DELETE_KEY: ClassVar[str] = "<Delete>"
     BACKSPACE_KEY: ClassVar[str] = "<BackSpace>"
     SPACE_KEY: ClassVar[str] = "<space>"
+    CONTROL_SPACE_KEY: ClassVar[str] = "<Control-space>"
     ESCAPE_KEY: ClassVar[str] = "<Escape>"
     ALPHANUMERIC_KEY: ClassVar[str] = "<Key>"
     MULTI_SELECT_SINGLE: ClassVar[str] = (
@@ -101,6 +102,7 @@ class TkEvents:
             self.DELETE_KEY: "Delete selected counts",
             self.BACKSPACE_KEY: "Delete selected counts",
             self.SPACE_KEY: "Small jump forward",
+            self.CONTROL_SPACE_KEY: "Small jump backward",
             self.ESCAPE_KEY: "Abort active count",
             self.MULTI_SELECT_SINGLE: "",
             self.MOUSE_WHEEL_SCROLLED: "Small jump forward / backward in the videos",

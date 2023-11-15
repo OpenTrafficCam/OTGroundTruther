@@ -130,6 +130,8 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.SPACE_KEY, self._on_space_key)
+        self._canvas.bind(tk_events.CONTROL_SPACE_KEY, self._on_control_space_key)
+
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
         self._canvas.bind(tk_events.CONTROL_RIGHT, self._on_control_right_key)
@@ -198,9 +200,16 @@ class CanvasEventTranslator:
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_space_key(self, event: Any) -> None:
-        scroll_delta = 1
+        self._scroll_through_videos(direction=1)
+
+    def _on_control_space_key(self, event: Any) -> None:
+        self._scroll_through_videos(direction=-1)
+
+    def _scroll_through_videos(self, direction: int) -> None:
         if not self._current_scrolling_time_step_short:
-            scroll_delta *= FACTOR_LARGE_SCROLLING
+            scroll_delta = direction * FACTOR_LARGE_SCROLLING
+        else:
+            scroll_delta = direction
         self._presenter.scroll_through_videos(
             scroll_delta=scroll_delta,
             mouse_wheel_pressed=self._middle_button_pressed,
