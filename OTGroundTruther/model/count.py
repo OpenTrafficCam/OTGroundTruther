@@ -35,15 +35,15 @@ COUNT_TEXT_THICKNESS: int = 1
 COUNT_LINETYPE: int = cv2.LINE_AA
 
 ACTIVE_COUNT_EVENTPOINT_RADIUS: int = 5
-ACTIVE_COUNT_COLOR: tuple[int, int, int, int] = (255, 255, 0, 255)
+ACTIVE_COUNT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 ACTIVE_COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = ACTIVE_COUNT_COLOR
 ACTIVE_COUNT_EVENTPOINT_THICKNESS: int = 1
 PLACEHOLDER_ROAD_USER_CLASS: str = "X"
+ACTIVE_COUNT_CONTOUR_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 
 ACTIVE_COUNT_EVENTPOINT_BG_RADIUS: int = ACTIVE_COUNT_EVENTPOINT_RADIUS
 ACTIVE_COUNT_EVENTPOINT_BG_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
 ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS: int = ACTIVE_COUNT_EVENTPOINT_THICKNESS + 1
-
 
 TIME_WINDOW_SHOW_COUNT: float = 1
 TIME_WINDOW_EVENT_MOMENT: float = 0.25
@@ -346,7 +346,8 @@ class CountsOverlay:
                 self._draw_single_count(
                     events=count.get_events(),
                     road_user_class=count.get_road_user_class(),
-                    color=COUNT_LINE_AND_TEXT_COLOR,
+                    color=count.get_road_user_class().get_color_rgb() + (255,),
+                    color_contour=COUNT_CONTOUR_COLOR,
                 )
 
     def _draw_events_if_in_time_and_class(self, count: Count):
@@ -408,11 +409,14 @@ class CountsOverlay:
         events: list[Event],
         road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
+        color_contour: tuple[int, int, int, int],
     ) -> None:
         for event, next_event in zip(events[:-1], events[1:]):
             p0 = event.get_coordinate()
             p1 = next_event.get_coordinate()
-            self._draw_arrow_with_outline(p0=p0, p1=p1, color=color)
+            self._draw_arrow_with_outline(
+                p0=p0, p1=p1, color=color, color_contour=color_contour
+            )
             self._draw_class_text_next_to_arrow(
                 p0=p0, p1=p1, road_user_class=road_user_class, color=color
             )
@@ -441,14 +445,18 @@ class CountsOverlay:
         )
 
     def _draw_arrow_with_outline(
-        self, p0: Coordinate, p1: Coordinate, color: tuple[int, int, int, int]
+        self,
+        p0: Coordinate,
+        p1: Coordinate,
+        color: tuple[int, int, int, int],
+        color_contour: tuple[int, int, int, int],
     ) -> None:
         tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_CONTOUR_SIZE)
         cv2.arrowedLine(
             img=self.image_array,
             pt1=p0.as_list(),
             pt2=p1.as_list(),
-            color=COUNT_CONTOUR_COLOR,
+            color=color_contour,
             thickness=COUNT_CONTOUR_THICKNESS,
             line_type=COUNT_LINETYPE,
             tipLength=tiplength,
@@ -471,10 +479,17 @@ class CountsOverlay:
     def _draw_active_count(self) -> None:
         if self.active_count is not None:
             if len(self.active_count.get_events()) >= 2:
+                road_user_class = self.active_count.get_road_user_class()
+                if road_user_class is None:
+                    color = ACTIVE_COUNT_COLOR
+                else:
+                    color = road_user_class.get_color_rgb() + (255,)
+
                 self._draw_single_count(
                     events=self.active_count.get_events(),
-                    road_user_class=self.active_count.get_road_user_class(),
-                    color=ACTIVE_COUNT_COLOR,
+                    road_user_class=road_user_class,
+                    color=color,
+                    color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
                 )
             else:
                 for event in self.active_count.get_events():
