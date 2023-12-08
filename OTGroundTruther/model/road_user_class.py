@@ -84,31 +84,31 @@ class ValidRoadUserClasses:
         for road_user_class in yaml_content:
             for name, properties in road_user_class.items():
                 key = str(properties[KEY_YAML_KEY])
-                road_user_classes[key] = self._prove_and_get_road_user_class(
+                road_user_classes[key] = self._get_road_user_class(
                     properties, name
                 )
         return road_user_classes
 
-    def _prove_and_get_road_user_class(
+    def _get_road_user_class(
         self,
         properties: dict[str, str | dict[str, int]],
         name: str,
     ) -> RoadUserClass:
         color_rgb_dict = properties[COLOR_RGB_YAML_KEY]
-        if type(color_rgb_dict) is dict:
-            r = int(list(color_rgb_dict.values())[0])
-            g = int(list(color_rgb_dict.values())[1])
-            b = int(list(color_rgb_dict.values())[2])
-            return RoadUserClass(
-                name=name,
-                label_ger=str(properties[LABEL_YAML_KEY]),
-                short_label_eng=str(properties[SHORT_LABEL_ENG_YAML_KEY]),
-                key=str(properties[KEY_YAML_KEY]),
-                icon_file=Path(str(properties[ICON_FILE_YAML_KEY])),
-                color_name=str(properties[COLOR_NAME_YAML_KEY]),
-                color_rgb=(r, g, b),
-            )
-        raise YamlWrongStructureError
+        if type(color_rgb_dict) is not dict:
+            raise YamlWrongStructureError
+        r = int(list(color_rgb_dict.values())[0])
+        g = int(list(color_rgb_dict.values())[1])
+        b = int(list(color_rgb_dict.values())[2])
+        return RoadUserClass(
+            name=name,
+            label_ger=str(properties[LABEL_YAML_KEY]),
+            short_label_eng=str(properties[SHORT_LABEL_ENG_YAML_KEY]),
+            key=str(properties[KEY_YAML_KEY]),
+            icon_file=Path(str(properties[ICON_FILE_YAML_KEY])),
+            color_name=str(properties[COLOR_NAME_YAML_KEY]),
+            color_rgb=(r, g, b),
+        )
 
     @staticmethod
     def from_yaml(yaml_file: Path) -> "ValidRoadUserClasses":

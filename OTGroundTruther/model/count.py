@@ -353,18 +353,17 @@ class CountsOverlay:
     def _draw_events_if_in_time_and_class(self, count: Count):
         if count.get_road_user_class().get_name() not in self.selected_classes:
             return False
-        else:
-            draw_count = False
-            for event in count.get_events():
-                if self._is_at_current_frame(event=event):
-                    self._draw_event_circle_with_contour(event)
-                    draw_count = True
-                elif self._is_in_time_window(
-                    event=event, time_window=TIME_WINDOW_SHOW_COUNT
-                ):
-                    self._draw_simple_event_circle(event)
-                    draw_count = True
-            return draw_count
+        draw_count = False
+        for event in count.get_events():
+            if self._is_at_current_frame(event=event):
+                self._draw_event_circle_with_contour(event)
+                draw_count = True
+            elif self._is_in_time_window(
+                event=event, time_window=TIME_WINDOW_SHOW_COUNT
+            ):
+                self._draw_simple_event_circle(event)
+                draw_count = True
+        return draw_count
 
     def _draw_simple_event_circle(self, event):
         cv2.circle(
@@ -481,12 +480,11 @@ class CountsOverlay:
     def _draw_active_count(self) -> None:
         if self.active_count is None:
             return
+        if len(self.active_count.get_events()) >= 2:
+            self._draw_active_count_multiple_events()
         else:
-            if len(self.active_count.get_events()) >= 2:
-                self._draw_active_count_multiple_events()
-            else:
-                for event in self.active_count.get_events():
-                    self.draw_active_count_only_one_event(event)
+            for event in self.active_count.get_events():
+                self.draw_active_count_only_one_event(event)
 
     def draw_active_count_only_one_event(self, event: Event):
         cv2.circle(
