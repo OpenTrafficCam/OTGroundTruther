@@ -71,3 +71,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def show_class_image_by_count_id(self, count_id: int) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def show_key_assignment(self) -> None:
+        raise NotImplementedError
