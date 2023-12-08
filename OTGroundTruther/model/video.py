@@ -33,7 +33,6 @@ def _get_datetime_from_filename(
     if not match:
         return 0, epoch_datetime
 
-    # Assume that there is only one timestamp in the file name
     datetime = match[1]
 
     try:

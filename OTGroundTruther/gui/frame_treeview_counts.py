@@ -246,7 +246,6 @@ class Treeview(ttk.Treeview):
         column_values_and_row_index.sort(
             reverse=self.next_column_sort_direction[sort_column]
         )
-        # rearrange items in sorted positions
         for order_index, (value, tv_index) in enumerate(column_values_and_row_index):
             self.move(tv_index, "", order_index)
         self.update_next_column_sort_direction(sort_column=sort_column)
@@ -290,7 +289,6 @@ class ClassLabel(ctk.CTkLabel):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
         self._presenter = presenter
-        # self.configure(bg="white")
 
     def show_class_img(self, road_user_class: RoadUserClass):
         self.image = ctk.CTkImage(light_image=road_user_class.get_icon(), size=(80, 80))
