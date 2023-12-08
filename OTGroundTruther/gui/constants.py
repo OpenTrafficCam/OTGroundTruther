@@ -73,7 +73,7 @@ class TkEvents:
     CONTROL_LEFT: ClassVar[str] = "<Control_L>"
     CONTROL_RIGHT: ClassVar[str] = "<Control_R>"
 
-    def get_key_assignment(self) -> None:
+    def get_key_description(self) -> None:
         self.key_assignment: dict[str, str] = {
             self.RIGHT_BUTTON_DOWN: "",
             RIGHT_MOUSE_UP: "finish active count if possible",
@@ -112,4 +112,4 @@ class TkEvents:
 
 
 tk_events = TkEvents()
-tk_events.get_key_assignment()
+tk_events.get_key_description()
