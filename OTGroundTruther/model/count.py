@@ -351,8 +351,10 @@ class CountsOverlay:
                 )
 
     def _draw_events_if_in_time_and_class(self, count: Count):
-        draw_count = False
-        if count.get_road_user_class().get_name() in self.selected_classes:
+        if count.get_road_user_class().get_name() not in self.selected_classes:
+            return False
+        else:
+            draw_count = False
             for event in count.get_events():
                 if self._is_at_current_frame(event=event):
                     self._draw_event_circle_with_contour(event)
@@ -362,7 +364,7 @@ class CountsOverlay:
                 ):
                     self._draw_simple_event_circle(event)
                     draw_count = True
-        return draw_count
+            return draw_count
 
     def _draw_simple_event_circle(self, event):
         cv2.circle(
