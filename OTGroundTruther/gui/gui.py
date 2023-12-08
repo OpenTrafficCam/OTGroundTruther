@@ -5,7 +5,7 @@ import customtkinter as ctk
 from OTGroundTruther.gui.constants import PADX, PADY, tk_events
 from OTGroundTruther.gui.frame_canvas import FrameCanvas
 from OTGroundTruther.gui.frame_treeview_counts import FrameTreeview
-from OTGroundTruther.gui.key_assignment import Key_Assignment_Window
+from OTGroundTruther.gui.key_assignment import KeyAssignmentWindow
 from OTGroundTruther.gui.menu import MenuBar
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 
@@ -47,7 +47,7 @@ class Gui(ctk.CTk):
         )
 
     def build_key_assignment_window(self, key_assignment_text: dict[str, str]):
-        self.key_assigment_window = Key_Assignment_Window(
+        self.key_assigment_window = KeyAssignmentWindow(
             master=self,
             key_assignment_text=key_assignment_text,
             presenter=self._presenter,

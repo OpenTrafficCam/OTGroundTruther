@@ -9,7 +9,7 @@ KEY_ASSIGNMENT_KEYS: str = "keys"
 KEY_ASSIGNMENT_ACTIONS: str = "actions"
 
 
-class Key_Assignment_Window(ctk.CTkToplevel):
+class KeyAssignmentWindow(ctk.CTkToplevel):
     def __init__(
         self,
         presenter: PresenterInterface,
