@@ -104,7 +104,7 @@ class FrameTreeview(ctk.CTkFrame):
             columns=COUNT_PROPERTIES_ORDER,
             show="headings",
         )
-        self.class_label = Class_Label(
+        self.class_label = ClassLabel(
             master=self,
             presenter=self._presenter,
             text="",
@@ -286,7 +286,7 @@ class TreeviewTranslator:
             self._presenter.show_class_image_by_count_id(count_id=selected_count_ids[0])
 
 
-class Class_Label(ctk.CTkLabel):
+class ClassLabel(ctk.CTkLabel):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
         self._presenter = presenter
