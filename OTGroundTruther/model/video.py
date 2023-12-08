@@ -304,7 +304,7 @@ class VideoRepository:
     def _try_get_by_delta_from_next(
         self, current_video: Video, current_frame_number: int, delta_of_frames: int
     ):
-        if self.is_the_video_the_last_one(current_video):
+        if self.is_last_video(current_video):
             return current_video, current_video.get_number_of_frames() - 1
         current_video_index = self._get_index_by_video(current_video)
         new_video_index = current_video_index + 1
@@ -333,7 +333,7 @@ class VideoRepository:
             delta_of_frames=new_delta_of_frames,
         )
 
-    def is_the_video_the_last_one(self, current_video: Video) -> bool:
+    def is_last_video(self, current_video: Video) -> bool:
         current_video_index = self._get_index_by_video(current_video)
         new_video_index = current_video_index + 1
         return new_video_index > len(self._videos) - 1
