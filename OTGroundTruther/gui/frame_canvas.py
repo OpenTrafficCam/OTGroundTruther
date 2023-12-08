@@ -25,7 +25,6 @@ class FrameCanvas(ctk.CTkFrame):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._presenter = presenter
-        self.columnconfigure(0)
         self._get_widgets()
         self._place_widgets()
 
