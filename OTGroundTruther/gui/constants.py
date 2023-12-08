@@ -79,7 +79,7 @@ class TkEvents:
             RIGHT_MOUSE_UP: "finish active count if possible",
             self.MIDDLE_BUTTON_DOWN: "",
             MOUSE_WHEEL_UP: (
-                f"Squitch beween 1 and "
+                f"Switch beween 1 and "
                 f"{str(FACTOR_LARGE_SCROLLING)}"
                 f" frames as small jumps"
             ),
