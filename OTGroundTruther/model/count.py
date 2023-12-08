@@ -477,23 +477,17 @@ class CountsOverlay:
         )
 
     def _draw_active_count(self) -> None:
-        if self.active_count is not None:
+        if self.active_count is None:
+            return
+        else:
             if len(self.active_count.get_events()) >= 2:
-                road_user_class = self.active_count.get_road_user_class()
-                if road_user_class is None:
-                    color = ACTIVE_COUNT_COLOR
-                else:
-                    color = road_user_class.get_color_rgb() + (255,)
-
-                self._draw_single_count(
-                    events=self.active_count.get_events(),
-                    road_user_class=road_user_class,
-                    color=color,
-                    color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
-                )
+                self._draw_active_count_multiple_events()
             else:
                 for event in self.active_count.get_events():
-                    cv2.circle(
+                    self.draw_active_count_only_one_event(event)
+
+    def draw_active_count_only_one_event(self, event: Event):
+        cv2.circle(
                         img=self.image_array,
                         center=event.get_coordinate().as_list(),
                         radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
@@ -501,7 +495,7 @@ class CountsOverlay:
                         thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
                         lineType=COUNT_LINETYPE,
                     )
-                    cv2.circle(
+        cv2.circle(
                         img=self.image_array,
                         center=event.get_coordinate().as_list(),
                         radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
@@ -509,6 +503,20 @@ class CountsOverlay:
                         thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
                         lineType=COUNT_LINETYPE,
                     )
+
+    def _draw_active_count_multiple_events(self):
+        road_user_class = self.active_count.get_road_user_class()
+        if road_user_class is None:
+            color = ACTIVE_COUNT_COLOR
+        else:
+            color = road_user_class.get_color_rgb() + (255,)
+
+        self._draw_single_count(
+                    events=self.active_count.get_events(),
+                    road_user_class=road_user_class,
+                    color=color,
+                    color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
+                )
 
     def _tiplength_for_same_arrow_size(
         self, p0: Coordinate, p1: Coordinate, size: int = 20
