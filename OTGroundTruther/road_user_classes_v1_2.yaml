@@ -91,7 +91,7 @@
         short_label_eng: private van
         short_label_ger: Kleinbus
         key: e
-        icon_file: assets/van.png
+        icon_file: assets/private_van.png
         color_name: "black"
         color_rgb:
                 r: 0
@@ -102,7 +102,7 @@
         short_label_eng: priv van w t
         short_label_ger: Kleinbus mA
         key: E
-        icon_file: assets/van_trailer.png
+        icon_file: assets/private_van_with_trailer.png
         color_name: "black"
         color_rgb:
                 r: 0
@@ -113,7 +113,7 @@
         short_label_eng: delivery van
         short_label_ger: Lieferwagen
         key: w
-        icon_file: assets/van.png
+        icon_file: assets/delivery_van.png
         color_name: "yellow"
         color_rgb:
                 r: 255
@@ -124,7 +124,7 @@
         short_label_eng: deli van w t
         short_label_ger: Lieferwagen mA
         key: W
-        icon_file: assets/van_trailer.png
+        icon_file: assets/delivery_van_with_trailer.png
         color_name: "yellow"
         color_rgb:
                 r: 255
@@ -157,7 +157,7 @@
         short_label_eng: truck w t
         short_label_ger: Lkw mA
         key: "4"
-        icon_file: assets/truck_trailer.png
+        icon_file: assets/truck_with_trailer.png
         color_name: "purple"
         color_rgb:
                 r: 128
@@ -169,7 +169,7 @@
         short_label_eng: semi
         short_label_ger: Sattelzug
         key: "3"
-        icon_file: assets/truck_trailer.png
+        icon_file: assets/truck_with_semitrailer.png
         color_name: "pink"
         color_rgb:
                 r: 255
@@ -191,7 +191,7 @@
         short_label_eng: other
         short_label_ger: Anderes
         key: g
-        icon_file: assets/tram_train.png
+        icon_file: assets/placeholder.png
         color_name: "goldenrod"
         color_rgb:
                 r: 218
