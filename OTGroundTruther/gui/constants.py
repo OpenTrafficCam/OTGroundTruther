@@ -25,12 +25,6 @@ LEFT_MOUSE_UP: str = "#left mouse button#"
 RIGHT_MOUSE_UP: str = "#right mouse button#"
 MOUSE_WHEEL_UP: str = "#middle mouse button#"
 
-KEY_NAME_CORRECTION: dict[str, str] = {
-    LEFT_MOUSE_UP: "<ButtonRelease-1>",
-    RIGHT_MOUSE_UP: "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>",
-    MOUSE_WHEEL_UP: "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>",
-}
-
 
 @dataclass
 class TkEvents:
@@ -41,11 +35,13 @@ class TkEvents:
     """
 
     RIGHT_BUTTON_DOWN: ClassVar[str] = "<Button-2>" if ON_MAC else "<Button-3>"
-    RIGHT_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[RIGHT_MOUSE_UP]
+    RIGHT_BUTTON_UP: ClassVar[str] = (
+        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>")
     MIDDLE_BUTTON_DOWN: ClassVar[str] = "<Button-3>" if ON_MAC else "<Button-2>"
-    MIDDLE_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[MOUSE_WHEEL_UP]
+    MIDDLE_BUTTON_UP: ClassVar[str] = (
+        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>")
     LEFT_BUTTON_DOWN: ClassVar[str] = "<Button-1>"
-    LEFT_BUTTON_UP: ClassVar[str] = KEY_NAME_CORRECTION[LEFT_MOUSE_UP]
+    LEFT_BUTTON_UP: ClassVar[str] = "<ButtonRelease-1>"
     LEFT_BUTTON_DOUBLE: ClassVar[str] = "<Double-1>"
     MOUSE_MOTION: ClassVar[str] = "<Motion>"
     MOUSE_MOTION_WHILE_LEFT_BUTTON_DOWN: ClassVar[str] = "<B1-Motion>"
