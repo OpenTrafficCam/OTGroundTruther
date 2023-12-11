@@ -232,3 +232,4 @@ class Presenter(PresenterInterface):
         self._gui.build_key_assignment_window(
             key_assignment_text=self._model.get_key_assignment_text()
         )
+
