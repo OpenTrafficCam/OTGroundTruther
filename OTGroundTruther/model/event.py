@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -16,17 +17,20 @@ EVENT_FORMAT_VERSION: str = "event_file_version"
 EVENT_LIST = "event_list"
 SECTIONS: str = "sections"
 SECTION_ID: str = "section_id"
+SECTION_NAME: str = "section_name"
 EVENT_COORDINATE: str = "event_coordinate"
 EVENT_TYPE: str = "event_type"
 DIRECTION_VECTOR: str = "direction_vector"
 VIDEO_NAME: str = "video_name"
 OCCURENCE: str = "occurrence"
 HOSTNAME: str = "hostname"
+
 ROAD_USER_CLASS: str = "road_user_class"
 ROAD_USER_CLASS_OTEVENTS: str = "road_user_type"
 ROAD_USER_ID: str = "road_user_id"
 FRAME_NUMBER: str = "frame_number"
 TIME_CREATED: str = "time_created"
+DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 
 
 @dataclass
@@ -35,7 +39,7 @@ class Event:
     section: LineSection
     frame_number: int
     timestamp: float
-    video_file: Path
+    video_file_name: str
     time_created: float | None
 
     def to_event_for_serializing(
@@ -49,12 +53,32 @@ class Event:
     def to_dict(self) -> dict:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
-            SECTION_ID: self.section.name,
+            SECTION_ID: self.section.id,
+            SECTION_NAME: self.section.name,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
-            VIDEO_NAME: self.video_file.stem,
+            VIDEO_NAME: self.video_file_name,
             TIME_CREATED: self.time_created,
         }
+
+    def get_coordinate(self):
+        return self.coordinate
+
+    def get_timestamp(self) -> float:
+        return self.timestamp
+
+    def get_time_as_str(self) -> str:
+        datetime_ = datetime.fromtimestamp(self.timestamp)
+        return datetime_.strftime("%Y-%m-%d %H:%M:%S")[5:]
+
+    def get_frame_number(self) -> int:
+        return self.frame_number
+
+    def get_video_file_name(self) -> str:
+        return self.video_file_name
+
+    def get_section(self) -> LineSection:
+        return self.section
 
 
 @dataclass
@@ -63,7 +87,7 @@ class EventForParsingSerializing:
     section: LineSection
     frame_number: int
     timestamp: float
-    video_file: Path
+    video_file_name: str
     time_created: float | None
     road_user_id: int
     road_user_class: RoadUserClass
@@ -77,10 +101,10 @@ class EventForParsingSerializing:
     def to_dict(self) -> dict:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
-            SECTION_ID: self.section.name,
+            SECTION_ID: self.section.id,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
-            VIDEO_NAME: self.video_file.stem,
+            VIDEO_NAME: self.video_file_name,
             TIME_CREATED: self.time_created,
             ROAD_USER_ID: self.road_user_id,
             ROAD_USER_CLASS_OTEVENTS: self.road_user_class.get_name(),
@@ -106,7 +130,8 @@ class EventListParser:
         sections: dict[str, LineSection],
         valid_road_user_classes: ValidRoadUserClasses,
     ) -> list[EventForParsingSerializing]:
-        """Parse otevents file and convert its content to domain level objects namely
+        """Parse (load) otevents file and convert its content to
+        domain level objects namely
         `Events`s.
 
         Args:
@@ -133,14 +158,23 @@ class EventListParser:
                         coordinate=coordinate,
                         section=section,
                         frame_number=event[FRAME_NUMBER],
-                        timestamp=event[OCCURENCE],
-                        video_file=Path(event[VIDEO_NAME]),
+                        timestamp=self._convert_datetime_to_unix(
+                            time_input=event[OCCURENCE]
+                        ),
+                        video_file_name=event[VIDEO_NAME],
                         time_created=event.get(TIME_CREATED, None),
                         road_user_id=event[ROAD_USER_ID],
                         road_user_class=road_user_class,
                     )
                 )
         return parsed_events
+
+    def _convert_datetime_to_unix(self, time_input: float | str) -> float:
+        if isinstance(time_input, float):
+            return time_input
+        else:
+            date_object = datetime.strptime(time_input, DATETIME_FORMAT)
+            return date_object.timestamp()
 
     def serialize(
         self,

@@ -18,7 +18,7 @@
                 "--videos",
                 "${workspaceFolder}/tests/data",
                 "--events",
-                "${workspaceFolder}/tests/data/Testvideo.otevents"
+                "${workspaceFolder}/tests/data/otgtevents_test_Testvideo_FR20_2020-02-20_13-11-00.otgtevents"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

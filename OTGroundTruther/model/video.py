@@ -33,7 +33,6 @@ def _get_datetime_from_filename(
     if not match:
         return 0, epoch_datetime
 
-    # Assume that there is only one timestamp in the file name
     datetime = match[1]
 
     try:
@@ -44,6 +43,10 @@ def _get_datetime_from_filename(
         return 0, epoch_datetime
 
     return seconds_since_epoch, datetime
+
+
+class NumberOfFramesUnknownError(Exception):
+    pass
 
 
 class FrameNotFoundInVideoError(Exception):
@@ -78,10 +81,22 @@ class BackgroundFrame:
     def get(self) -> Image.Image:
         return self.image
 
+    def get_unix_timestamp(self) -> float:
+        return self.unix_timestamp
+
     def add_overlay(self, overlay: Image.Image) -> None:
         self.image = Image.alpha_composite(
             self.image.convert("RGBA"), overlay.convert(mode="RGBA")
         )
+
+    def get_frame_number(self) -> int:
+        return self.frame_number
+
+    def get_video_file(self) -> Path:
+        return self.video_file
+
+    def get_video_name(self) -> str:
+        return self.video_file.stem
 
 
 class Video:
@@ -89,6 +104,7 @@ class Video:
         self.file: Path = file
         self._load()
         self._set_frame_rate()
+        self._set_number_of_frames()
         self._start_timestamp, self._start_datetime = self._parse_start_time()
 
     def _load(self):
@@ -105,8 +121,33 @@ class Video:
     def get_height(self) -> int:
         return self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
+    def get_filepath(self) -> Path:
+        return self.file
+
+    def get_name(self) -> str:
+        return self.file.stem
+
+    def get_frame_rate(self) -> float:
+        return self.frame_rate
+
     def _set_frame_rate(self) -> None:
         self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
+
+    def _set_number_of_frames(self) -> None:
+        calculated_frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        for frame_number in range(
+            calculated_frame_count - 3, calculated_frame_count + 3
+        ):
+            try:
+                self._get_frame_by_number(frame_number=frame_number)
+            except FrameNotFoundInVideoError:
+                self.number_of_frames = frame_number
+                if frame_number == calculated_frame_count - 3:
+                    raise NumberOfFramesUnknownError
+                else:
+                    break
+            else:
+                pass
 
     def _parse_start_time(self) -> tuple[float, str]:
         return _get_datetime_from_filename(filename=str(self.file))
@@ -118,7 +159,7 @@ class Video:
         return self._start_datetime
 
     def get_number_of_frames(self):
-        return int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        return self.number_of_frames
 
     def get_duration_in_seconds(self) -> float:
         return self.get_number_of_frames / self.frame_rate
@@ -185,7 +226,7 @@ class Video:
 
 class VideoRepository:
     def __init__(self) -> None:
-        self._videos: dict[Path, Video] = {}
+        self._videos: dict[str, Video] = {}
 
     def add(self, video: Video) -> None:
         """Add one video to the repository.
@@ -210,7 +251,7 @@ class VideoRepository:
         Args:
             video (Video): the video to be added
         """
-        self._videos[video.file] = video
+        self._videos[video.get_name()] = video
 
     def get_by_timestamp(self, unix_timestamp: float) -> Video | None:
         for video in self._videos.values():
@@ -218,10 +259,29 @@ class VideoRepository:
                 return video
         return None
 
-    def get_video_and_frame_by_delta_of_frames(
-        self, current_file: Path, current_frame_number: int, delta_of_frames: int
+    def get_video_and_frame_by_delta_frame_or_time(
+        self,
+        current_file_name: str,
+        current_frame_number: int,
+        delta_of_frames: int = 0,
+        delta_of_time: float = 0,
     ) -> tuple[Video, int]:
-        current_video = self.get_video_by_file(current_file)
+        current_video = self.get_video_by_name(file_name=current_file_name)
+        delta_of_frames += round(delta_of_time * current_video.get_frame_rate())
+        return self.get_video_and_frame_by_delta_frame(
+            current_file_name=current_file_name,
+            current_frame_number=current_frame_number,
+            delta_of_frames=delta_of_frames,
+        )
+
+    def get_video_and_frame_by_delta_frame(
+        self,
+        current_file_name: str,
+        current_frame_number: int,
+        delta_of_frames: int = 0,
+    ) -> tuple[Video, int]:
+        current_video = self.get_video_by_name(file_name=current_file_name)
+
         new_frame_number = current_frame_number + delta_of_frames
         current_video_number_of_frames = current_video.get_number_of_frames()
 
@@ -244,16 +304,16 @@ class VideoRepository:
     def _try_get_by_delta_from_next(
         self, current_video: Video, current_frame_number: int, delta_of_frames: int
     ):
+        if self.is_last_video(current_video):
+            return current_video, current_video.get_number_of_frames() - 1
         current_video_index = self._get_index_by_video(current_video)
         new_video_index = current_video_index + 1
-        if new_video_index > len(self._videos) - 1:
-            return current_video, current_video.get_number_of_frames()
         new_video = self._get_video_by_index(new_video_index)
         new_delta_of_frames = delta_of_frames - (
             current_video.get_number_of_frames() - current_frame_number
         )
-        return self.get_video_and_frame_by_delta_of_frames(
-            current_file=new_video.file,
+        return self.get_video_and_frame_by_delta_frame(
+            current_file_name=new_video.get_name(),
             current_frame_number=0,
             delta_of_frames=new_delta_of_frames,
         )
@@ -267,29 +327,31 @@ class VideoRepository:
             return self._get_video_by_index(current_video_index), 0
         new_video = self._get_video_by_index(new_video_index)
         new_delta_of_frames = delta_of_frames + current_frame_number
-        return self.get_video_and_frame_by_delta_of_frames(
-            current_file=new_video.file,
+        return self.get_video_and_frame_by_delta_frame(
+            current_file_name=new_video.get_name(),
             current_frame_number=new_video.get_number_of_frames(),
             delta_of_frames=new_delta_of_frames,
         )
 
+    def is_last_video(self, current_video: Video) -> bool:
+        current_video_index = self._get_index_by_video(current_video)
+        new_video_index = current_video_index + 1
+        return new_video_index > len(self._videos) - 1
+
     def _get_video_by_index(self, index: int) -> Video:
         return list(self._videos.values())[index]
 
-    def _get_index_by_file(self, file: Path) -> int:
-        return list(self._videos.keys()).index(file)
+    def _get_index_by_file_name(self, file_name: str) -> int:
+        return list(self._videos.keys()).index(file_name)
 
     def _get_index_by_video(self, video: Video) -> int:
         return list(self._videos.values()).index(video)
 
-    def get_video_by_file(self, file: Path) -> Video:
-        return self._videos[file]
+    def get_video_by_name(self, file_name: str) -> Video:
+        return self._videos[file_name]
 
     def get_first_video(self) -> Video:
         return list(self._videos.values())[0]
-
-    def get_first_video_file(self) -> Path:
-        return list(self._videos.keys())[0]
 
     def is_empty(self) -> bool:
         return not self._videos

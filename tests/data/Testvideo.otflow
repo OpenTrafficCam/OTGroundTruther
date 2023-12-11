@@ -1,8 +1,8 @@
 {
     "sections": [
         {
-            "id": "10",
-            "name": "j",
+            "id": "2",
+            "name": "Nord",
             "type": "line",
             "relative_offset_coordinates": {
                 "section-enter": {
@@ -12,19 +12,19 @@
             },
             "coordinates": [
                 {
-                    "x": 375,
-                    "y": 365
+                    "x": 424,
+                    "y": 593
                 },
                 {
-                    "x": 551,
-                    "y": 202
+                    "x": 796,
+                    "y": 131
                 }
             ],
             "plugin_data": {}
         },
         {
-            "id": "16",
-            "name": "z",
+            "id": "4",
+            "name": "Ost",
             "type": "line",
             "relative_offset_coordinates": {
                 "section-enter": {
@@ -34,16 +34,56 @@
             },
             "coordinates": [
                 {
-                    "x": 296,
-                    "y": 195
+                    "x": 414,
+                    "y": 588
                 },
                 {
-                    "x": 502,
-                    "y": 77
+                    "x": 13,
+                    "y": 145
+                }
+            ],
+            "plugin_data": {}
+        },
+        {
+            "id": "5",
+            "name": "West",
+            "type": "line",
+            "relative_offset_coordinates": {
+                "section-enter": {
+                    "x": 0.5,
+                    "y": 0.5
+                }
+            },
+            "coordinates": [
+                {
+                    "x": 791,
+                    "y": 107
                 },
                 {
-                    "x": 709,
-                    "y": 77
+                    "x": 381,
+                    "y": 54
+                }
+            ],
+            "plugin_data": {}
+        },
+        {
+            "id": "6",
+            "name": "S\u00fcd",
+            "type": "line",
+            "relative_offset_coordinates": {
+                "section-enter": {
+                    "x": 0.5,
+                    "y": 0.5
+                }
+            },
+            "coordinates": [
+                {
+                    "x": 45,
+                    "y": 160
+                },
+                {
+                    "x": 374,
+                    "y": 58
                 }
             ],
             "plugin_data": {}

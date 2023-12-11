@@ -4,10 +4,21 @@ from typing import Any
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
-from OTGroundTruther.gui.constants import PADX, STICKY, tk_events
+from OTGroundTruther.gui.constants import (
+    FACTOR_LARGE_SCROLLING,
+    JUMP_TIME_STEPS,
+    MINIMUM_WINDOWS_SCROLL_VALUE,
+    PADX,
+    PADY,
+    PREVIEW_IMAGE_FILE,
+    STICKY,
+    tk_events,
+)
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
+from OTGroundTruther.model.config import ON_WINDOWS
 
-PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
+FRAME_CANVAS_ROW = 0
+FRAME_CANVAS_COLUMN = 0
 
 
 class FrameCanvas(ctk.CTkFrame):
@@ -23,9 +34,12 @@ class FrameCanvas(ctk.CTkFrame):
         )
 
     def _place_widgets(self) -> None:
-        PADY = 10
         self.canvas_background.grid(
-            row=2, column=0, padx=PADX, pady=PADY, sticky=STICKY
+            row=FRAME_CANVAS_ROW,
+            column=FRAME_CANVAS_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
         )
 
     def clear_image(self) -> None:
@@ -85,7 +99,9 @@ class CanvasEventTranslator:
     def __init__(self, canvas: CanvasBackground, presenter: PresenterInterface):
         self._canvas = canvas
         self._presenter = presenter
-        self._middle_button_pressed = False
+        self._middle_button_pressed: bool = False
+        self._current_scrolling_time_step_short: bool = True
+        self._current_jump_time_step: int = 0
         self._bind_events()
 
     def _bind_events(self) -> None:
@@ -104,14 +120,20 @@ class CanvasEventTranslator:
         self._canvas.bind(tk_events.MOUSE_WHEEL_SCROLLED, self._on_mouse_wheel_scrolled)
         self._canvas.bind(tk_events.PLUS_KEY, self._on_plus)
         self._canvas.bind(tk_events.KEYPAD_PLUS_KEY, self._on_plus)
+
         self._canvas.bind(tk_events.LEFT_ARROW_KEY, self._on_left_key)
         self._canvas.bind(tk_events.RIGHT_ARROW_KEY, self._on_right_key)
+        # self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
+        # self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
+
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
-        self._canvas.bind(tk_events.DELETE_KEY, self._on_delete_keys)
-        self._canvas.bind(tk_events.BACKSPACE_KEY, self._on_delete_keys)
+        self._canvas.bind(tk_events.SPACE_KEY, self._on_space_key)
+        self._canvas.bind(tk_events.CONTROL_SPACE_KEY, self._on_control_space_key)
+
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
+        self._canvas.bind(tk_events.CONTROL_RIGHT, self._on_control_right_key)
 
     def _on_left_button_down(self, event: Any) -> None:
         pass
@@ -125,6 +147,9 @@ class CanvasEventTranslator:
 
     def _on_middle_button_down(self, event: Any) -> None:
         self._middle_button_pressed = True
+        self._current_scrolling_time_step_short = (
+            not self._current_scrolling_time_step_short
+        )
 
     def _on_middle_button_up(self, event: Any) -> None:
         self._middle_button_pressed = False
@@ -143,6 +168,11 @@ class CanvasEventTranslator:
 
     def _on_mouse_wheel_scrolled(self, event: Any) -> None:
         scroll_delta = event.delta
+        if ON_WINDOWS:
+            scroll_delta = scroll_delta / MINIMUM_WINDOWS_SCROLL_VALUE
+        if not self._current_scrolling_time_step_short:
+            scroll_delta *= FACTOR_LARGE_SCROLLING
+
         self._presenter.scroll_through_videos(
             scroll_delta=scroll_delta,
             mouse_wheel_pressed=self._middle_button_pressed,
@@ -151,17 +181,41 @@ class CanvasEventTranslator:
     def _on_plus(self, event: Any) -> None:
         pass
 
+    def _on_control_right_key(self, event: Any) -> None:
+        if self._current_jump_time_step == list(JUMP_TIME_STEPS.keys())[-1]:
+            self._current_jump_time_step = list(JUMP_TIME_STEPS.keys())[0]
+        else:
+            self._current_jump_time_step += 1
+        print(
+            f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+        )
+
     def _on_left_key(self, event: Any) -> None:
-        pass
+        delta_of_time = -1 * JUMP_TIME_STEPS[self._current_jump_time_step]
+        self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
 
     def _on_right_key(self, event: Any) -> None:
-        pass
+        delta_of_time = JUMP_TIME_STEPS[self._current_jump_time_step]
+        self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
+
+    def _on_space_key(self, event: Any) -> None:
+        self._scroll_through_videos(direction=1)
+
+    def _on_control_space_key(self, event: Any) -> None:
+        self._scroll_through_videos(direction=-1)
+
+    def _scroll_through_videos(self, direction: int) -> None:
+        if not self._current_scrolling_time_step_short:
+            scroll_delta = direction * FACTOR_LARGE_SCROLLING
+        else:
+            scroll_delta = direction
+        self._presenter.scroll_through_videos(
+            scroll_delta=scroll_delta,
+            mouse_wheel_pressed=self._middle_button_pressed,
+        )
 
     def _on_return_key(self, event: Any) -> None:
         self._presenter.finsh_active_count()
-
-    def _on_delete_keys(self, event: Any) -> None:
-        pass
 
     def _on_escape_key(self, event: Any) -> None:
         self._presenter.abort_active_count()

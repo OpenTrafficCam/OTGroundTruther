@@ -4,7 +4,6 @@ from typing import Iterable, Optional, Sequence
 
 import cv2
 import numpy as np
-import numpy.typing as npt
 from PIL import Image
 
 from OTGroundTruther.model.coordinate import Coordinate
@@ -22,10 +21,10 @@ RELATIVE_OFFSET_COORDINATES: str = "relative_offset_coordinates"
 PLUGIN_DATA: str = "plugin_data"
 METADATA: str = "metadata"
 
-SECTION_COLOR = (200, 125, 125, 255)
+SECTION_COLOR = (127, 255, 0, 255)
 ELLIPSE_COLOR = (127, 255, 0, 255)
-SECTION_THICKNESS = 2
-ELLIPSE_THICKNESS = 1
+SECTION_THICKNESS = 1
+ELLIPSE_THICKNESS = 2
 
 
 class UnambigousSectionEllipsesError(Exception):
@@ -67,12 +66,16 @@ class LineSection:
     def _get_coordinate_list(self):
         return [coordinate.to_dict() for coordinate in self.coordinates]
 
+    def get_name(self) -> str:
+        return self.name
+
 
 @dataclass
 class SectionsOverlay:
     sections: list[LineSection]
     width: int
     height: int
+    image_array: np.ndarray = field(init=False)
     image: Image.Image = field(init=False)
 
     def __post_init__(self) -> None:
@@ -82,25 +85,25 @@ class SectionsOverlay:
         return self.image
 
     def _get_image(self) -> Image.Image:
-        image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
+        self.image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
         for section in self.sections:
             for ellipse in section.ellipses:
-                self._draw_line(image_array, ellipse)
-                self._draw_ellipse(image_array, ellipse)
-        self.image = Image.fromarray(image_array)
+                self._draw_line(ellipse)
+                self._draw_ellipse(ellipse)
+        self.image = Image.fromarray(self.image_array)
 
-    def _draw_line(self, image_array: npt.NDArray, ellipse: Ellipse) -> None:
-        return cv2.line(
-            img=image_array,
+    def _draw_line(self, ellipse: Ellipse) -> None:
+        cv2.line(
+            img=self.image_array,
             pt1=ellipse.start.as_tuple(),
             pt2=ellipse.end.as_tuple(),
             color=SECTION_COLOR,
             thickness=SECTION_THICKNESS,
         )
 
-    def _draw_ellipse(self, image_array: npt.NDArray, ellipse: Ellipse) -> None:
-        return cv2.ellipse(
-            img=image_array,
+    def _draw_ellipse(self, ellipse: Ellipse) -> None:
+        cv2.ellipse(
+            img=self.image_array,
             center=ellipse.center.as_tuple(),
             axes=(round(ellipse.major_axis_length), round(ellipse.minor_axis_length)),
             angle=ellipse.angle,

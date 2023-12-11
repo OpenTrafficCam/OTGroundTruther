@@ -43,3 +43,35 @@ class PresenterInterface(ABC):
     @abstractmethod
     def abort_active_count(self) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def jump_by_delta_time_in_sec(self, delta_of_time: float) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def refresh_treeview(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_selected_counts(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def show_start_of_count(self, count_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_canvas_image_with_new_overlay(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_selected_classes_from_gui(self) -> list[str]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def show_class_image_by_count_id(self, count_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def show_key_assignment(self) -> None:
+        raise NotImplementedError

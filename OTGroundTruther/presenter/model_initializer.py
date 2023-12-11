@@ -44,7 +44,9 @@ class ModelInitializer:
             self._prefill_section_repository(file=cli_args.sections_file)
 
     def _prefill_video_repository(self, files: set[Path]) -> None:
-        video_files = [Video(file) for file in files]
+        files_list: list[Path] = list(files)
+        files_list.sort()
+        video_files = [Video(file) for file in files_list]
         self._video_repository.add_all(video_files)
 
     def _prefill_section_repository(self, file: Path) -> None:
