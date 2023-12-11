@@ -123,8 +123,8 @@ class CanvasEventTranslator:
 
         self._canvas.bind(tk_events.LEFT_ARROW_KEY, self._on_left_key)
         self._canvas.bind(tk_events.RIGHT_ARROW_KEY, self._on_right_key)
-        # self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
-        # self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
+        self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
+        self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
 
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
@@ -133,7 +133,6 @@ class CanvasEventTranslator:
 
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
-        self._canvas.bind(tk_events.CONTROL_RIGHT, self._on_control_right_key)
 
     def _on_left_button_down(self, event: Any) -> None:
         pass
@@ -181,15 +180,6 @@ class CanvasEventTranslator:
     def _on_plus(self, event: Any) -> None:
         pass
 
-    def _on_control_right_key(self, event: Any) -> None:
-        if self._current_jump_time_step == list(JUMP_TIME_STEPS.keys())[-1]:
-            self._current_jump_time_step = list(JUMP_TIME_STEPS.keys())[0]
-        else:
-            self._current_jump_time_step += 1
-        print(
-            f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
-        )
-
     def _on_left_key(self, event: Any) -> None:
         delta_of_time = -1 * JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
@@ -197,6 +187,20 @@ class CanvasEventTranslator:
     def _on_right_key(self, event: Any) -> None:
         delta_of_time = JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
+
+    def _on_up_key(self, event: Any) -> None:
+        if self._current_jump_time_step != list(JUMP_TIME_STEPS.keys())[-1]:
+            self._current_jump_time_step += 1
+            print(
+                f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+            )
+
+    def _on_down_key(self, event: Any) -> None:
+        if self._current_jump_time_step != list(JUMP_TIME_STEPS.keys())[0]:
+            self._current_jump_time_step -= 1
+            print(
+                f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+            )
 
     def _on_space_key(self, event: Any) -> None:
         self._scroll_through_videos(direction=1)
