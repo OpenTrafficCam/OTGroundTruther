@@ -558,6 +558,8 @@ class CountsOverlay:
         length = (
             (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
         ) ** 0.5
+        if length < size or length == 0:
+            return 1
         return size / length
 
     def _get_text_position(self, p0: Coordinate, p1: Coordinate) -> tuple[int, int]:
