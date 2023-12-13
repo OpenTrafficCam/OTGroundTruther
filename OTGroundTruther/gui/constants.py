@@ -36,10 +36,12 @@ class TkEvents:
 
     RIGHT_BUTTON_DOWN: ClassVar[str] = "<Button-2>" if ON_MAC else "<Button-3>"
     RIGHT_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>")
+        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>"
+    )
     MIDDLE_BUTTON_DOWN: ClassVar[str] = "<Button-3>" if ON_MAC else "<Button-2>"
     MIDDLE_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>")
+        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>"
+    )
     LEFT_BUTTON_DOWN: ClassVar[str] = "<Button-1>"
     LEFT_BUTTON_UP: ClassVar[str] = "<ButtonRelease-1>"
     LEFT_BUTTON_DOUBLE: ClassVar[str] = "<Double-1>"
@@ -99,7 +101,7 @@ class TkEvents:
             self.BACKSPACE_KEY: "Delete selected counts",
             self.SPACE_KEY: "Small jump forward",
             self.CONTROL_SPACE_KEY: "Small jump backward",
-            self.ESCAPE_KEY: "Abort active count",
+            self.ESCAPE_KEY: "unselect selection / Abort active count",
             self.MULTI_SELECT_SINGLE: "",
             self.MOUSE_WHEEL_SCROLLED: "Small jump forward / backward in the videos",
             self.CONTROL_LEFT: "",

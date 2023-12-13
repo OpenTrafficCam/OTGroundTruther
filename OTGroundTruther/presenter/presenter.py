@@ -173,11 +173,10 @@ class Presenter(PresenterInterface):
             return
 
         self._model.add_event_to_active_count(event)
-        self.update_canvas_image_with_new_overlay()
-
         if not self._model.active_count_class_is_set():
             self._gui.frame_treeview.treeview_counts.selection_set("")
             self._gui.frame_treeview.class_label.set_blank()
+        self.update_canvas_image_with_new_overlay()
 
     def update_canvas_image_with_new_overlay(self) -> None:
         if self._current_frame is not None:
@@ -215,16 +214,18 @@ class Presenter(PresenterInterface):
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
-        self.update_canvas_image_with_new_overlay()
+        self._gui.frame_treeview.treeview_counts.selection_set("")
         self._gui.frame_treeview.class_label.set_blank()
+        self.update_canvas_image_with_new_overlay()
 
     def delete_selected_counts(self) -> None:
         to_delete_count_ids = (
             self._gui.frame_treeview.treeview_counts.delete_selected_count()
         )
         self._model.delete_counts(to_delete_count_ids)
-        self._gui.frame_treeview.class_label.set_blank()
+
         self.update_canvas_image_with_new_overlay()
+        self._gui.frame_treeview.class_label.set_blank()
 
     def show_start_of_count(self, count_id: int):
         overlayed_frame = self._model.get_start_frame_of_count(
