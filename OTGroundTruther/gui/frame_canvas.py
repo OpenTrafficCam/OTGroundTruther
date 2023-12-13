@@ -257,4 +257,6 @@ class CanvasEventTranslator:
         else:
             current_small_jump_size = FACTOR_LARGE_SCROLLING
         self._canvas_info_text.configure(
-            text=f"Scrolling Step: {current_small_jump_size} frames; Jump Step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec")
+            text=f"Scrolling Step: {current_small_jump_size} frames;"
+            f" Jump Step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+        )

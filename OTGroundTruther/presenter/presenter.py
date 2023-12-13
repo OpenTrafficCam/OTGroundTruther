@@ -53,7 +53,10 @@ class Presenter(PresenterInterface):
 
     def _display_first_frame(self) -> None:
         overlayed_first_frame = self._model.get_first_frame(
-            selected_classes=self.get_selected_classes_from_gui()
+            selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_first_frame)
 
@@ -111,6 +114,9 @@ class Presenter(PresenterInterface):
         overlayed_frame = self._model.refresh_current_frame(
             current_frame=self._current_frame,
             selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -126,6 +132,9 @@ class Presenter(PresenterInterface):
         overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
             current_frame=self._current_frame,
             selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
             delta_of_frames=capped_scroll_delta,
             delta_of_time=0,
         )
@@ -136,6 +145,9 @@ class Presenter(PresenterInterface):
             overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
                 current_frame=self._current_frame,
                 selected_classes=self.get_selected_classes_from_gui(),
+                selected_count_ids=(
+                    self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+                ),
                 delta_of_frames=0,
                 delta_of_time=delta_of_time,
             )
@@ -172,6 +184,9 @@ class Presenter(PresenterInterface):
             overlayed_frame = self._model._get_overlayed_frame(
                 background_frame=self._current_frame.background_frame,
                 selected_classes=self.get_selected_classes_from_gui(),
+                selected_count_ids=(
+                    self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+                ),
             )
             self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -213,7 +228,11 @@ class Presenter(PresenterInterface):
 
     def show_start_of_count(self, count_id: int):
         overlayed_frame = self._model.get_start_frame_of_count(
-            count_id=count_id, selected_classes=self.get_selected_classes_from_gui()
+            count_id=count_id,
+            selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -232,4 +251,3 @@ class Presenter(PresenterInterface):
         self._gui.build_key_assignment_window(
             key_assignment_text=self._model.get_key_assignment_text()
         )
-
