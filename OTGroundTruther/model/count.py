@@ -366,6 +366,7 @@ class CountsOverlay:
     def _draw_selected_counts(self) -> None:
         count_dict = self.count_repository.get_all_as_dict()
         for count_id in self.selected_count_ids:
+            self._draw_events_if_in_time_and_class(count_dict[count_id])
             self._draw_single_count(
                 events=count_dict[count_id].get_events(),
                 road_user_class=count_dict[count_id].get_road_user_class(),
