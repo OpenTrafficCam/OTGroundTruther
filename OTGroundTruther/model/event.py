@@ -32,6 +32,8 @@ FRAME_NUMBER: str = "frame_number"
 TIME_CREATED: str = "time_created"
 DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 
+MAX_NUMBER_OF_EVENTS: int = 10000
+
 
 @dataclass
 class Event:
@@ -142,6 +144,8 @@ class EventListParser:
         """
         otevents_content = parse(otevent_file)
         events: list[dict] = otevents_content[EVENT_LIST]
+        if len(events) > MAX_NUMBER_OF_EVENTS:
+            events = events[:MAX_NUMBER_OF_EVENTS]
         parsed_events = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
         for event in events:
@@ -163,7 +167,7 @@ class EventListParser:
                         ),
                         video_file_name=event[VIDEO_NAME],
                         time_created=event.get(TIME_CREATED, None),
-                        road_user_id=event[ROAD_USER_ID],
+                        road_user_id=int(event[ROAD_USER_ID]),
                         road_user_class=road_user_class,
                     )
                 )

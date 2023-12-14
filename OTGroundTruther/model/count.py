@@ -12,7 +12,6 @@ from OTGroundTruther.model.video import BackgroundFrame
 
 ACTIVE_COUNT_ID: str = "active-count-id"
 
-
 COUNT_ID_NAME: str = "ID"
 COUNT_CLASS_NAME: str = "Class"
 COUNT_ENTER_TIME_NAME: str = "Enter Time"
@@ -391,7 +390,7 @@ class CountsOverlay:
                 draw_count = True
         return draw_count
 
-    def _draw_simple_event_circle(self, event):
+    def _draw_simple_event_circle(self, event: Event):
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
