@@ -84,6 +84,7 @@ class Presenter(PresenterInterface):
         if output_askfile:
             self._model.read_sections_from_file(Path(output_askfile))
             self._model.read_events_from_file(Path(output_askfile))
+            self.refresh_treeview()
             if self._current_frame is None:
                 return
             self._refresh_current_frame()
