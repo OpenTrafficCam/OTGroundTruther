@@ -228,15 +228,15 @@ class Treeview(ttk.Treeview):
         )
         self.scroll_to_the_end()
 
-    def delete_selected_count(self) -> list[int]:
+    def delete_selected_count(self) -> list[str]:
         to_delete_count_ids = []
         for selected_count_id in self.selection():
             self.delete(selected_count_id)
-            to_delete_count_ids.append(int(selected_count_id))
+            to_delete_count_ids.append(selected_count_id)
         return to_delete_count_ids
 
-    def get_selected_count_ids(self) -> list[int]:
-        return [int(count_id) for count_id in self.selection()]
+    def get_selected_count_ids(self) -> list[str]:
+        return list(self.selection())
 
     def sort_by_column(self, sort_column: str) -> None:
         column_values_and_row_index = [

@@ -228,7 +228,7 @@ class Presenter(PresenterInterface):
         self.update_canvas_image_with_new_overlay()
         self._gui.frame_treeview.class_label.set_blank()
 
-    def show_start_of_count(self, count_id: int):
+    def show_start_of_count(self, count_id: str):
         overlayed_frame = self._model.get_start_frame_of_count(
             count_id=count_id,
             selected_classes=self.get_selected_classes_from_gui(),
@@ -241,7 +241,7 @@ class Presenter(PresenterInterface):
     def get_selected_classes_from_gui(self) -> list[str]:
         return self._gui.frame_treeview.combobox_counts.get_selected_classes()
 
-    def show_class_image_by_count_id(self, count_id: int) -> None:
+    def show_class_image_by_count_id(self, count_id: str) -> None:
         road_user_class = self._model._count_repository.get_all_as_dict()[
             count_id
         ].get_road_user_class()

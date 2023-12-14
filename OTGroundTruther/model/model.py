@@ -98,7 +98,7 @@ class Model:
         self,
         unix_timestamp: float,
         selected_classes: list[str],
-        selected_count_ids: list[int],
+        selected_count_ids: list[str],
     ) -> OverlayedFrame:
         if self._video_repository == []:
             raise NoVideoError
@@ -116,7 +116,7 @@ class Model:
         self,
         current_frame: OverlayedFrame,
         selected_classes: list[str],
-        selected_count_ids: list[int],
+        selected_count_ids: list[str],
         delta_of_frames: int = 0,
         delta_of_time: float = 0,
     ) -> OverlayedFrame:
@@ -137,7 +137,7 @@ class Model:
         )
 
     def get_first_frame(
-        self, selected_classes: list[str], selected_count_ids: list[int]
+        self, selected_classes: list[str], selected_count_ids: list[str]
     ) -> OverlayedFrame:
         first_video = self._video_repository.get_first_video()
         background_frame = first_video.get_frame_by_number(0)
@@ -151,7 +151,7 @@ class Model:
         self,
         current_frame: OverlayedFrame,
         selected_classes: list[str],
-        selected_count_ids: list[int],
+        selected_count_ids: list[str],
     ) -> OverlayedFrame:
         current_video = self._video_repository.get_video_by_name(
             current_frame.background_frame.get_video_name()
@@ -169,7 +169,7 @@ class Model:
         self,
         background_frame: BackgroundFrame,
         selected_classes: list[str],
-        selected_count_ids: list[int],
+        selected_count_ids: list[str],
     ) -> OverlayedFrame:
         sections_overlay = SectionsOverlay(
             sections=self._section_repository.to_list(),
@@ -271,10 +271,10 @@ class Model:
     def get_all_counts(self) -> list[Count]:
         return self._count_repository.get_all_as_list()
 
-    def delete_count(self, id: int) -> None:
+    def delete_count(self, id: str) -> None:
         self._count_repository.delete(id=id)
 
-    def delete_counts(self, ids: list[int]) -> None:
+    def delete_counts(self, ids: list[str]) -> None:
         for id in ids:
             self.delete_count(id=id)
 
@@ -288,7 +288,7 @@ class Model:
         self.active_count = None
 
     def get_start_frame_of_last_count(
-        self, selected_classes: list[str], selected_count_ids: list[int]
+        self, selected_classes: list[str], selected_count_ids: list[str]
     ) -> OverlayedFrame:
         last_added_count = list(self._count_repository.get_all_as_dict().values())[-1]
         event = last_added_count.get_first_event()
@@ -299,7 +299,7 @@ class Model:
         )
 
     def get_frame_by_event(
-        self, event: Event, selected_classes: list[str], selected_count_ids: list[int]
+        self, event: Event, selected_classes: list[str], selected_count_ids: list[str]
     ) -> OverlayedFrame:
         video = self._video_repository.get_video_by_name(event.get_video_file_name())
         background_frame = video.get_frame_by_number(event.get_frame_number())
@@ -310,7 +310,7 @@ class Model:
         )
 
     def get_start_frame_of_count(
-        self, count_id: int, selected_classes: list[str], selected_count_ids: list[int]
+        self, count_id: str, selected_classes: list[str], selected_count_ids: list[str]
     ):
         event = self._count_repository.get_all_as_dict()[count_id].get_first_event()
         return self.get_frame_by_event(

@@ -78,7 +78,7 @@ class EventBeforePreviouseEventError(Exception):
 class Count:
     def __init__(
         self,
-        road_user_id: int,
+        road_user_id: str,
         events: list[Event],
         road_user_class: RoadUserClass,
     ):
@@ -111,7 +111,7 @@ class Count:
     def get_events(self) -> list[Event]:
         return self.events
 
-    def get_road_user_id(self) -> int:
+    def get_road_user_id(self) -> str:
         return self.road_user_id
 
     def get_road_user_class(self) -> RoadUserClass:
@@ -174,7 +174,7 @@ class ActiveCount:
 
 class CountRepository:
     def __init__(self) -> None:
-        self._counts: dict[int, Count] = {}
+        self._counts: dict[str, Count] = {}
         self._current_id: int = 0
 
     def add_all(self, counts: Iterable[Count]) -> None:
@@ -202,10 +202,10 @@ class CountRepository:
         """
         return list(self._counts.values())
 
-    def get_all_as_dict(self) -> dict[int, Count]:
+    def get_all_as_dict(self) -> dict[str, Count]:
         return self._counts
 
-    def get(self, id: int) -> Optional[Count]:
+    def get(self, id: str) -> Optional[Count]:
         """Get the count for the given id or nothing, if the id is missing.
 
         Args:
@@ -224,7 +224,7 @@ class CountRepository:
             )
         return list(set(filtered_counts))
 
-    def delete(self, id: int) -> None:
+    def delete(self, id: str) -> None:
         """Remove count from the repository.
 
         Args:
@@ -238,20 +238,25 @@ class CountRepository:
         )
         del self._counts[id]
 
-    def set_current_id(self, id: int):
+    def set_current_id(self, id: str | int):
         """set current id
 
         Args:
-            id (int): _description_
+            id (str): _description_
         """
-        self._current_id = id
+        try:
+            int_value = int(id)
+        except Exception:
+            self._current_id = 0
+        else:
+            self._current_id = int_value
 
-    def get_id(self) -> int:
+    def get_id(self) -> str:
         """
         Get an id for a new count
         """
         self._current_id += 1
-        candidate = self._current_id
+        candidate = str(self._current_id)
         return self.get_id() if candidate in self._counts.keys() else candidate
 
     def is_empty(self) -> bool:
@@ -297,13 +302,13 @@ class CountRepository:
             else:
                 continue  # TODO: Store in "SingleEventRepository"
         if len(self._counts.keys()) > 0:
-            self.set_current_id(list(self._counts.keys())[0])
+            self.set_current_id(list(self._counts.keys())[-1])
 
     def _get_events_and_classes_by_id(
         self, event_list: list[EventForParsingSerializing]
-    ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
-        events: dict[int, list[Event]] = {}
-        classes: dict[int, RoadUserClass] = {}
+    ) -> tuple[dict[str, list[Event]], dict[str, RoadUserClass]]:
+        events: dict[str, list[Event]] = {}
+        classes: dict[str, RoadUserClass] = {}
         for event_for_saving in event_list:
             id_ = event_for_saving.get_road_user_id()
             if id_ in events.keys():
@@ -319,7 +324,7 @@ class CountRepository:
 class CountsOverlay:
     count_repository: CountRepository
     active_count: ActiveCount | None
-    selected_count_ids: list[int]
+    selected_count_ids: list[str]
     background_frame: BackgroundFrame
     selected_classes: list[str]
     image_array: np.ndarray = field(init=False)

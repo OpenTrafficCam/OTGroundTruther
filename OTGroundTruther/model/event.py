@@ -45,7 +45,7 @@ class Event:
     time_created: float | None
 
     def to_event_for_serializing(
-        self, road_user_id: int, road_user_class: RoadUserClass
+        self, road_user_id: str, road_user_class: RoadUserClass
     ) -> "EventForParsingSerializing":
         event: dict = vars(self)
         event[ROAD_USER_ID] = road_user_id
@@ -91,7 +91,7 @@ class EventForParsingSerializing:
     timestamp: float
     video_file_name: str
     time_created: float | None
-    road_user_id: int
+    road_user_id: str
     road_user_class: RoadUserClass
 
     def to_event(self) -> Event:
@@ -113,7 +113,7 @@ class EventForParsingSerializing:
             DIRECTION_VECTOR: None,
         }
 
-    def get_road_user_id(self) -> int:
+    def get_road_user_id(self) -> str:
         return self.road_user_id
 
     def get_road_user_class(self) -> RoadUserClass:
@@ -167,7 +167,7 @@ class EventListParser:
                         ),
                         video_file_name=event[VIDEO_NAME],
                         time_created=event.get(TIME_CREATED, None),
-                        road_user_id=int(event[ROAD_USER_ID]),
+                        road_user_id=str(event[ROAD_USER_ID]),
                         road_user_class=road_user_class,
                     )
                 )
