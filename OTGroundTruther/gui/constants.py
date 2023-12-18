@@ -13,8 +13,9 @@ STATE_NORMAL = "normal"
 PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
 JUMP_TIME_STEPS: dict[int, float] = {
     0: 1,
-    1: 20,
-    2: 600,
+    1: 4,
+    2: 20,
+    3: 600,
 }
 
 MINIMUM_WINDOWS_SCROLL_VALUE: int = 120
