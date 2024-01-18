@@ -174,7 +174,10 @@ class EventListParser:
                     round(event[EVENT_COORDINATE][1]),
                 )
                 road_user_class = classes_by_name[event[ROAD_USER_CLASS_OTEVENTS]]
-
+                if event_type_available:
+                    video_file_name = event[VIDEO_NAME]
+                else:
+                    video_file_name = f"{event[VIDEO_NAME]}.mp4"
                 parsed_events.append(
                     EventForParsingSerializing(
                         coordinate=coordinate,
@@ -184,7 +187,7 @@ class EventListParser:
                         timestamp=self._convert_datetime_to_unix(
                             time_input=event[OCCURENCE]
                         ),
-                        video_file_name=event[VIDEO_NAME],
+                        video_file_name=video_file_name,
                         time_created=event.get(TIME_CREATED, None),
                         road_user_id=str(event[ROAD_USER_ID]),
                         road_user_class=road_user_class,

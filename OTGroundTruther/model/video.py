@@ -96,7 +96,7 @@ class BackgroundFrame:
         return self.video_file
 
     def get_video_name(self) -> str:
-        return self.video_file.stem
+        return self.video_file.name
 
 
 class Video:
@@ -125,7 +125,7 @@ class Video:
         return self.file
 
     def get_name(self) -> str:
-        return self.file.stem
+        return self.file.name
 
     def get_frame_rate(self) -> float:
         return self.frame_rate

@@ -427,7 +427,7 @@ class CountsOverlay:
     def _is_at_current_frame(self, event: Event) -> bool:
         return (
             self.background_frame.get_frame_number() == event.get_frame_number()
-        ) & (self.background_frame.get_video_file().stem == event.get_video_file_name())
+        ) & (self.background_frame.get_video_file().name == event.get_video_file_name())
 
     def _is_in_time_window(self, event: Event, time_window: float) -> bool:
         return (

@@ -203,7 +203,7 @@ class Model:
             section,
             frame_number=current_frame.background_frame.frame_number,
             timestamp=current_frame.background_frame.unix_timestamp,
-            video_file_name=current_frame.background_frame.video_file.stem,
+            video_file_name=current_frame.background_frame.video_file.name,
             time_created=now,
         )
 
