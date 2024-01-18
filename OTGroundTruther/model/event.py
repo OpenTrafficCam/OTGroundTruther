@@ -32,17 +32,29 @@ FRAME_NUMBER: str = "frame_number"
 TIME_CREATED: str = "time_created"
 DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 
-MAX_NUMBER_OF_EVENTS: int = 10000
+SECTION_ENTER: str = "section-enter"
+
+MAX_NUMBER_OF_EVENTS: int = 1000000
 
 
-@dataclass
 class Event:
-    coordinate: Coordinate
-    section: LineSection
-    frame_number: int
-    timestamp: float
-    video_file_name: str
-    time_created: float | None
+    def __init__(
+        self,
+        coordinate: Coordinate,
+        section: LineSection,
+        frame_number: int,
+        timestamp: float,
+        video_file_name: str,
+        time_created: float | None,
+        event_type: str = SECTION_ENTER,
+    ) -> None:
+        self.coordinate = coordinate
+        self.section = section
+        self.frame_number = frame_number
+        self.timestamp = timestamp
+        self.video_file_name = video_file_name
+        self.time_created = time_created
+        self.event_type = event_type
 
     def to_event_for_serializing(
         self, road_user_id: str, road_user_class: RoadUserClass
@@ -57,6 +69,7 @@ class Event:
             EVENT_COORDINATE: self.coordinate.as_list(),
             SECTION_ID: self.section.id,
             SECTION_NAME: self.section.name,
+            EVENT_TYPE: self.event_type,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file_name,
@@ -87,6 +100,7 @@ class Event:
 class EventForParsingSerializing:
     coordinate: Coordinate
     section: LineSection
+    event_type: str
     frame_number: int
     timestamp: float
     video_file_name: str
@@ -104,6 +118,7 @@ class EventForParsingSerializing:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
             SECTION_ID: self.section.id,
+            EVENT_TYPE: self.event_type,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file_name,
@@ -148,8 +163,11 @@ class EventListParser:
             events = events[:MAX_NUMBER_OF_EVENTS]
         parsed_events = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
+        event_type_available = self.is_event_type_is_available(events)
         for event in events:
-            if event[SECTION_ID] in list(sections.keys()):
+            if self.event_section_available_and_is_section_entering(
+                sections, event_type_available, event
+            ):
                 section = sections[event[SECTION_ID]]
                 coordinate = Coordinate(
                     round(event[EVENT_COORDINATE][0]),
@@ -161,6 +179,7 @@ class EventListParser:
                     EventForParsingSerializing(
                         coordinate=coordinate,
                         section=section,
+                        event_type=SECTION_ENTER,
                         frame_number=event[FRAME_NUMBER],
                         timestamp=self._convert_datetime_to_unix(
                             time_input=event[OCCURENCE]
@@ -172,6 +191,19 @@ class EventListParser:
                     )
                 )
         return parsed_events
+
+    def event_section_available_and_is_section_entering(
+        self, sections, event_type_available, event
+    ):
+        return (not event_type_available or event[EVENT_TYPE] == SECTION_ENTER) and (
+            event[SECTION_ID] in list(sections.keys())
+        )
+
+    def is_event_type_is_available(self, events):
+        if events and EVENT_TYPE in list(events[0].keys()):
+            return True
+        else:
+            return False
 
     def _convert_datetime_to_unix(self, time_input: float | str) -> float:
         if isinstance(time_input, float):
