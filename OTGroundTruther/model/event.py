@@ -174,10 +174,7 @@ class EventListParser:
                     round(event[EVENT_COORDINATE][1]),
                 )
                 road_user_class = classes_by_name[event[ROAD_USER_CLASS_OTEVENTS]]
-                if event_type_available:
-                    video_file_name = event[VIDEO_NAME]
-                else:
-                    video_file_name = f"{event[VIDEO_NAME]}.mp4"
+                video_file_name = self.get_video_file_name(event_type_available, event)
                 parsed_events.append(
                     EventForParsingSerializing(
                         coordinate=coordinate,
@@ -194,6 +191,12 @@ class EventListParser:
                     )
                 )
         return parsed_events
+
+    def get_video_file_name(self, event_type_available, event):
+        if event_type_available:
+            return event[VIDEO_NAME]
+        else:
+            return f"{event[VIDEO_NAME]}.mp4"
 
     def event_section_available_and_is_section_entering(
         self, sections, event_type_available, event
