@@ -309,15 +309,32 @@ class CountRepository:
     ) -> tuple[dict[str, list[Event]], dict[str, RoadUserClass]]:
         events: dict[str, list[Event]] = {}
         classes: dict[str, RoadUserClass] = {}
-        for event_for_saving in event_list:
-            id_ = event_for_saving.get_road_user_id()
+        for event_for_saving_parsing in event_list:
+            id_ = event_for_saving_parsing.get_road_user_id()
+            classes[id_] = event_for_saving_parsing.get_road_user_class()
+            event_for_saving = event_for_saving_parsing.to_event()
             if id_ in events.keys():
-                events[id_].append(event_for_saving.to_event())
+                events[id_] = self.add_event_at_correct_position(
+                    events, id_, event_for_saving
+                )
             else:
-                classes[id_] = event_for_saving.get_road_user_class()
-                events[id_] = [event_for_saving.to_event()]
+                events[id_] = [event_for_saving]
 
         return events, classes
+
+    def add_event_at_correct_position(
+        self, events: dict[str, list[Event]], id_: str, event_for_saving: Event
+    ) -> list[Event]:
+        count_event_list = []
+        added = False
+        for event in events[id_]:
+            if event.get_timestamp() > event_for_saving.get_timestamp():
+                count_event_list.append(event_for_saving)
+                added = True
+            count_event_list.append(event)
+        if not added:
+            count_event_list.append(event_for_saving)
+        return count_event_list
 
 
 @dataclass
@@ -396,7 +413,7 @@ class CountsOverlay:
                 draw_count = True
         return draw_count
 
-    def _draw_simple_event_circle(self, event: Event):
+    def _draw_simple_event_circle(self, event: Event) -> None:
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
@@ -406,7 +423,7 @@ class CountsOverlay:
             lineType=COUNT_LINETYPE,
         )
 
-    def _draw_event_circle_with_contour(self, event):
+    def _draw_event_circle_with_contour(self, event) -> None:
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
@@ -524,7 +541,7 @@ class CountsOverlay:
             for event in self.active_count.get_events():
                 self.draw_active_count_only_one_event(event)
 
-    def draw_active_count_only_one_event(self, event: Event):
+    def draw_active_count_only_one_event(self, event: Event) -> None:
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
@@ -542,20 +559,21 @@ class CountsOverlay:
             lineType=COUNT_LINETYPE,
         )
 
-    def _draw_active_count_multiple_events(self):
-        road_user_class = self.active_count.get_road_user_class()
-        if road_user_class is None:
-            color = ACTIVE_COUNT_COLOR
-        else:
-            color = road_user_class.get_color_rgb() + (255,)
+    def _draw_active_count_multiple_events(self) -> None:
+        if self.active_count is not None:
+            road_user_class = self.active_count.get_road_user_class()
+            if road_user_class is None:
+                color = ACTIVE_COUNT_COLOR
+            else:
+                color = road_user_class.get_color_rgb() + (255,)
 
-        self._draw_single_count(
-            events=self.active_count.get_events(),
-            road_user_class=road_user_class,
-            color=color,
-            color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
-            thickness_contour=ACTIVE_COUNT_CONTOUR_THICKNESS,
-        )
+            self._draw_single_count(
+                events=self.active_count.get_events(),
+                road_user_class=road_user_class,
+                color=color,
+                color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
+                thickness_contour=ACTIVE_COUNT_CONTOUR_THICKNESS,
+            )
 
     def _tiplength_for_same_arrow_size(
         self, p0: Coordinate, p1: Coordinate, size: int = 20
