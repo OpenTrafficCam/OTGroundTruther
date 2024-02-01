@@ -26,10 +26,10 @@
         short_label_ger: Fahrrad mA
         key: D
         icon_file: assets/cyclist-trailer.png
-        color_name: "lime"
+        color_name: "other"
         color_rgb:
-                r: 192
-                g: 255
+                r: 233
+                g: 85
                 b: 0
 - cargo_bike_driver:
         label: Lastenrad
@@ -103,11 +103,11 @@
         short_label_ger: Kleinbus mA
         key: E
         icon_file: assets/private_van_with_trailer.png
-        color_name: "black"
+        color_name: "other"
         color_rgb:
-                r: 0
-                g: 0
-                b: 0
+                r: 80
+                g: 80
+                b: 203
 - delivery_van:
         label: Lieferwagen ohne Anhänger
         short_label_eng: delivery van
@@ -125,11 +125,11 @@
         short_label_ger: Lieferwagen mA
         key: W
         icon_file: assets/delivery_van_with_trailer.png
-        color_name: "yellow"
+        color_name: "other"
         color_rgb:
-                r: 255
-                g: 255
-                b: 0
+                r: 100
+                g: 166
+                b: 88
 - bus:
         label: Bus
         short_label_eng: bus
