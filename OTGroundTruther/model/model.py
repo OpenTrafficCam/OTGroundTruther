@@ -35,7 +35,7 @@ from OTGroundTruther.model.video import (
     VideoRepository,
 )
 
-STANDARD_CLASS_KEY: str | None = None
+DEFAULT_CLASS_KEY: str | None = None
 
 
 class Model:
@@ -212,12 +212,12 @@ class Model:
 
     def add_event_to_active_count(self, event: Event) -> None:
         if self._active_count is None:
-            if STANDARD_CLASS_KEY is None:
+            if DEFAULT_CLASS_KEY is None:
                 standard_road_user_class = None
             else:
                 standard_road_user_class = (
                     self._valid_road_user_classes.to_dict_with_name_as_key()[
-                        STANDARD_CLASS_KEY
+                        DEFAULT_CLASS_KEY
                     ]
                 )
             self._active_count = ActiveCount(
