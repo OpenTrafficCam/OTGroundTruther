@@ -1,7 +1,7 @@
 import copy
 import tkinter as tk
 import tkinter.ttk as ttk
-from typing import Any
+from typing import Any, Callable
 
 import customtkinter as ctk
 from PIL import Image
@@ -251,9 +251,9 @@ class Treeview(ttk.Treeview):
         self.update_next_column_sort_direction(sort_column=sort_column)
 
     def update_next_column_sort_direction(self, sort_column: str) -> None:
-        self.next_column_sort_direction[
-            sort_column
-        ] = not self.next_column_sort_direction[sort_column]
+        self.next_column_sort_direction[sort_column] = (
+            not self.next_column_sort_direction[sort_column]
+        )
         for column in COUNT_PROPERTIES_ORDER:
             if column != sort_column:
                 self.next_column_sort_direction[column] = False
@@ -272,10 +272,13 @@ class TreeviewTranslator:
         self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
 
         for column in COUNT_PROPERTIES_ORDER:
+            sort_treeview_by_column: Callable = (
+                lambda _column=column: self._treeview.sort_by_column(_column)
+            )
             self._treeview.heading(
                 column,
                 text=column,
-                command=lambda _column=column: self._treeview.sort_by_column(_column),
+                command=sort_treeview_by_column,
             )
 
     def _show_selected_count(self, event: Any) -> None:
