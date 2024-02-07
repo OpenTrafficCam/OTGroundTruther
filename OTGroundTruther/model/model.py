@@ -212,16 +212,17 @@ class Model:
 
     def add_event_to_active_count(self, event: Event) -> None:
         if self._active_count is None:
+            # TODO: #42 Infer default class key from yaml file containing road user classes
             if DEFAULT_CLASS_KEY is None:
-                standard_road_user_class = None
+                default_road_user_class = None
             else:
-                standard_road_user_class = (
+                default_road_user_class = (
                     self._valid_road_user_classes.to_dict_with_name_as_key()[
                         DEFAULT_CLASS_KEY
                     ]
                 )
             self._active_count = ActiveCount(
-                first_event=event, road_user_class=standard_road_user_class
+                first_event=event, road_user_class=default_road_user_class
             )
             print("New active count")
         else:
