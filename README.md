@@ -1,6 +1,6 @@
 # OTGroundTruther
 
-Tools to manually validate and create Ground Truth data for OTValidate
+Create ground truth data for validating road traffic events automatically obtained with OTAnalytics.
 
 ## Contributors
 
