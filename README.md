@@ -6,11 +6,11 @@ Tools to manually validate and create Ground Truth data for OTValidate
 
 OTGroundTruther was developed by @arminkollascheck, @martinbaerwolff and @hgoerner during their time at TUD Dresden University of Technology.
 
-[![TU Dresden](/assets/TUD_Logo_HKS41_h50.png)](https://tu-dresden.de/bu/verkehr/ivs/ivst)
+[![TU Dresden](/assets/TU_Dresden.jpg)](https://tu-dresden.de/bu/verkehr/ivs/ivst)
 
 The developement was supported by platomo GmbH.
 
-[![platomo](/assets/platomo_logo_black_h50.png)](https://platomo.de/)
+[![platomo](/assets/platomo_logo_black_300_bg-white.png)](https://platomo.de/)
 
 ## Funding
 
