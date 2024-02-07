@@ -74,7 +74,7 @@ class Model:
 
     def read_events_from_file(self, file: Path) -> None:
         event_list = self._eventlistparser.parse(
-            otevent_file=file,
+            events_file=file,
             sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
