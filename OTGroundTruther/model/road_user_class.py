@@ -8,7 +8,6 @@ KEY_YAML_KEY = "key"
 SHORT_LABEL_ENG_YAML_KEY = "short_label_eng"
 LABEL_YAML_KEY = "label"
 ICON_FILE_YAML_KEY = "icon_file"
-COLOR_NAME_YAML_KEY = "color_name"
 COLOR_RGB_YAML_KEY = "color_rgb"
 
 CLASS_IMAGE_SIZE: int = 80
@@ -26,7 +25,6 @@ class RoadUserClass:
     key: str | None
     icon_file: Path
     icon: Image = field(init=False)
-    color_name: str
     color_rgb: tuple[int, int, int]
 
     def __post_init__(self):
@@ -84,9 +82,7 @@ class ValidRoadUserClasses:
         for road_user_class in yaml_content:
             for name, properties in road_user_class.items():
                 key = str(properties[KEY_YAML_KEY])
-                road_user_classes[key] = self._get_road_user_class(
-                    properties, name
-                )
+                road_user_classes[key] = self._get_road_user_class(properties, name)
         return road_user_classes
 
     def _get_road_user_class(
@@ -106,7 +102,6 @@ class ValidRoadUserClasses:
             short_label_eng=str(properties[SHORT_LABEL_ENG_YAML_KEY]),
             key=str(properties[KEY_YAML_KEY]),
             icon_file=Path(str(properties[ICON_FILE_YAML_KEY])),
-            color_name=str(properties[COLOR_NAME_YAML_KEY]),
             color_rgb=(r, g, b),
         )
 
