@@ -4,7 +4,7 @@ Tools to manually validate and create Ground Truth data for OTValidate
 
 ## Contributors
 
-OTGroundTruther was developed by @arminkollascheck, @martinbaerwolff and @hgoerner during their time at TUD Dresden University of Technology, [Chair for Mobility Systems Planning](https://tu-dresden.de/bu/verkehr/ivs/msp).
+OTGroundTruther was developed by [@arminkollascheck](https://github.com/arminkollascheck), [@martinbaerwolff](https://github.com/martinbaerwolff) and [@hgoerner](https://github.com/hgoerner) during their time at TUD Dresden University of Technology, [Chair for Mobility Systems Planning](https://tu-dresden.de/bu/verkehr/ivs/msp).
 
 [![TU Dresden](/assets/TU_Dresden.jpg)](https://tu-dresden.de/bu/verkehr/ivs/msp)
 
