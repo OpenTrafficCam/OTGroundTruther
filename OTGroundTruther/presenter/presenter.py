@@ -221,8 +221,9 @@ class Presenter(PresenterInterface):
 
     def delete_selected_counts(self) -> None:
         to_delete_count_ids = (
-            self._gui.frame_treeview.treeview_counts.delete_selected_count()
+            self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
         )
+        self._gui.frame_treeview.treeview_counts.delete_selected_count()
         self._model.delete_counts(to_delete_count_ids)
 
         self.update_canvas_image_with_new_overlay()

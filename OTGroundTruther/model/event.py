@@ -35,6 +35,7 @@ DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 SECTION_ENTER: str = "section-enter"
 
 MAX_NUMBER_OF_EVENTS: int = 1000000
+MAX_NUMBER_OF_EVENTS_APPLIED: bool = False
 
 
 class Event:
@@ -159,7 +160,7 @@ class EventListParser:
         """
         otevents_content = parse(otevent_file)
         events: list[dict] = otevents_content[EVENT_LIST]
-        if len(events) > MAX_NUMBER_OF_EVENTS:
+        if len(events) > MAX_NUMBER_OF_EVENTS and MAX_NUMBER_OF_EVENTS_APPLIED:
             events = events[:MAX_NUMBER_OF_EVENTS]
         parsed_events = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
