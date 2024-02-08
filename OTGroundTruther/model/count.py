@@ -61,6 +61,9 @@ EVENTPOINT_MOMENT_RADIUS: int = COUNT_EVENTPOINT_RADIUS
 EVENTPOINT_MOMENT_COLOR: tuple[int, int, int, int] = COUNT_EVENTPOINT_COLOR
 EVENTPOINT_MOMENT_THICKNESS: int = EVENTPOINT_MOMENT_BG_THICKNESS - 1
 
+IN_FRAME: str = "in_frame"
+IN_WINDOW_NOT_IN_FRAME: str = "in_window_not_in_frame"
+
 
 class TooFewEventsError(Exception):
     pass
@@ -246,7 +249,7 @@ class CountRepository:
         """
         try:
             int_value = int(id)
-        except Exception:
+        except ValueError:
             self._current_id = 0
         else:
             self._current_id = int_value
@@ -285,6 +288,8 @@ class CountRepository:
     def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
         """
         create count list from event list and the suitable list of the object ids
+        set current id = 0 (only important for id naming of new events later) if the
+        ids are not transformable to an int
 
         Args:
             event_list (list[Event_For_Saving]): List of events.
@@ -367,8 +372,8 @@ class CountsOverlay:
         for count in self.count_repository.get_all_as_list():
             if count.get_road_user_id() in self.selected_count_ids:
                 continue
-            draw_count = self._draw_events_if_in_time_and_class(count)
-            if not draw_count:
+            events_to_draw = self._get_events_of_count_to_draw(count)
+            if not (events_to_draw[IN_FRAME] + events_to_draw[IN_WINDOW_NOT_IN_FRAME]):
                 continue
             if self.selected_count_ids:
                 color = NOT_SELECTED_COLOR
@@ -377,7 +382,9 @@ class CountsOverlay:
                 color = count.get_road_user_class().get_color_rgb() + (255,)
                 color_contour = COUNT_CONTOUR_COLOR
 
-            self._draw_single_count(
+                self._draw_events(events_to_draw=events_to_draw)
+
+            self._draw_movement_single_count(
                 events=count.get_events(),
                 road_user_class=count.get_road_user_class(),
                 color=color,
@@ -388,8 +395,9 @@ class CountsOverlay:
     def _draw_selected_counts(self) -> None:
         count_dict = self.count_repository.get_all_as_dict()
         for count_id in self.selected_count_ids:
-            self._draw_events_if_in_time_and_class(count_dict[count_id])
-            self._draw_single_count(
+            events_to_draw = self._get_events_of_count_to_draw(count_dict[count_id])
+            self._draw_events(events_to_draw=events_to_draw)
+            self._draw_movement_single_count(
                 events=count_dict[count_id].get_events(),
                 road_user_class=count_dict[count_id].get_road_user_class(),
                 color=count_dict[count_id].get_road_user_class().get_color_rgb()
@@ -398,20 +406,27 @@ class CountsOverlay:
                 thickness_contour=COUNT_CONTOUR_THICKNESS,
             )
 
-    def _draw_events_if_in_time_and_class(self, count: Count) -> bool:
+    def _get_events_of_count_to_draw(self, count: Count) -> dict[str, list[Event]]:
+        events_to_draw: dict[str, list[Event]] = {
+            IN_FRAME: [],
+            IN_WINDOW_NOT_IN_FRAME: [],
+        }
         if count.get_road_user_class().get_name() not in self.selected_classes:
-            return False
-        draw_count = False
+            return events_to_draw
         for event in count.get_events():
             if self._is_at_current_frame(event=event):
-                self._draw_event_circle_with_contour(event)
-                draw_count = True
+                events_to_draw[IN_FRAME].append(event)
             elif self._is_in_time_window(
                 event=event, time_window=TIME_WINDOW_SHOW_COUNT
             ):
-                self._draw_simple_event_circle(event)
-                draw_count = True
-        return draw_count
+                events_to_draw[IN_WINDOW_NOT_IN_FRAME].append(event)
+        return events_to_draw
+
+    def _draw_events(self, events_to_draw: dict[str, list[Event]]) -> None:
+        for event in events_to_draw[IN_WINDOW_NOT_IN_FRAME]:
+            self._draw_simple_event_circle(event)
+        for event in events_to_draw[IN_FRAME]:
+            self._draw_event_circle_with_contour(event)
 
     def _draw_simple_event_circle(self, event: Event) -> None:
         cv2.circle(
@@ -453,7 +468,7 @@ class CountsOverlay:
             <= self.background_frame.get_unix_timestamp() + time_window / 2
         )
 
-    def _draw_single_count(
+    def _draw_movement_single_count(
         self,
         events: list[Event],
         road_user_class: RoadUserClass | None,
@@ -567,7 +582,7 @@ class CountsOverlay:
             else:
                 color = road_user_class.get_color_rgb() + (255,)
 
-            self._draw_single_count(
+            self._draw_movement_single_count(
                 events=self.active_count.get_events(),
                 road_user_class=road_user_class,
                 color=color,

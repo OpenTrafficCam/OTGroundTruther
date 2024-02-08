@@ -39,6 +39,7 @@ DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 SECTION_ENTER: str = "section-enter"
 
 MAX_NUMBER_OF_EVENTS: int = 1000000
+MAX_NUMBER_OF_EVENTS_APPLIED: bool = False
 
 
 class InvalidEventsFileType(Exception):
@@ -183,7 +184,6 @@ class EventListParser:
         event_type_available = self._event_type_is_available(events)
         enter_events_without_sections: int = 0
         for event in events:
-
             if event_type_available and not self._is_enter_event(event):
                 continue
             if not self._section_of_event_exists(sections, event):
