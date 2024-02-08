@@ -42,9 +42,9 @@ class Presenter(PresenterInterface):
 
     def load_video_files(self) -> None:
         output_askfile = askopenfilenames(
-            defaultextension=f"*.{DEFAULT_VIDEO_FILE_SUFFIX}",
+            defaultextension=f"*{DEFAULT_VIDEO_FILE_SUFFIX}",
             filetypes=[
-                ("mp4", f"*.{DEFAULT_VIDEO_FILE_SUFFIX}"),
+                ("mp4", f"*{DEFAULT_VIDEO_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
@@ -62,9 +62,9 @@ class Presenter(PresenterInterface):
 
     def load_otflow(self) -> None:
         output_askfile = askopenfilename(
-            defaultextension=f"*.{OTANALYTICS_FILE_SUFFIX}",
+            defaultextension=f"*{OTANALYTICS_FILE_SUFFIX}",
             filetypes=[
-                ("otevents", f"*.{OTANALYTICS_FILE_SUFFIX}"),
+                ("otevents", f"*{OTANALYTICS_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
@@ -75,10 +75,10 @@ class Presenter(PresenterInterface):
 
     def load_events(self) -> None:
         output_askfile = askopenfilename(
-            defaultextension=f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
+            defaultextension=f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
-                ("otgtevents", f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
-                ("otevents", f"*.{OTEVENTS_FILE_SUFFIX}"),
+                ("otgtevents", f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
+                ("otevents", f"*{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
