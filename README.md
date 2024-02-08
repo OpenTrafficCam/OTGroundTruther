@@ -1,6 +1,6 @@
 # OTGroundTruther
 
-Create ground truth data for validating road traffic events automatically obtained with OTAnalytics.
+Create ground truth data to validate road traffic events automatically obtained with OTAnalytics.
 
 ## Contributors
 
