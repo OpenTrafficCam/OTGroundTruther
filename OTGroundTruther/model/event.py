@@ -220,7 +220,7 @@ class EventListParser:
         return parsed_events
 
     def _exceeds_maximum_events(self, events: list[dict]) -> bool:
-        if len(events) > MAX_NUMBER_OF_EVENTS:
+        if MAX_NUMBER_OF_EVENTS_APPLIED and len(events) > MAX_NUMBER_OF_EVENTS:
             return True
         return False
 
