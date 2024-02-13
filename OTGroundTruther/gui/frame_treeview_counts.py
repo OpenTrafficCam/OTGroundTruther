@@ -14,6 +14,7 @@ from OTGroundTruther.model.count import (
     COUNT_ENTER_TIME_NAME,
     COUNT_EXIT_GATE_NAME,
     COUNT_ID_NAME,
+    COUNT_NUMBER_OF_EVENTS,
     COUNT_TIME_SPAN,
     Count,
     CountRepository,
@@ -38,14 +39,16 @@ COUNT_PROPERTIES_ORDER: list[str] = [
     COUNT_ENTER_GATE_NAME,
     COUNT_EXIT_GATE_NAME,
     COUNT_TIME_SPAN,
+    COUNT_NUMBER_OF_EVENTS,
 ]
 COLUMN_WIDTHS: dict[str, int] = {
-    COUNT_ID_NAME: 40,
+    COUNT_ID_NAME: 60,
     COUNT_CLASS_NAME: 100,
     COUNT_ENTER_TIME_NAME: 100,
-    COUNT_ENTER_GATE_NAME: 80,
-    COUNT_EXIT_GATE_NAME: 80,
+    COUNT_ENTER_GATE_NAME: 60,
+    COUNT_EXIT_GATE_NAME: 60,
     COUNT_TIME_SPAN: 80,
+    COUNT_NUMBER_OF_EVENTS: 40,
 }
 
 ALL_CLASSES_SELECTION: str = "All"
@@ -248,9 +251,9 @@ class Treeview(ttk.Treeview):
         self.update_next_column_sort_direction(sort_column=sort_column)
 
     def update_next_column_sort_direction(self, sort_column: str) -> None:
-        self.next_column_sort_direction[sort_column] = (
-            not self.next_column_sort_direction[sort_column]
-        )
+        self.next_column_sort_direction[
+            sort_column
+        ] = not self.next_column_sort_direction[sort_column]
         for column in COUNT_PROPERTIES_ORDER:
             if column != sort_column:
                 self.next_column_sort_direction[column] = False
