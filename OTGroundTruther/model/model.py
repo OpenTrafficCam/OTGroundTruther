@@ -212,7 +212,8 @@ class Model:
 
     def add_event_to_active_count(self, event: Event) -> None:
         if self._active_count is None:
-            # TODO: #42 Infer default class key from yaml file containing road user classes
+            # TODO: #42 Infer default class key from yaml file
+            # containing road user classes
             if DEFAULT_CLASS_KEY is None:
                 default_road_user_class = None
             else:

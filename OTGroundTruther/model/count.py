@@ -333,7 +333,7 @@ class CountRepository:
         count_event_list = []
         added = False
         for event in events[id_]:
-            if event.get_timestamp() > event_for_saving.get_timestamp():
+            if not added and event.get_timestamp() > event_for_saving.get_timestamp():
                 count_event_list.append(event_for_saving)
                 added = True
             count_event_list.append(event)
