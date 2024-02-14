@@ -18,7 +18,7 @@ COUNT_ENTER_TIME_NAME: str = "Enter Time"
 COUNT_ENTER_GATE_NAME: str = "Enter Gate"
 COUNT_EXIT_GATE_NAME: str = "Exit Gate"
 COUNT_TIME_SPAN: str = "Time Span"
-COUNT_NUMBER_OF_EVENTS: str = "Passings"
+COUNT_NUMBER_OF_EVENTS: str = "Events"
 
 
 ARROW_CONTOUR_SIZE: int = 18
