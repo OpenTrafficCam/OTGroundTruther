@@ -330,17 +330,14 @@ class CountRepository:
         return events, classes
 
     def add_event_at_correct_position(
-        self, events: dict[str, list[Event]], id_: str, event_for_saving: Event
+        self, ordered_events: dict[str, list[Event]], id_: str, event_for_saving: Event
     ) -> list[Event]:
-        count_event_list = []
-        added = False
-        for event in events[id_]:
-            if not added and event.get_timestamp() > event_for_saving.get_timestamp():
-                count_event_list.append(event_for_saving)
-                added = True
-            count_event_list.append(event)
-        if not added:
-            count_event_list.append(event_for_saving)
+        count_event_list = ordered_events[id_]
+        for i, event in enumerate(ordered_events[id_]):
+            if event_for_saving.get_timestamp() < event.get_timestamp():
+                count_event_list.insert(i, event_for_saving)
+                return count_event_list
+        count_event_list.append(event_for_saving)
         return count_event_list
 
 
