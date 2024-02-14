@@ -50,24 +50,15 @@ class TooManyEvents(Exception):
     pass
 
 
+@dataclass
 class Event:
-    def __init__(
-        self,
-        coordinate: Coordinate,
-        section: LineSection,
-        frame_number: int,
-        timestamp: float,
-        video_file_name: str,
-        time_created: float | None,
-        event_type: str = SECTION_ENTER,
-    ) -> None:
-        self.coordinate = coordinate
-        self.section = section
-        self.frame_number = frame_number
-        self.timestamp = timestamp
-        self.video_file_name = video_file_name
-        self.time_created = time_created
-        self.event_type = event_type
+    coordinate: Coordinate
+    section: LineSection
+    frame_number: int
+    timestamp: float
+    video_file_name: str
+    time_created: float | None
+    event_type: str = SECTION_ENTER
 
     def to_event_for_serializing(
         self, road_user_id: str, road_user_class: RoadUserClass
