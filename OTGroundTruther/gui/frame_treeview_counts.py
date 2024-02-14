@@ -1,7 +1,7 @@
 import copy
 import tkinter as tk
 import tkinter.ttk as ttk
-from typing import Any
+from typing import Any, Callable
 
 import customtkinter as ctk
 from PIL import Image
@@ -14,6 +14,7 @@ from OTGroundTruther.model.count import (
     COUNT_ENTER_TIME_NAME,
     COUNT_EXIT_GATE_NAME,
     COUNT_ID_NAME,
+    COUNT_NUMBER_OF_EVENTS,
     COUNT_TIME_SPAN,
     Count,
     CountRepository,
@@ -38,14 +39,16 @@ COUNT_PROPERTIES_ORDER: list[str] = [
     COUNT_ENTER_GATE_NAME,
     COUNT_EXIT_GATE_NAME,
     COUNT_TIME_SPAN,
+    COUNT_NUMBER_OF_EVENTS,
 ]
 COLUMN_WIDTHS: dict[str, int] = {
-    COUNT_ID_NAME: 40,
+    COUNT_ID_NAME: 60,
     COUNT_CLASS_NAME: 100,
     COUNT_ENTER_TIME_NAME: 100,
-    COUNT_ENTER_GATE_NAME: 80,
-    COUNT_EXIT_GATE_NAME: 80,
+    COUNT_ENTER_GATE_NAME: 60,
+    COUNT_EXIT_GATE_NAME: 60,
     COUNT_TIME_SPAN: 80,
+    COUNT_NUMBER_OF_EVENTS: 40,
 }
 
 ALL_CLASSES_SELECTION: str = "All"
@@ -228,15 +231,12 @@ class Treeview(ttk.Treeview):
         )
         self.scroll_to_the_end()
 
-    def delete_selected_count(self) -> list[int]:
-        to_delete_count_ids = []
+    def delete_selected_count(self) -> None:
         for selected_count_id in self.selection():
             self.delete(selected_count_id)
-            to_delete_count_ids.append(int(selected_count_id))
-        return to_delete_count_ids
 
-    def get_selected_count_ids(self) -> list[int]:
-        return [int(count_id) for count_id in self.selection()]
+    def get_selected_count_ids(self) -> list[str]:
+        return list(self.selection())
 
     def sort_by_column(self, sort_column: str) -> None:
         column_values_and_row_index = [
@@ -272,10 +272,13 @@ class TreeviewTranslator:
         self._treeview.bind(TREEVIEW_SELECT, self._show_selected_count)
 
         for column in COUNT_PROPERTIES_ORDER:
+            sort_treeview_by_column: Callable = (
+                lambda _column=column: self._treeview.sort_by_column(_column)
+            )
             self._treeview.heading(
                 column,
                 text=column,
-                command=lambda _column=column: self._treeview.sort_by_column(_column),
+                command=sort_treeview_by_column,
             )
 
     def _show_selected_count(self, event: Any) -> None:

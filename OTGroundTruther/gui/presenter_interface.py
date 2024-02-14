@@ -57,7 +57,7 @@ class PresenterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def show_start_of_count(self, count_id: int) -> None:
+    def show_start_of_count(self, count_id: str) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -69,7 +69,7 @@ class PresenterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def show_class_image_by_count_id(self, count_id: int) -> None:
+    def show_class_image_by_count_id(self, count_id: str) -> None:
         raise NotImplementedError
 
     @abstractmethod

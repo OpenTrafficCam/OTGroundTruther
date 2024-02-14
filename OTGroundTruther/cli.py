@@ -119,13 +119,13 @@ class CliArgumentParser:
         for file in files:
             video_file = Path(file)
             if video_file.is_dir():
-                files_in_directory = video_file.rglob(f"*.{DEFAULT_VIDEO_FILE_SUFFIX}")
+                files_in_directory = video_file.rglob(f"*{DEFAULT_VIDEO_FILE_SUFFIX}")
                 video_files.update(files_in_directory)
                 continue
 
             if not video_file.exists():
                 raise VideoFileDoesNotExist(f"Video file'{video_file}' does not exist.")
-            if video_file.suffix != f".{DEFAULT_VIDEO_FILE_SUFFIX}":
+            if video_file.suffix != f"{DEFAULT_VIDEO_FILE_SUFFIX}":
                 raise InvalidVideoFileType(
                     f"Video file {video_file} has wrong file type. "
                 )
@@ -149,7 +149,7 @@ class CliArgumentParser:
         file_of_type = Path(file)
         if not file_of_type.exists():
             raise SectionsFileDoesNotExist(f"'{file_of_type}' does not exist.")
-        if file_of_type.suffix not in [f".{file_type}" for file_type in file_types]:
+        if file_of_type.suffix not in [f"{file_type}" for file_type in file_types]:
             raise InvalidSectionFileType(
                 f"'{file_of_type}' has wrong file type, has to be one of {file_types}."
             )

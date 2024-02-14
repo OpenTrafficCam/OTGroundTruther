@@ -3,6 +3,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from OTGroundTruther.model.config import (
+    GROUND_TRUTH_EVENTS_FILE_SUFFIX,
+    OTEVENTS_FILE_SUFFIX,
+)
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.road_user_class import ValidRoadUserClasses
 from OTGroundTruther.model.section import LineSection
@@ -32,6 +36,19 @@ FRAME_NUMBER: str = "frame_number"
 TIME_CREATED: str = "time_created"
 DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S.%f"
 
+SECTION_ENTER: str = "section-enter"
+
+MAX_NUMBER_OF_EVENTS: int = 1000000
+MAX_NUMBER_OF_EVENTS_APPLIED: bool = False
+
+
+class InvalidEventsFileType(Exception):
+    pass
+
+
+class TooManyEvents(Exception):
+    pass
+
 
 @dataclass
 class Event:
@@ -41,9 +58,10 @@ class Event:
     timestamp: float
     video_file_name: str
     time_created: float | None
+    event_type: str = SECTION_ENTER
 
     def to_event_for_serializing(
-        self, road_user_id: int, road_user_class: RoadUserClass
+        self, road_user_id: str, road_user_class: RoadUserClass
     ) -> "EventForParsingSerializing":
         event: dict = vars(self)
         event[ROAD_USER_ID] = road_user_id
@@ -55,6 +73,7 @@ class Event:
             EVENT_COORDINATE: self.coordinate.as_list(),
             SECTION_ID: self.section.id,
             SECTION_NAME: self.section.name,
+            EVENT_TYPE: self.event_type,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file_name,
@@ -85,11 +104,12 @@ class Event:
 class EventForParsingSerializing:
     coordinate: Coordinate
     section: LineSection
+    event_type: str
     frame_number: int
     timestamp: float
     video_file_name: str
     time_created: float | None
-    road_user_id: int
+    road_user_id: str
     road_user_class: RoadUserClass
 
     def to_event(self) -> Event:
@@ -102,6 +122,7 @@ class EventForParsingSerializing:
         return {
             EVENT_COORDINATE: self.coordinate.as_list(),
             SECTION_ID: self.section.id,
+            EVENT_TYPE: self.event_type,
             FRAME_NUMBER: self.frame_number,
             OCCURENCE: self.timestamp,
             VIDEO_NAME: self.video_file_name,
@@ -111,7 +132,7 @@ class EventForParsingSerializing:
             DIRECTION_VECTOR: None,
         }
 
-    def get_road_user_id(self) -> int:
+    def get_road_user_id(self) -> str:
         return self.road_user_id
 
     def get_road_user_class(self) -> RoadUserClass:
@@ -126,7 +147,7 @@ class EventParser:
 class EventListParser:
     def parse(
         self,
-        otevent_file: Path,
+        events_file: Path,
         sections: dict[str, LineSection],
         valid_road_user_classes: ValidRoadUserClasses,
     ) -> list[EventForParsingSerializing]:
@@ -140,34 +161,96 @@ class EventListParser:
         Returns:
             list[Event]: the events.
         """
-        otevents_content = parse(otevent_file)
-        events: list[dict] = otevents_content[EVENT_LIST]
+
+        if not self._events_file_type_is_supported(events_file):
+            raise InvalidEventsFileType
+
+        events_file_content = parse(events_file)
+        events: list[dict] = events_file_content[EVENT_LIST]
+        if self._exceeds_maximum_events(events):
+            raise TooManyEvents
+
         parsed_events = []
         classes_by_name = valid_road_user_classes.to_dict_with_name_as_key()
+        event_type_available = self._event_type_is_available(events)
+        enter_events_without_sections: int = 0
         for event in events:
-            if event[SECTION_ID] in list(sections.keys()):
-                section = sections[event[SECTION_ID]]
-                coordinate = Coordinate(
-                    round(event[EVENT_COORDINATE][0]),
-                    round(event[EVENT_COORDINATE][1]),
-                )
-                road_user_class = classes_by_name[event[ROAD_USER_CLASS_OTEVENTS]]
+            if event_type_available and not self._is_enter_event(event):
+                continue
+            if not self._section_of_event_exists(sections, event):
+                enter_events_without_sections += 1
+                continue
 
-                parsed_events.append(
-                    EventForParsingSerializing(
-                        coordinate=coordinate,
-                        section=section,
-                        frame_number=event[FRAME_NUMBER],
-                        timestamp=self._convert_datetime_to_unix(
-                            time_input=event[OCCURENCE]
-                        ),
-                        video_file_name=event[VIDEO_NAME],
-                        time_created=event.get(TIME_CREATED, None),
-                        road_user_id=event[ROAD_USER_ID],
-                        road_user_class=road_user_class,
-                    )
+            section = sections[event[SECTION_ID]]
+            coordinate = Coordinate(
+                round(event[EVENT_COORDINATE][0]),
+                round(event[EVENT_COORDINATE][1]),
+            )
+            road_user_class = classes_by_name[event[ROAD_USER_CLASS_OTEVENTS]]
+            video_file_name = self._get_video_file_name(event)
+            parsed_events.append(
+                EventForParsingSerializing(
+                    coordinate=coordinate,
+                    section=section,
+                    event_type=SECTION_ENTER,
+                    frame_number=event[FRAME_NUMBER],
+                    timestamp=self._convert_datetime_to_unix(
+                        time_input=event[OCCURENCE]
+                    ),
+                    video_file_name=video_file_name,
+                    time_created=event.get(TIME_CREATED, None),
+                    road_user_id=str(event[ROAD_USER_ID]),
+                    road_user_class=road_user_class,
                 )
+            )
+        if enter_events_without_sections > 0:
+            print(
+                f"WARNING: No section found for a total of "
+                f"{enter_events_without_sections} enter events from {events_file}"
+            )
         return parsed_events
+
+    def _exceeds_maximum_events(self, events: list[dict]) -> bool:
+        if MAX_NUMBER_OF_EVENTS_APPLIED and len(events) > MAX_NUMBER_OF_EVENTS:
+            return True
+        return False
+
+    def _get_video_file_name(self, event: dict) -> str:
+        return event[VIDEO_NAME]
+
+    def _is_from_otanalytics(self, events_file: Path) -> bool:
+        if events_file.suffix == OTEVENTS_FILE_SUFFIX:
+            return True
+        else:
+            return False
+
+    def _is_from_otgroundtruther(self, events_file: Path) -> bool:
+        if events_file.suffix == GROUND_TRUTH_EVENTS_FILE_SUFFIX:
+            return True
+        else:
+            return False
+
+    def _events_file_type_is_supported(self, events_file: Path) -> bool:
+        if self._is_from_otgroundtruther(events_file) or self._is_from_otanalytics(
+            events_file
+        ):
+            return True
+        else:
+            return False
+
+    def _is_enter_event(self, event: dict) -> bool:
+        return event[EVENT_TYPE] == SECTION_ENTER
+
+    def _section_of_event_exists(
+        self, sections: dict[str, LineSection], event: dict
+    ) -> bool:
+        return event[SECTION_ID] in list(sections.keys())
+
+    def _event_type_is_available(self, events: list[dict]):
+        if events and EVENT_TYPE in list(events[0].keys()):
+            return True
+        else:
+            return False
 
     def _convert_datetime_to_unix(self, time_input: float | str) -> float:
         if isinstance(time_input, float):

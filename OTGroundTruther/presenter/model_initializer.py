@@ -56,7 +56,7 @@ class ModelInitializer:
 
     def _prefill_count_repository(self, file: Path) -> None:
         event_list = EventListParser().parse(
-            otevent_file=file,
+            events_file=file,
             sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
