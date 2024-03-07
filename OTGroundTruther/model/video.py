@@ -244,6 +244,7 @@ class VideoRepository:
         """
         for video in videos:
             self._add(video)
+        self._videos = dict(sorted(self._videos.items()))
 
     def _add(self, video: Video) -> None:
         """Internal method to add a video.
