@@ -171,20 +171,21 @@ class Treeview(ttk.Treeview):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
         self._presenter = presenter
-        self.add_columns()
+        self._add_columns()
 
-        self.add_scrollbar()
+        self._add_scrollbar()
         self._event_translator = TreeviewTranslator(
             treeview=self, presenter=self._presenter
         )
         self.add_next_column_sort_direction()
+        self.example_count: Count | None = None
 
-    def add_columns(self) -> None:
+    def _add_columns(self) -> None:
         for key in COUNT_PROPERTIES_ORDER:
             self.heading(key, text=key)
             self.column(key, width=COLUMN_WIDTHS[key])
 
-    def add_scrollbar(self) -> None:
+    def _add_scrollbar(self) -> None:
         self.scrollbar = ctk.CTkScrollbar(
             master=self.master, orientation=ctk.VERTICAL, command=self.yview
         )
@@ -201,11 +202,15 @@ class Treeview(ttk.Treeview):
     def refresh_treeview(self, count_repository: CountRepository) -> None:
         self.delete(*self.get_children())
         selected_classes = self._presenter.get_selected_classes_from_gui()
-        for count in count_repository.get_all_as_dict().values():
+        for count in list(count_repository.get_all_as_dict().values()):
             if count.get_road_user_class().get_name() in selected_classes:
                 self.add_count(
                     count=count,
                 )
+
+        self.example_count = copy.deepcopy(
+            list(count_repository.get_all_as_dict().values())[0]
+        )
 
     def add_and_select_count_if_in(self, count: Count) -> None:
         if (
@@ -214,12 +219,13 @@ class Treeview(ttk.Treeview):
         ):
             self.add_count(count=count)
             self.selection_set([str(count.get_road_user_id())])
+            self.example_count = copy.deepcopy(count)
         else:
             self._presenter.update_canvas_image_with_new_overlay()
 
     def add_count(self, count: Count) -> None:
         properties_random_order = count.get_properties_to_show_as_dict()
-        values_in_correct_order: list[str] = []
+        values_in_correct_order: list[str | float] = []
         for count_property in COUNT_PROPERTIES_ORDER:
             values_in_correct_order.append(properties_random_order[count_property])
 
@@ -239,10 +245,9 @@ class Treeview(ttk.Treeview):
         return list(self.selection())
 
     def sort_by_column(self, sort_column: str) -> None:
-        column_values_and_row_index = [
-            (self.set(tv_index, sort_column), tv_index)
-            for tv_index in self.get_children("")
-        ]
+        if self.example_count is None:
+            return
+        column_values_and_row_index = self._get_tuples_of_column(sort_column)
         column_values_and_row_index.sort(
             reverse=self.next_column_sort_direction[sort_column]
         )
@@ -250,10 +255,24 @@ class Treeview(ttk.Treeview):
             self.move(tv_index, "", order_index)
         self.update_next_column_sort_direction(sort_column=sort_column)
 
+    def _get_tuples_of_column(self, sort_column: str) -> list[tuple[Any, str]]:
+        count_example_properties = self.example_count.get_properties_to_show_as_dict()
+        if isinstance(count_example_properties[sort_column], str):
+            return [
+                (self.set(tv_index, sort_column), tv_index)
+                for tv_index in self.get_children("")
+            ]
+        else:
+            class_ = type(count_example_properties[sort_column])
+            return [
+                (class_(self.set(tv_index, sort_column)), tv_index)
+                for tv_index in self.get_children("")
+            ]
+
     def update_next_column_sort_direction(self, sort_column: str) -> None:
-        self.next_column_sort_direction[
-            sort_column
-        ] = not self.next_column_sort_direction[sort_column]
+        self.next_column_sort_direction[sort_column] = (
+            not self.next_column_sort_direction[sort_column]
+        )
         for column in COUNT_PROPERTIES_ORDER:
             if column != sort_column:
                 self.next_column_sort_direction[column] = False

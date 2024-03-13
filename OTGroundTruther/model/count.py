@@ -127,15 +127,15 @@ class Count:
     def get_last_event(self) -> Event:
         return self.events[-1]
 
-    def get_properties_to_show_as_dict(self) -> dict[str, str]:
+    def get_properties_to_show_as_dict(self) -> dict[str, str | float]:
         return {
             COUNT_ID_NAME: str(self.get_road_user_id()),
             COUNT_CLASS_NAME: self.get_road_user_class().get_name(),
             COUNT_ENTER_TIME_NAME: self.get_first_event().get_time_as_str(),
             COUNT_ENTER_GATE_NAME: self.get_first_event().get_section().get_name(),
             COUNT_EXIT_GATE_NAME: self.get_last_event().get_section().get_name(),
-            COUNT_TIME_SPAN: str(round(self.time_span, 1)),
-            COUNT_NUMBER_OF_EVENTS: str(len(self.get_events())),
+            COUNT_TIME_SPAN: round(self.time_span, 1),
+            COUNT_NUMBER_OF_EVENTS: len(self.get_events()),
         }
 
 
