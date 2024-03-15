@@ -3,8 +3,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any, Callable
 
-import customtkinter as ctk
-from PIL import Image
+import customtkinter as ctk  # type: ignore
+from PIL import Image  # type: ignore
 
 from OTGroundTruther.gui.constants import PADX, PADY, STICKY
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
@@ -251,9 +251,9 @@ class Treeview(ttk.Treeview):
         self.update_next_column_sort_direction(sort_column=sort_column)
 
     def update_next_column_sort_direction(self, sort_column: str) -> None:
-        self.next_column_sort_direction[
-            sort_column
-        ] = not self.next_column_sort_direction[sort_column]
+        self.next_column_sort_direction[sort_column] = (
+            not self.next_column_sort_direction[sort_column]
+        )
         for column in COUNT_PROPERTIES_ORDER:
             if column != sort_column:
                 self.next_column_sort_direction[column] = False
