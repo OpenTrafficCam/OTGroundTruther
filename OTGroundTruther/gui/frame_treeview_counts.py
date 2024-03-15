@@ -179,6 +179,7 @@ class Treeview(ttk.Treeview):
         )
         self.add_next_column_sort_direction()
         self.example_count: Count | None = None
+        self.last_sorted_by = COUNT_ENTER_TIME_NAME
 
     def _add_columns(self) -> None:
         for key in COUNT_PROPERTIES_ORDER:
@@ -211,6 +212,7 @@ class Treeview(ttk.Treeview):
         self.example_count = copy.deepcopy(
             list(count_repository.get_all_as_dict().values())[0]
         )
+        self.sort_by_column()
 
     def add_and_select_count_if_in(self, count: Count) -> None:
         if (
@@ -218,6 +220,7 @@ class Treeview(ttk.Treeview):
             in self._presenter.get_selected_classes_from_gui()
         ):
             self.add_count(count=count)
+            self.sort_by_column()
             self.selection_set([str(count.get_road_user_id())])
             self.example_count = copy.deepcopy(count)
         else:
@@ -235,7 +238,7 @@ class Treeview(ttk.Treeview):
             iid=str(count.get_road_user_id()),
             values=list(values_in_correct_order),
         )
-        self.scroll_to_the_end()
+        # self.scroll_to_the_end()
 
     def delete_selected_count(self) -> None:
         for selected_count_id in self.selection():
@@ -244,16 +247,31 @@ class Treeview(ttk.Treeview):
     def get_selected_count_ids(self) -> list[str]:
         return list(self.selection())
 
-    def sort_by_column(self, sort_column: str) -> None:
+    def sort_by_column(
+        self,
+        sort_column: str = COUNT_ENTER_TIME_NAME,
+        change_sort_direction: bool = False,
+    ) -> None:
         if self.example_count is None:
             return
-        column_values_and_row_index = self._get_tuples_of_column(sort_column)
-        column_values_and_row_index.sort(
-            reverse=self.next_column_sort_direction[sort_column]
+
+        sort_direction = self._get_sort_direction(
+            change_sort_direction=change_sort_direction, sort_column=sort_column
         )
+        column_values_and_row_index = self._get_tuples_of_column(sort_column)
+        column_values_and_row_index.sort(reverse=sort_direction)
         for order_index, (value, tv_index) in enumerate(column_values_and_row_index):
             self.move(tv_index, "", order_index)
+
+    def _get_sort_direction(
+        self, change_sort_direction: bool, sort_column: str
+    ) -> bool:
+        if not change_sort_direction:
+            self.next_column_sort_direction[sort_column] = False
+        self.last_sorted_by = sort_column
+        return_cache = self.next_column_sort_direction[sort_column]
         self.update_next_column_sort_direction(sort_column=sort_column)
+        return return_cache
 
     def _get_tuples_of_column(self, sort_column: str) -> list[tuple[Any, str]]:
         count_example_properties = self.example_count.get_properties_to_show_as_dict()
@@ -292,7 +310,7 @@ class TreeviewTranslator:
 
         for column in COUNT_PROPERTIES_ORDER:
             sort_treeview_by_column: Callable = (
-                lambda _column=column: self._treeview.sort_by_column(_column)
+                lambda _column=column: self._treeview.sort_by_column(_column, True)
             )
             self._treeview.heading(
                 column,
