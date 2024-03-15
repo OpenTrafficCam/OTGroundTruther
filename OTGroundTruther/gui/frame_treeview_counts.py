@@ -222,7 +222,7 @@ class Treeview(ttk.Treeview):
             self.add_count(count=count)
             self.sort_by_column()
             self.selection_set([str(count.get_road_user_id())])
-            self.see([str(count.get_road_user_id())])
+            self.see(str(count.get_road_user_id()))
             self.example_count = copy.deepcopy(count)
         else:
             self._presenter.update_canvas_image_with_new_overlay()
