@@ -127,15 +127,15 @@ class Count:
     def get_last_event(self) -> Event:
         return self.events[-1]
 
-    def get_properties_to_show_as_dict(self) -> dict[str, str]:
+    def get_properties_to_show_as_dict(self) -> dict[str, str | float]:
         return {
             COUNT_ID_NAME: str(self.get_road_user_id()),
             COUNT_CLASS_NAME: self.get_road_user_class().get_name(),
             COUNT_ENTER_TIME_NAME: self.get_first_event().get_time_as_str(),
             COUNT_ENTER_GATE_NAME: self.get_first_event().get_section().get_name(),
             COUNT_EXIT_GATE_NAME: self.get_last_event().get_section().get_name(),
-            COUNT_TIME_SPAN: str(round(self.time_span, 1)),
-            COUNT_NUMBER_OF_EVENTS: str(len(self.get_events())),
+            COUNT_TIME_SPAN: round(self.time_span, 1),
+            COUNT_NUMBER_OF_EVENTS: len(self.get_events()),
         }
 
 
@@ -485,7 +485,6 @@ class CountsOverlay:
                 color_contour=color_contour,
                 thickness_contour=thickness_contour,
             )
-            pass
             self._draw_class_text_next_to_arrow(
                 p0=p0, p1=p1, road_user_class=road_user_class, color=color
             )
@@ -595,9 +594,7 @@ class CountsOverlay:
         length = (
             (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
         ) ** 0.5
-        if length < size or length == 0:
-            return 1
-        return size / length
+        return 1 if length < size or length == 0 else size / length
 
     def _get_text_position(self, p0: Coordinate, p1: Coordinate) -> tuple[int, int]:
         return (
