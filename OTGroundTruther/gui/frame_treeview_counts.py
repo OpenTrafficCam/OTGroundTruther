@@ -274,19 +274,20 @@ class Treeview(ttk.Treeview):
         self.update_next_column_sort_direction(sort_column=sort_column)
         return return_cache
 
-    def _get_tuples_of_column(self, sort_column: str) -> list[tuple[Any, str]]:
-        count_example_properties = self.example_count.get_properties_to_show_as_dict()
+    def _get_tuples_of_column(
+        self, sort_column: str, _example_count: Count
+    ) -> list[tuple[Any, str]]:
+        count_example_properties = _example_count.get_properties_to_show_as_dict()
         if isinstance(count_example_properties[sort_column], str):
             return [
                 (self.set(tv_index, sort_column), tv_index)
                 for tv_index in self.get_children("")
             ]
-        else:
-            class_ = type(count_example_properties[sort_column])
-            return [
-                (class_(self.set(tv_index, sort_column)), tv_index)
-                for tv_index in self.get_children("")
-            ]
+        class_ = type(count_example_properties[sort_column])
+        return [
+            (class_(self.set(tv_index, sort_column)), tv_index)
+            for tv_index in self.get_children("")
+        ]
 
     def update_next_column_sort_direction(self, sort_column: str) -> None:
         self.next_column_sort_direction[sort_column] = (
@@ -320,6 +321,7 @@ class TreeviewTranslator:
             )
 
     def _show_selected_count(self, event: Any) -> None:
+        # sourcery skip: use-named-expression
         selected_count_ids = self._treeview.get_selected_count_ids()
         if selected_count_ids:
             self._presenter.show_start_of_count(count_id=selected_count_ids[0])

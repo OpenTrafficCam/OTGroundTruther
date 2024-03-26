@@ -485,7 +485,6 @@ class CountsOverlay:
                 color_contour=color_contour,
                 thickness_contour=thickness_contour,
             )
-            pass
             self._draw_class_text_next_to_arrow(
                 p0=p0, p1=p1, road_user_class=road_user_class, color=color
             )
@@ -595,9 +594,7 @@ class CountsOverlay:
         length = (
             (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
         ) ** 0.5
-        if length < size or length == 0:
-            return 1
-        return size / length
+        return 1 if length < size or length == 0 else size / length
 
     def _get_text_position(self, p0: Coordinate, p1: Coordinate) -> tuple[int, int]:
         return (
