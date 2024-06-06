@@ -1,51 +1,29 @@
 {
     "sections": [
         {
+            "id": "1",
+            "name": "South",
+            "type": "line",
+            "relative_offset_coordinates": {
+                "section-enter": {
+                    "x": 0.5,
+                    "y": 0.5
+                }
+            },
+            "coordinates": [
+                {
+                    "x": 38,
+                    "y": 203
+                },
+                {
+                    "x": 422,
+                    "y": 101
+                }
+            ],
+            "plugin_data": {}
+        },
+        {
             "id": "2",
-            "name": "Nord",
-            "type": "line",
-            "relative_offset_coordinates": {
-                "section-enter": {
-                    "x": 0.5,
-                    "y": 0.5
-                }
-            },
-            "coordinates": [
-                {
-                    "x": 424,
-                    "y": 593
-                },
-                {
-                    "x": 796,
-                    "y": 131
-                }
-            ],
-            "plugin_data": {}
-        },
-        {
-            "id": "4",
-            "name": "Ost",
-            "type": "line",
-            "relative_offset_coordinates": {
-                "section-enter": {
-                    "x": 0.5,
-                    "y": 0.5
-                }
-            },
-            "coordinates": [
-                {
-                    "x": 414,
-                    "y": 588
-                },
-                {
-                    "x": 13,
-                    "y": 145
-                }
-            ],
-            "plugin_data": {}
-        },
-        {
-            "id": "5",
             "name": "West",
             "type": "line",
             "relative_offset_coordinates": {
@@ -56,19 +34,19 @@
             },
             "coordinates": [
                 {
-                    "x": 791,
-                    "y": 107
+                    "x": 425,
+                    "y": 101
                 },
                 {
-                    "x": 381,
-                    "y": 54
+                    "x": 757,
+                    "y": 113
                 }
             ],
             "plugin_data": {}
         },
         {
-            "id": "6",
-            "name": "S\u00fcd",
+            "id": "3",
+            "name": "North",
             "type": "line",
             "relative_offset_coordinates": {
                 "section-enter": {
@@ -78,12 +56,34 @@
             },
             "coordinates": [
                 {
-                    "x": 45,
-                    "y": 160
+                    "x": 760,
+                    "y": 117
                 },
                 {
-                    "x": 374,
-                    "y": 58
+                    "x": 256,
+                    "y": 593
+                }
+            ],
+            "plugin_data": {}
+        },
+        {
+            "id": "4",
+            "name": "East",
+            "type": "line",
+            "relative_offset_coordinates": {
+                "section-enter": {
+                    "x": 0.5,
+                    "y": 0.5
+                }
+            },
+            "coordinates": [
+                {
+                    "x": 252,
+                    "y": 592
+                },
+                {
+                    "x": 39,
+                    "y": 206
                 }
             ],
             "plugin_data": {}

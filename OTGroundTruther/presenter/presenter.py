@@ -42,9 +42,9 @@ class Presenter(PresenterInterface):
 
     def load_video_files(self) -> None:
         output_askfile = askopenfilenames(
-            defaultextension=f"*.{DEFAULT_VIDEO_FILE_SUFFIX}",
+            defaultextension=f"*{DEFAULT_VIDEO_FILE_SUFFIX}",
             filetypes=[
-                ("mp4", f"*.{DEFAULT_VIDEO_FILE_SUFFIX}"),
+                ("mp4", f"*{DEFAULT_VIDEO_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
@@ -53,15 +53,18 @@ class Presenter(PresenterInterface):
 
     def _display_first_frame(self) -> None:
         overlayed_first_frame = self._model.get_first_frame(
-            selected_classes=self.get_selected_classes_from_gui()
+            selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_first_frame)
 
     def load_otflow(self) -> None:
         output_askfile = askopenfilename(
-            defaultextension=f"*.{OTANALYTICS_FILE_SUFFIX}",
+            defaultextension=f"*{OTANALYTICS_FILE_SUFFIX}",
             filetypes=[
-                ("otevents", f"*.{OTANALYTICS_FILE_SUFFIX}"),
+                ("otevents", f"*{OTANALYTICS_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
@@ -72,15 +75,16 @@ class Presenter(PresenterInterface):
 
     def load_events(self) -> None:
         output_askfile = askopenfilename(
-            defaultextension=f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
+            defaultextension=f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
-                ("otgtevents", f"*.{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
-                ("otevents", f"*.{OTEVENTS_FILE_SUFFIX}"),
+                ("otgtevents", f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}"),
+                ("otevents", f"*{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
         if output_askfile:
             self._model.read_sections_from_file(Path(output_askfile))
             self._model.read_events_from_file(Path(output_askfile))
+            self.refresh_treeview()
             if self._current_frame is None:
                 return
             self._refresh_current_frame()
@@ -91,7 +95,7 @@ class Presenter(PresenterInterface):
         )
         output_asksave = asksaveasfilename(
             initialdir=first_video_file.parent,
-            initialfile=first_video_file.stem,
+            initialfile=first_video_file.name,
             defaultextension=GROUND_TRUTH_EVENTS_FILE_SUFFIX,
             filetypes=[("OTGTEvent file", GROUND_TRUTH_EVENTS_FILE_SUFFIX)],
             title="Save all Events",
@@ -111,6 +115,9 @@ class Presenter(PresenterInterface):
         overlayed_frame = self._model.refresh_current_frame(
             current_frame=self._current_frame,
             selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -126,6 +133,9 @@ class Presenter(PresenterInterface):
         overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
             current_frame=self._current_frame,
             selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
             delta_of_frames=capped_scroll_delta,
             delta_of_time=0,
         )
@@ -136,6 +146,9 @@ class Presenter(PresenterInterface):
             overlayed_frame = self._model.get_frame_by_delta_frames_or_time(
                 current_frame=self._current_frame,
                 selected_classes=self.get_selected_classes_from_gui(),
+                selected_count_ids=(
+                    self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+                ),
                 delta_of_frames=0,
                 delta_of_time=delta_of_time,
             )
@@ -161,17 +174,19 @@ class Presenter(PresenterInterface):
             return
 
         self._model.add_event_to_active_count(event)
-        self.update_canvas_image_with_new_overlay()
-
         if not self._model.active_count_class_is_set():
             self._gui.frame_treeview.treeview_counts.selection_set("")
             self._gui.frame_treeview.class_label.set_blank()
+        self.update_canvas_image_with_new_overlay()
 
     def update_canvas_image_with_new_overlay(self) -> None:
         if self._current_frame is not None:
             overlayed_frame = self._model._get_overlayed_frame(
                 background_frame=self._current_frame.background_frame,
                 selected_classes=self.get_selected_classes_from_gui(),
+                selected_count_ids=(
+                    self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+                ),
             )
             self._update_canvas_image(overlayed_frame=overlayed_frame)
 
@@ -200,27 +215,34 @@ class Presenter(PresenterInterface):
 
     def abort_active_count(self) -> None:
         self._model.clear_active_count()
-        self.update_canvas_image_with_new_overlay()
+        self._gui.frame_treeview.treeview_counts.selection_set("")
         self._gui.frame_treeview.class_label.set_blank()
+        self.update_canvas_image_with_new_overlay()
 
     def delete_selected_counts(self) -> None:
         to_delete_count_ids = (
-            self._gui.frame_treeview.treeview_counts.delete_selected_count()
+            self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
         )
+        self._gui.frame_treeview.treeview_counts.delete_selected_count()
         self._model.delete_counts(to_delete_count_ids)
-        self._gui.frame_treeview.class_label.set_blank()
-        self.update_canvas_image_with_new_overlay()
 
-    def show_start_of_count(self, count_id: int):
+        self.update_canvas_image_with_new_overlay()
+        self._gui.frame_treeview.class_label.set_blank()
+
+    def show_start_of_count(self, count_id: str):
         overlayed_frame = self._model.get_start_frame_of_count(
-            count_id=count_id, selected_classes=self.get_selected_classes_from_gui()
+            count_id=count_id,
+            selected_classes=self.get_selected_classes_from_gui(),
+            selected_count_ids=(
+                self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+            ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
 
     def get_selected_classes_from_gui(self) -> list[str]:
         return self._gui.frame_treeview.combobox_counts.get_selected_classes()
 
-    def show_class_image_by_count_id(self, count_id: int) -> None:
+    def show_class_image_by_count_id(self, count_id: str) -> None:
         road_user_class = self._model._count_repository.get_all_as_dict()[
             count_id
         ].get_road_user_class()

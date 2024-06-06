@@ -13,8 +13,9 @@ STATE_NORMAL = "normal"
 PREVIEW_IMAGE_FILE: str = r"assets/OpenTrafficCam_800.png"
 JUMP_TIME_STEPS: dict[int, float] = {
     0: 1,
-    1: 20,
-    2: 600,
+    1: 4,
+    2: 20,
+    3: 600,
 }
 
 MINIMUM_WINDOWS_SCROLL_VALUE: int = 120
@@ -36,10 +37,12 @@ class TkEvents:
 
     RIGHT_BUTTON_DOWN: ClassVar[str] = "<Button-2>" if ON_MAC else "<Button-3>"
     RIGHT_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>")
+        "<ButtonRelease-2>" if ON_MAC else "<ButtonRelease-3>"
+    )
     MIDDLE_BUTTON_DOWN: ClassVar[str] = "<Button-3>" if ON_MAC else "<Button-2>"
     MIDDLE_BUTTON_UP: ClassVar[str] = (
-        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>")
+        "<ButtonRelease-3>" if ON_MAC else "<ButtonRelease-2>"
+    )
     LEFT_BUTTON_DOWN: ClassVar[str] = "<Button-1>"
     LEFT_BUTTON_UP: ClassVar[str] = "<ButtonRelease-1>"
     LEFT_BUTTON_DOUBLE: ClassVar[str] = "<Double-1>"
@@ -89,17 +92,17 @@ class TkEvents:
             self.TREEVIEW_SELECT: "",
             self.PLUS_KEY: "",
             self.KEYPAD_PLUS_KEY: "",
-            self.LEFT_ARROW_KEY: "Big jump backward in the videos",
-            self.RIGHT_ARROW_KEY: "Big jump forward in the videos",
-            self.UP_ARROW_KEY: "",
-            self.DOWN_ARROW_KEY: "",
+            self.LEFT_ARROW_KEY: "Large jump backward in the videos",
+            self.RIGHT_ARROW_KEY: "Large jump forward in the videos",
+            self.UP_ARROW_KEY: "Increase large time jump",
+            self.DOWN_ARROW_KEY: "Decrease large time jump",
             self.RETURN_KEY: "Finish active count if possible",
-            self.KEYPAD_RETURN_KEY: "",
+            self.KEYPAD_RETURN_KEY: "Finish active count if possible",
             self.DELETE_KEY: "Delete selected counts",
             self.BACKSPACE_KEY: "Delete selected counts",
-            self.SPACE_KEY: "Small jump forward",
-            self.CONTROL_SPACE_KEY: "Small jump backward",
-            self.ESCAPE_KEY: "Abort active count",
+            self.SPACE_KEY: "Small jump forward in the videos",
+            self.CONTROL_SPACE_KEY: "Small jump backward in the videos",
+            self.ESCAPE_KEY: "Deselect selection / Abort active count",
             self.MULTI_SELECT_SINGLE: "",
             self.MOUSE_WHEEL_SCROLLED: "Small jump forward / backward in the videos",
             self.CONTROL_LEFT: "",

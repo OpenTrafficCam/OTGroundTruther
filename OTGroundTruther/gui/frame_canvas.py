@@ -17,8 +17,10 @@ from OTGroundTruther.gui.constants import (
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.config import ON_WINDOWS
 
-FRAME_CANVAS_ROW = 0
-FRAME_CANVAS_COLUMN = 0
+FRAME_CANVAS_ROW: int = 0
+FRAME_CANVAS_COLUMN: int = 0
+FRAME_LABEL_ROW: int = FRAME_CANVAS_ROW + 1
+FRAME_LABEL_COLUMN: int = FRAME_CANVAS_COLUMN
 
 
 class FrameCanvas(ctk.CTkFrame):
@@ -27,16 +29,28 @@ class FrameCanvas(ctk.CTkFrame):
         self._presenter = presenter
         self._get_widgets()
         self._place_widgets()
+        self._event_translator._refresh_canvas_info_text()
 
     def _get_widgets(self) -> None:
         self.canvas_background = CanvasBackground(
             master=self, presenter=self._presenter
+        )
+        self._canvas_info_text = ctk.CTkLabel(master=self)
+        self._event_translator = CanvasEventTranslator(
+            framecanvas=self, presenter=self._presenter
         )
 
     def _place_widgets(self) -> None:
         self.canvas_background.grid(
             row=FRAME_CANVAS_ROW,
             column=FRAME_CANVAS_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
+        )
+        self._canvas_info_text.grid(
+            row=FRAME_LABEL_ROW,
+            column=FRAME_LABEL_COLUMN,
             padx=PADX,
             pady=PADY,
             sticky=STICKY,
@@ -50,10 +64,6 @@ class CanvasBackground(ctk.CTkCanvas):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
         self._presenter = presenter
-        self._event_translator = CanvasEventTranslator(
-            canvas=self, presenter=self._presenter
-        )
-
         self._current_image: ImageTk.PhotoImage
         self._current_id: Any = None
         self.update_image(self._get_preview_image())
@@ -96,8 +106,9 @@ class CanvasBackground(ctk.CTkCanvas):
 
 
 class CanvasEventTranslator:
-    def __init__(self, canvas: CanvasBackground, presenter: PresenterInterface):
-        self._canvas = canvas
+    def __init__(self, framecanvas: FrameCanvas, presenter: PresenterInterface):
+        self._canvas = framecanvas.canvas_background
+        self._canvas_info_text = framecanvas._canvas_info_text
         self._presenter = presenter
         self._middle_button_pressed: bool = False
         self._current_scrolling_time_step_short: bool = True
@@ -123,8 +134,8 @@ class CanvasEventTranslator:
 
         self._canvas.bind(tk_events.LEFT_ARROW_KEY, self._on_left_key)
         self._canvas.bind(tk_events.RIGHT_ARROW_KEY, self._on_right_key)
-        # self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
-        # self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
+        self._canvas.bind(tk_events.UP_ARROW_KEY, self._on_up_key)
+        self._canvas.bind(tk_events.DOWN_ARROW_KEY, self._on_down_key)
 
         self._canvas.bind(tk_events.RETURN_KEY, self._on_return_key)
         self._canvas.bind(tk_events.KEYPAD_RETURN_KEY, self._on_return_key)
@@ -133,7 +144,6 @@ class CanvasEventTranslator:
 
         self._canvas.bind(tk_events.ESCAPE_KEY, self._on_escape_key)
         self._canvas.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
-        self._canvas.bind(tk_events.CONTROL_RIGHT, self._on_control_right_key)
 
     def _on_left_button_down(self, event: Any) -> None:
         pass
@@ -150,6 +160,7 @@ class CanvasEventTranslator:
         self._current_scrolling_time_step_short = (
             not self._current_scrolling_time_step_short
         )
+        self._refresh_canvas_info_text()
 
     def _on_middle_button_up(self, event: Any) -> None:
         self._middle_button_pressed = False
@@ -181,15 +192,6 @@ class CanvasEventTranslator:
     def _on_plus(self, event: Any) -> None:
         pass
 
-    def _on_control_right_key(self, event: Any) -> None:
-        if self._current_jump_time_step == list(JUMP_TIME_STEPS.keys())[-1]:
-            self._current_jump_time_step = list(JUMP_TIME_STEPS.keys())[0]
-        else:
-            self._current_jump_time_step += 1
-        print(
-            f"New jump time step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
-        )
-
     def _on_left_key(self, event: Any) -> None:
         delta_of_time = -1 * JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
@@ -197,6 +199,16 @@ class CanvasEventTranslator:
     def _on_right_key(self, event: Any) -> None:
         delta_of_time = JUMP_TIME_STEPS[self._current_jump_time_step]
         self._presenter.jump_by_delta_time_in_sec(delta_of_time=delta_of_time)
+
+    def _on_up_key(self, event: Any) -> None:
+        if self._current_jump_time_step != list(JUMP_TIME_STEPS.keys())[-1]:
+            self._current_jump_time_step += 1
+            self._refresh_canvas_info_text()
+
+    def _on_down_key(self, event: Any) -> None:
+        if self._current_jump_time_step != list(JUMP_TIME_STEPS.keys())[0]:
+            self._current_jump_time_step -= 1
+            self._refresh_canvas_info_text()
 
     def _on_space_key(self, event: Any) -> None:
         self._scroll_through_videos(direction=1)
@@ -238,3 +250,13 @@ class CanvasEventTranslator:
         x = int(self._canvas.canvasx(event.x))
         y = int(self._canvas.canvasy(event.y))
         return x, y
+
+    def _refresh_canvas_info_text(self) -> None:
+        if self._current_scrolling_time_step_short:
+            current_small_jump_size = 1
+        else:
+            current_small_jump_size = FACTOR_LARGE_SCROLLING
+        self._canvas_info_text.configure(
+            text=f"Scrolling Step: {current_small_jump_size} frames;"
+            f" Jump Step: {JUMP_TIME_STEPS[self._current_jump_time_step]} sec"
+        )

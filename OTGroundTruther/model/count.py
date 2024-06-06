@@ -12,21 +12,19 @@ from OTGroundTruther.model.video import BackgroundFrame
 
 ACTIVE_COUNT_ID: str = "active-count-id"
 
-
 COUNT_ID_NAME: str = "ID"
 COUNT_CLASS_NAME: str = "Class"
 COUNT_ENTER_TIME_NAME: str = "Enter Time"
 COUNT_ENTER_GATE_NAME: str = "Enter Gate"
 COUNT_EXIT_GATE_NAME: str = "Exit Gate"
 COUNT_TIME_SPAN: str = "Time Span"
+COUNT_NUMBER_OF_EVENTS: str = "Events"
 
 
 ARROW_CONTOUR_SIZE: int = 18
 COUNT_CONTOUR_COLOR: tuple[int, int, int, int] = (10, 10, 10, 255)
 COUNT_CONTOUR_THICKNESS: int = 2
 COUNT_LINE_THICKNESS: int = 1
-COUNT_LINE_AND_TEXT_COLOR: tuple[int, int, int, int] = (255, 185, 15, 255)
-
 
 COUNT_TEXT_FONT: int = cv2.FONT_HERSHEY_SIMPLEX
 COUNT_TEXT_FONTSCALE: float = 0.5
@@ -34,10 +32,13 @@ COUNT_TEXT_COLOR: tuple[int, int, int, int] = (255, 185, 15, 255)
 COUNT_TEXT_THICKNESS: int = 1
 COUNT_LINETYPE: int = cv2.LINE_AA
 
+NOT_SELECTED_COLOR: tuple[int, int, int, int] = (110, 110, 110, 255)
+
 ACTIVE_COUNT_EVENTPOINT_RADIUS: int = 5
 ACTIVE_COUNT_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 ACTIVE_COUNT_EVENTPOINT_COLOR: tuple[int, int, int, int] = ACTIVE_COUNT_COLOR
 ACTIVE_COUNT_EVENTPOINT_THICKNESS: int = 1
+ACTIVE_COUNT_CONTOUR_THICKNESS: int = 4
 PLACEHOLDER_ROAD_USER_CLASS: str = "X"
 ACTIVE_COUNT_CONTOUR_COLOR: tuple[int, int, int, int] = (255, 255, 255, 255)
 
@@ -61,6 +62,9 @@ EVENTPOINT_MOMENT_RADIUS: int = COUNT_EVENTPOINT_RADIUS
 EVENTPOINT_MOMENT_COLOR: tuple[int, int, int, int] = COUNT_EVENTPOINT_COLOR
 EVENTPOINT_MOMENT_THICKNESS: int = EVENTPOINT_MOMENT_BG_THICKNESS - 1
 
+IN_FRAME: str = "in_frame"
+IN_WINDOW_NOT_IN_FRAME: str = "in_window_not_in_frame"
+
 
 class TooFewEventsError(Exception):
     pass
@@ -78,7 +82,7 @@ class EventBeforePreviouseEventError(Exception):
 class Count:
     def __init__(
         self,
-        road_user_id: int,
+        road_user_id: str,
         events: list[Event],
         road_user_class: RoadUserClass,
     ):
@@ -111,7 +115,7 @@ class Count:
     def get_events(self) -> list[Event]:
         return self.events
 
-    def get_road_user_id(self) -> int:
+    def get_road_user_id(self) -> str:
         return self.road_user_id
 
     def get_road_user_class(self) -> RoadUserClass:
@@ -123,14 +127,15 @@ class Count:
     def get_last_event(self) -> Event:
         return self.events[-1]
 
-    def get_properties_to_show_as_dict(self) -> dict[str, str]:
+    def get_properties_to_show_as_dict(self) -> dict[str, str | float]:
         return {
             COUNT_ID_NAME: str(self.get_road_user_id()),
             COUNT_CLASS_NAME: self.get_road_user_class().get_name(),
             COUNT_ENTER_TIME_NAME: self.get_first_event().get_time_as_str(),
             COUNT_ENTER_GATE_NAME: self.get_first_event().get_section().get_name(),
             COUNT_EXIT_GATE_NAME: self.get_last_event().get_section().get_name(),
-            COUNT_TIME_SPAN: str(round(self.time_span, 1)),
+            COUNT_TIME_SPAN: round(self.time_span, 1),
+            COUNT_NUMBER_OF_EVENTS: len(self.get_events()),
         }
 
 
@@ -174,7 +179,7 @@ class ActiveCount:
 
 class CountRepository:
     def __init__(self) -> None:
-        self._counts: dict[int, Count] = {}
+        self._counts: dict[str, Count] = {}
         self._current_id: int = 0
 
     def add_all(self, counts: Iterable[Count]) -> None:
@@ -202,10 +207,10 @@ class CountRepository:
         """
         return list(self._counts.values())
 
-    def get_all_as_dict(self) -> dict[int, Count]:
+    def get_all_as_dict(self) -> dict[str, Count]:
         return self._counts
 
-    def get(self, id: int) -> Optional[Count]:
+    def get(self, id: str) -> Optional[Count]:
         """Get the count for the given id or nothing, if the id is missing.
 
         Args:
@@ -224,7 +229,7 @@ class CountRepository:
             )
         return list(set(filtered_counts))
 
-    def delete(self, id: int) -> None:
+    def delete(self, id: str) -> None:
         """Remove count from the repository.
 
         Args:
@@ -238,20 +243,25 @@ class CountRepository:
         )
         del self._counts[id]
 
-    def set_current_id(self, id: int):
+    def set_current_id(self, id: str | int):
         """set current id
 
         Args:
-            id (int): _description_
+            id (str): _description_
         """
-        self._current_id = id
+        try:
+            int_value = int(id)
+        except ValueError:
+            self._current_id = 0
+        else:
+            self._current_id = int_value
 
-    def get_id(self) -> int:
+    def get_id(self) -> str:
         """
         Get an id for a new count
         """
         self._current_id += 1
-        candidate = self._current_id
+        candidate = str(self._current_id)
         return self.get_id() if candidate in self._counts.keys() else candidate
 
     def is_empty(self) -> bool:
@@ -280,6 +290,8 @@ class CountRepository:
     def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
         """
         create count list from event list and the suitable list of the object ids
+        set current id = 0 (only important for id naming of new events later) if the
+        ids are not transformable to an int
 
         Args:
             event_list (list[Event_For_Saving]): List of events.
@@ -297,28 +309,43 @@ class CountRepository:
             else:
                 continue  # TODO: Store in "SingleEventRepository"
         if len(self._counts.keys()) > 0:
-            self.set_current_id(list(self._counts.keys())[0])
+            self.set_current_id(list(self._counts.keys())[-1])
 
     def _get_events_and_classes_by_id(
         self, event_list: list[EventForParsingSerializing]
-    ) -> tuple[dict[int, list[Event]], dict[int, RoadUserClass]]:
-        events: dict[int, list[Event]] = {}
-        classes: dict[int, RoadUserClass] = {}
-        for event_for_saving in event_list:
-            id_ = event_for_saving.get_road_user_id()
+    ) -> tuple[dict[str, list[Event]], dict[str, RoadUserClass]]:
+        events: dict[str, list[Event]] = {}
+        classes: dict[str, RoadUserClass] = {}
+        for event_for_saving_parsing in event_list:
+            id_ = event_for_saving_parsing.get_road_user_id()
+            classes[id_] = event_for_saving_parsing.get_road_user_class()
+            event_for_saving = event_for_saving_parsing.to_event()
             if id_ in events.keys():
-                events[id_].append(event_for_saving.to_event())
+                events[id_] = self.add_event_at_correct_position(
+                    events, id_, event_for_saving
+                )
             else:
-                classes[id_] = event_for_saving.get_road_user_class()
-                events[id_] = [event_for_saving.to_event()]
+                events[id_] = [event_for_saving]
 
         return events, classes
+
+    def add_event_at_correct_position(
+        self, ordered_events: dict[str, list[Event]], id_: str, event_for_saving: Event
+    ) -> list[Event]:
+        count_event_list = ordered_events[id_]
+        for i, event in enumerate(ordered_events[id_]):
+            if event_for_saving.get_timestamp() < event.get_timestamp():
+                count_event_list.insert(i, event_for_saving)
+                return count_event_list
+        count_event_list.append(event_for_saving)
+        return count_event_list
 
 
 @dataclass
 class CountsOverlay:
     count_repository: CountRepository
     active_count: ActiveCount | None
+    selected_count_ids: list[str]
     background_frame: BackgroundFrame
     selected_classes: list[str]
     image_array: np.ndarray = field(init=False)
@@ -336,36 +363,71 @@ class CountsOverlay:
             dtype=np.uint8,
         )
         self._draw_finished_counts()
+        self._draw_selected_counts()
         self._draw_active_count()
         self.image = Image.fromarray(self.image_array)
 
-    def _draw_finished_counts(self):
+    def _draw_finished_counts(self) -> None:
         for count in self.count_repository.get_all_as_list():
-            draw_count = self._draw_events_if_in_time_and_class(count)
-            if draw_count:
-                self._draw_single_count(
-                    events=count.get_events(),
-                    road_user_class=count.get_road_user_class(),
-                    color=count.get_road_user_class().get_color_rgb() + (255,),
-                    color_contour=COUNT_CONTOUR_COLOR,
-                )
+            if count.get_road_user_id() in self.selected_count_ids:
+                continue
+            events_to_draw = self._get_events_of_count_to_draw(count)
+            if not (events_to_draw[IN_FRAME] + events_to_draw[IN_WINDOW_NOT_IN_FRAME]):
+                continue
+            if self.selected_count_ids:
+                color = NOT_SELECTED_COLOR
+                color_contour = NOT_SELECTED_COLOR
+            else:
+                color = count.get_road_user_class().get_color_rgb() + (255,)
+                color_contour = COUNT_CONTOUR_COLOR
 
-    def _draw_events_if_in_time_and_class(self, count: Count):
+                self._draw_events(events_to_draw=events_to_draw)
+
+            self._draw_movement_single_count(
+                events=count.get_events(),
+                road_user_class=count.get_road_user_class(),
+                color=color,
+                color_contour=color_contour,
+                thickness_contour=COUNT_CONTOUR_THICKNESS,
+            )
+
+    def _draw_selected_counts(self) -> None:
+        count_dict = self.count_repository.get_all_as_dict()
+        for count_id in self.selected_count_ids:
+            events_to_draw = self._get_events_of_count_to_draw(count_dict[count_id])
+            self._draw_events(events_to_draw=events_to_draw)
+            self._draw_movement_single_count(
+                events=count_dict[count_id].get_events(),
+                road_user_class=count_dict[count_id].get_road_user_class(),
+                color=count_dict[count_id].get_road_user_class().get_color_rgb()
+                + (255,),
+                color_contour=COUNT_CONTOUR_COLOR,
+                thickness_contour=COUNT_CONTOUR_THICKNESS,
+            )
+
+    def _get_events_of_count_to_draw(self, count: Count) -> dict[str, list[Event]]:
+        events_to_draw: dict[str, list[Event]] = {
+            IN_FRAME: [],
+            IN_WINDOW_NOT_IN_FRAME: [],
+        }
         if count.get_road_user_class().get_name() not in self.selected_classes:
-            return False
-        draw_count = False
+            return events_to_draw
         for event in count.get_events():
             if self._is_at_current_frame(event=event):
-                self._draw_event_circle_with_contour(event)
-                draw_count = True
+                events_to_draw[IN_FRAME].append(event)
             elif self._is_in_time_window(
                 event=event, time_window=TIME_WINDOW_SHOW_COUNT
             ):
-                self._draw_simple_event_circle(event)
-                draw_count = True
-        return draw_count
+                events_to_draw[IN_WINDOW_NOT_IN_FRAME].append(event)
+        return events_to_draw
 
-    def _draw_simple_event_circle(self, event):
+    def _draw_events(self, events_to_draw: dict[str, list[Event]]) -> None:
+        for event in events_to_draw[IN_WINDOW_NOT_IN_FRAME]:
+            self._draw_simple_event_circle(event)
+        for event in events_to_draw[IN_FRAME]:
+            self._draw_event_circle_with_contour(event)
+
+    def _draw_simple_event_circle(self, event: Event) -> None:
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
@@ -375,7 +437,7 @@ class CountsOverlay:
             lineType=COUNT_LINETYPE,
         )
 
-    def _draw_event_circle_with_contour(self, event):
+    def _draw_event_circle_with_contour(self, event) -> None:
         cv2.circle(
             img=self.image_array,
             center=event.get_coordinate().as_list(),
@@ -396,7 +458,7 @@ class CountsOverlay:
     def _is_at_current_frame(self, event: Event) -> bool:
         return (
             self.background_frame.get_frame_number() == event.get_frame_number()
-        ) & (self.background_frame.get_video_file().stem == event.get_video_file_name())
+        ) & (self.background_frame.get_video_file().name == event.get_video_file_name())
 
     def _is_in_time_window(self, event: Event, time_window: float) -> bool:
         return (
@@ -405,18 +467,23 @@ class CountsOverlay:
             <= self.background_frame.get_unix_timestamp() + time_window / 2
         )
 
-    def _draw_single_count(
+    def _draw_movement_single_count(
         self,
         events: list[Event],
         road_user_class: RoadUserClass | None,
         color: tuple[int, int, int, int],
         color_contour: tuple[int, int, int, int],
+        thickness_contour: int,
     ) -> None:
         for event, next_event in zip(events[:-1], events[1:]):
             p0 = event.get_coordinate()
             p1 = next_event.get_coordinate()
-            self._draw_arrow_with_outline(
-                p0=p0, p1=p1, color=color, color_contour=color_contour
+            self._draw_arrow_with_contour(
+                p0=p0,
+                p1=p1,
+                color=color,
+                color_contour=color_contour,
+                thickness_contour=thickness_contour,
             )
             self._draw_class_text_next_to_arrow(
                 p0=p0, p1=p1, road_user_class=road_user_class, color=color
@@ -445,12 +512,13 @@ class CountsOverlay:
             bottomLeftOrigin=False,
         )
 
-    def _draw_arrow_with_outline(
+    def _draw_arrow_with_contour(
         self,
         p0: Coordinate,
         p1: Coordinate,
         color: tuple[int, int, int, int],
         color_contour: tuple[int, int, int, int],
+        thickness_contour: int,
     ) -> None:
         tiplength = self._tiplength_for_same_arrow_size(p0, p1, ARROW_CONTOUR_SIZE)
         cv2.arrowedLine(
@@ -458,14 +526,14 @@ class CountsOverlay:
             pt1=p0.as_list(),
             pt2=p1.as_list(),
             color=color_contour,
-            thickness=COUNT_CONTOUR_THICKNESS,
+            thickness=thickness_contour,
             line_type=COUNT_LINETYPE,
             tipLength=tiplength,
         )
         tiplength = self._tiplength_for_same_arrow_size(
             p0,
             p1,
-            ARROW_CONTOUR_SIZE - (COUNT_CONTOUR_THICKNESS - COUNT_LINE_THICKNESS),
+            ARROW_CONTOUR_SIZE - (thickness_contour - COUNT_LINE_THICKNESS),
         )
         cv2.arrowedLine(
             img=self.image_array,
@@ -486,37 +554,39 @@ class CountsOverlay:
             for event in self.active_count.get_events():
                 self.draw_active_count_only_one_event(event)
 
-    def draw_active_count_only_one_event(self, event: Event):
+    def draw_active_count_only_one_event(self, event: Event) -> None:
         cv2.circle(
-                        img=self.image_array,
-                        center=event.get_coordinate().as_list(),
-                        radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
-                        color=ACTIVE_COUNT_EVENTPOINT_BG_COLOR,
-                        thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
-                        lineType=COUNT_LINETYPE,
-                    )
+            img=self.image_array,
+            center=event.get_coordinate().as_list(),
+            radius=ACTIVE_COUNT_EVENTPOINT_BG_RADIUS,
+            color=ACTIVE_COUNT_EVENTPOINT_BG_COLOR,
+            thickness=ACTIVE_COUNT_EVENTPOINT_BG_THICKNESS,
+            lineType=COUNT_LINETYPE,
+        )
         cv2.circle(
-                        img=self.image_array,
-                        center=event.get_coordinate().as_list(),
-                        radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
-                        color=ACTIVE_COUNT_EVENTPOINT_COLOR,
-                        thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
-                        lineType=COUNT_LINETYPE,
-                    )
+            img=self.image_array,
+            center=event.get_coordinate().as_list(),
+            radius=ACTIVE_COUNT_EVENTPOINT_RADIUS,
+            color=ACTIVE_COUNT_EVENTPOINT_COLOR,
+            thickness=ACTIVE_COUNT_EVENTPOINT_THICKNESS,
+            lineType=COUNT_LINETYPE,
+        )
 
-    def _draw_active_count_multiple_events(self):
-        road_user_class = self.active_count.get_road_user_class()
-        if road_user_class is None:
-            color = ACTIVE_COUNT_COLOR
-        else:
-            color = road_user_class.get_color_rgb() + (255,)
+    def _draw_active_count_multiple_events(self) -> None:
+        if self.active_count is not None:
+            road_user_class = self.active_count.get_road_user_class()
+            if road_user_class is None:
+                color = ACTIVE_COUNT_COLOR
+            else:
+                color = road_user_class.get_color_rgb() + (255,)
 
-        self._draw_single_count(
-                    events=self.active_count.get_events(),
-                    road_user_class=road_user_class,
-                    color=color,
-                    color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
-                )
+            self._draw_movement_single_count(
+                events=self.active_count.get_events(),
+                road_user_class=road_user_class,
+                color=color,
+                color_contour=ACTIVE_COUNT_CONTOUR_COLOR,
+                thickness_contour=ACTIVE_COUNT_CONTOUR_THICKNESS,
+            )
 
     def _tiplength_for_same_arrow_size(
         self, p0: Coordinate, p1: Coordinate, size: int = 20
@@ -524,7 +594,7 @@ class CountsOverlay:
         length = (
             (p0.get_x() - p1.get_x()) ** 2 + (p0.get_y() - p1.get_y()) ** 2
         ) ** 0.5
-        return size / length
+        return 1 if length < size or length == 0 else size / length
 
     def _get_text_position(self, p0: Coordinate, p1: Coordinate) -> tuple[int, int]:
         return (

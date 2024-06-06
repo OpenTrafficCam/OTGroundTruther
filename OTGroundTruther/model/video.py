@@ -96,7 +96,7 @@ class BackgroundFrame:
         return self.video_file
 
     def get_video_name(self) -> str:
-        return self.video_file.stem
+        return self.video_file.name
 
 
 class Video:
@@ -125,7 +125,7 @@ class Video:
         return self.file
 
     def get_name(self) -> str:
-        return self.file.stem
+        return self.file.name
 
     def get_frame_rate(self) -> float:
         return self.frame_rate
@@ -244,6 +244,7 @@ class VideoRepository:
         """
         for video in videos:
             self._add(video)
+        self._videos = dict(sorted(self._videos.items()))
 
     def _add(self, video: Video) -> None:
         """Internal method to add a video.
