@@ -147,3 +147,11 @@ helpers/filehelper/afterprocessing/click_evauation.py
 
 # Local History for Visual Studio Code
 .history/
+
+# PyCharm
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+local.properties
