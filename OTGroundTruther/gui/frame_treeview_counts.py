@@ -259,7 +259,9 @@ class Treeview(ttk.Treeview):
         sort_direction = self._get_sort_direction(
             change_sort_direction=change_sort_direction, sort_column=sort_column
         )
-        column_values_and_row_index = self._get_tuples_of_column(sort_column)
+        column_values_and_row_index = self._get_tuples_of_column(
+            sort_column=sort_column, _example_count=self.example_count
+        )
         column_values_and_row_index.sort(reverse=sort_direction)
         for order_index, (value, tv_index) in enumerate(column_values_and_row_index):
             self.move(tv_index, "", order_index)
