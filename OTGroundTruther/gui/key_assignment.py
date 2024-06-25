@@ -1,6 +1,6 @@
 from typing import Any
 
-import customtkinter as ctk
+import customtkinter as ctk  # type: ignore
 
 from OTGroundTruther.gui.constants import PADX, PADY, STICKY
 from OTGroundTruther.gui.presenter_interface import PresenterInterface

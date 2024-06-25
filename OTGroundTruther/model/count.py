@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
-import cv2
+import cv2  # type: ignore
 import numpy as np
-from PIL import Image
+from PIL import Image  # type: ignore
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.event import Event, EventForParsingSerializing

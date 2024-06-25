@@ -4,9 +4,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-import cv2
+import cv2  # type: ignore
 import numpy.typing as npt
-from PIL import Image
+from PIL import Image  # type: ignore
 
 
 class NoVideoError(Exception):
