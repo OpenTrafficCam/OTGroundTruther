@@ -1,4 +1,9 @@
+# OS generated files
 .DS_Store
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -130,3 +135,23 @@ dmypy.json
 # Pyre type checker
 .pyre/
 helpers/filehelper/afterprocessing/click_evauation.py
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/scripts
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# PyCharm
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+local.properties
