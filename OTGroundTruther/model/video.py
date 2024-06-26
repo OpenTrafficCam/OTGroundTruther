@@ -34,14 +34,12 @@ def _get_datetime_from_filename(
         return 0, epoch_datetime
 
     datetime = match[1]
-
     try:
         seconds_since_epoch = dt.datetime.strptime(
             datetime, "%Y-%m-%d_%H-%M-%S"
         ).timestamp()
     except ValueError:
         return 0, epoch_datetime
-
     return seconds_since_epoch, datetime
 
 
@@ -153,7 +151,7 @@ class Video:
                 pass
 
     def _parse_start_time(self) -> tuple[float, str]:
-        return _get_datetime_from_filename(filename=str(self.file))
+        return _get_datetime_from_filename(filename=self.file.stem)
 
     def get_start_timestamp(self) -> float:
         return self._start_timestamp
