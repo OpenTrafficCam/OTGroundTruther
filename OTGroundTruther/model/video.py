@@ -34,14 +34,12 @@ def _get_datetime_from_filename(
         return 0, epoch_datetime
 
     datetime = match[1]
-
     try:
         seconds_since_epoch = dt.datetime.strptime(
             datetime, "%Y-%m-%d_%H-%M-%S"
         ).timestamp()
     except ValueError:
         return 0, epoch_datetime
-
     return seconds_since_epoch, datetime
 
 
@@ -124,8 +122,11 @@ class Video:
     def get_filepath(self) -> Path:
         return self.file
 
-    def get_name(self) -> str:
+    def get_full_name(self) -> str:
         return self.file.name
+
+    def get_name_stem(self) -> str:
+        return self.file.stem
 
     def get_frame_rate(self) -> float:
         return self.frame_rate
@@ -150,7 +151,7 @@ class Video:
                 pass
 
     def _parse_start_time(self) -> tuple[float, str]:
-        return _get_datetime_from_filename(filename=str(self.file))
+        return _get_datetime_from_filename(filename=self.file.stem)
 
     def get_start_timestamp(self) -> float:
         return self._start_timestamp
@@ -252,7 +253,7 @@ class VideoRepository:
         Args:
             video (Video): the video to be added
         """
-        self._videos[video.get_name()] = video
+        self._videos[video.get_full_name()] = video
 
     def get_by_timestamp(self, unix_timestamp: float) -> Video | None:
         for video in self._videos.values():
@@ -314,7 +315,7 @@ class VideoRepository:
             current_video.get_number_of_frames() - current_frame_number
         )
         return self.get_video_and_frame_by_delta_frame(
-            current_file_name=new_video.get_name(),
+            current_file_name=new_video.get_full_name(),
             current_frame_number=0,
             delta_of_frames=new_delta_of_frames,
         )
@@ -329,7 +330,7 @@ class VideoRepository:
         new_video = self._get_video_by_index(new_video_index)
         new_delta_of_frames = delta_of_frames + current_frame_number
         return self.get_video_and_frame_by_delta_frame(
-            current_file_name=new_video.get_name(),
+            current_file_name=new_video.get_full_name(),
             current_frame_number=new_video.get_number_of_frames(),
             delta_of_frames=new_delta_of_frames,
         )

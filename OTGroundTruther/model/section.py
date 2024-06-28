@@ -22,6 +22,7 @@ PLUGIN_DATA: str = "plugin_data"
 METADATA: str = "metadata"
 
 SECTION_COLOR = (127, 255, 0, 255)
+SECTION_LINETYPE: int = cv2.LINE_AA
 ELLIPSE_COLOR = (127, 255, 0, 255)
 SECTION_THICKNESS = 1
 ELLIPSE_THICKNESS = 2
@@ -99,6 +100,7 @@ class SectionsOverlay:
             pt2=ellipse.end.as_tuple(),
             color=SECTION_COLOR,
             thickness=SECTION_THICKNESS,
+            lineType=SECTION_LINETYPE,
         )
 
     def _draw_ellipse(self, ellipse: Ellipse) -> None:
@@ -111,6 +113,7 @@ class SectionsOverlay:
             endAngle=360,
             color=ELLIPSE_COLOR,
             thickness=ELLIPSE_THICKNESS,
+            lineType=SECTION_LINETYPE,
         )
 
 
