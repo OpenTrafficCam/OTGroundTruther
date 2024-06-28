@@ -6,13 +6,15 @@ import numpy as np
 from OTGroundTruther.model.coordinate import Coordinate
 
 RELATIVE_HEIGHT: float = 0.15
+MINOR_AXIS_LENGTH_SET: bool = True
+MINOR_AXIS_LENGTH: float = 10
 
 
 @dataclass
 class Ellipse:
     start: Coordinate
     end: Coordinate
-    relative_height: float = RELATIVE_HEIGHT
+    relative_height: float = field(init=False)
     center: Coordinate = field(init=False)
     radian: float = field(init=False)
     angle: float = field(init=False)
@@ -30,7 +32,12 @@ class Ellipse:
         self.radian = atan2(self.end.y - self.start.y, self.start.x - self.end.x)
         self.angle = -self.radian * (180 / pi)
         self.major_axis_length = dist(self.start.as_tuple(), self.end.as_tuple()) / 2
-        self.minor_axis_length = self.major_axis_length * self.relative_height
+        if MINOR_AXIS_LENGTH_SET:
+            self.minor_axis_length = MINOR_AXIS_LENGTH
+            self.relative_height = self.minor_axis_length / self.major_axis_length
+        else:
+            self.minor_axis_length = self.major_axis_length * RELATIVE_HEIGHT
+            self.relative_height = RELATIVE_HEIGHT
 
     def contains(self, coordinate: Coordinate) -> bool:
         delta_x = coordinate.x - self.center.x
