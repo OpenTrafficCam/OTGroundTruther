@@ -227,10 +227,7 @@ class EventListParser:
             return video_name
 
     def _is_detection_file(self, video_name: str) -> bool:
-        if (
-            video_name[-1 * len(DEFAULT_DETECTION_FILE_SUFFIX) :]
-            == DEFAULT_DETECTION_FILE_SUFFIX
-        ):
+        if Path(video_name).suffix == DEFAULT_DETECTION_FILE_SUFFIX:
             return True
         else:
             return False
