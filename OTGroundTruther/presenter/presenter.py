@@ -95,7 +95,7 @@ class Presenter(PresenterInterface):
         )
         output_asksave = asksaveasfilename(
             initialdir=first_video_file.parent,
-            initialfile=first_video_file.name,
+            initialfile=first_video_file.stem,
             defaultextension=GROUND_TRUTH_EVENTS_FILE_SUFFIX,
             filetypes=[("OTGTEvent file", GROUND_TRUTH_EVENTS_FILE_SUFFIX)],
             title="Save all Events",

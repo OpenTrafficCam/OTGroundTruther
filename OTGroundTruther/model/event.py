@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Any
 
 from OTGroundTruther.model.config import (
+    DEFAULT_DETECTION_FILE_SUFFIX,
+    DEFAULT_VIDEO_FILE_SUFFIX,
     GROUND_TRUTH_EVENTS_FILE_SUFFIX,
     OTEVENTS_FILE_SUFFIX,
 )
@@ -216,7 +218,19 @@ class EventListParser:
         return False
 
     def _get_video_file_name(self, event: dict) -> str:
-        return event[VIDEO_NAME]
+        video_name = event[VIDEO_NAME]
+        if Path(video_name).suffix == "":
+            return video_name + DEFAULT_VIDEO_FILE_SUFFIX
+        elif self._is_detection_file(video_name=video_name):
+            return Path(video_name).stem + DEFAULT_VIDEO_FILE_SUFFIX
+        else:
+            return video_name
+
+    def _is_detection_file(self, video_name: str) -> bool:
+        if Path(video_name).suffix == DEFAULT_DETECTION_FILE_SUFFIX:
+            return True
+        else:
+            return False
 
     def _is_from_otanalytics(self, events_file: Path) -> bool:
         if events_file.suffix == OTEVENTS_FILE_SUFFIX:
