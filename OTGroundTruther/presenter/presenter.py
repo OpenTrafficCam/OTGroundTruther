@@ -82,8 +82,10 @@ class Presenter(PresenterInterface):
             ],
         )
         if output_askfile:
-            self._model.read_sections_from_file(Path(output_askfile))
-            self._model.read_events_from_file(Path(output_askfile))
+            if self._model._count_repository.get_all_as_dict:
+                keep = self._gui.ask_if_keep_existing_counts()
+            self._model.read_sections_from_file(Path(output_askfile), keep)
+            self._model.read_events_from_file(Path(output_askfile), keep)
             self.refresh_treeview()
             if self._current_frame is None:
                 return

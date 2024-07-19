@@ -1,6 +1,7 @@
 from typing import Any
 
 import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox
 
 from OTGroundTruther.gui.constants import PADX, PADY, tk_events
 from OTGroundTruther.gui.frame_canvas import FrameCanvas
@@ -46,12 +47,25 @@ class Gui(ctk.CTk):
             side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=PADX, pady=PADY
         )
 
-    def build_key_assignment_window(self, key_assignment_text: dict[str, str]):
+    def build_key_assignment_window(self, key_assignment_text: dict[str, str]) -> None:
         self.key_assigment_window = KeyAssignmentWindow(
             master=self,
             key_assignment_text=key_assignment_text,
             presenter=self._presenter,
         )
+
+    def ask_if_keep_existing_counts(self) -> bool:
+        msg = CTkMessagebox(
+            title="Keep existing Counts?",
+            message="Do you want to keep the already existing counts?",
+            icon="question",
+            option_1="Yes",
+            option_2="No",
+        )
+        if msg == "Yes":
+            return True
+        else:
+            return False
 
 
 class GuiEventTranslator:
