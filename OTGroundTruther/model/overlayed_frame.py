@@ -1,7 +1,7 @@
 import copy
 from dataclasses import dataclass
 
-from PIL import Image
+from PIL import Image  # type: ignore
 
 from OTGroundTruther.model.count import CountsOverlay
 from OTGroundTruther.model.section import SectionsOverlay
