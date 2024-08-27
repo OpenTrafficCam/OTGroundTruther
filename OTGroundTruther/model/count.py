@@ -287,7 +287,12 @@ class CountRepository:
                 event_list.append(event_for_save)
         return event_list
 
-    def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
+    def from_event_list(
+        self,
+        event_list: list[EventForParsingSerializing],
+        keep_existing_events: bool,
+        suffix: str,
+    ) -> None:
         """
         create count list from event list and the suitable list of the object ids
         set current id = 0 (only important for id naming of new events later) if the
@@ -297,11 +302,11 @@ class CountRepository:
             event_list (list[Event_For_Saving]): List of events.
         """
         events, classes = self._get_events_and_classes_by_id(event_list)
-
-        self.clear()
+        if not keep_existing_events:
+            self.clear()
         for id_ in events.keys():
             if len(events[id_]) >= 2:
-                self._counts[id_] = Count(
+                self._counts[id_ + suffix] = Count(
                     road_user_id=id_,
                     events=events[id_],
                     road_user_class=classes[id_],

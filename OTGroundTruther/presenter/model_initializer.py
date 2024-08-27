@@ -60,7 +60,9 @@ class ModelInitializer:
             sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
-        self._count_repository.from_event_list(event_list)
+        self._count_repository.from_event_list(
+            event_list, keep_existing_events=False, suffix="_"
+        )
 
     def get(self) -> Model:
         return self._model

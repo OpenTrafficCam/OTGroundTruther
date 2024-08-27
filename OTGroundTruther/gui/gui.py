@@ -57,15 +57,35 @@ class Gui(ctk.CTk):
     def ask_if_keep_existing_counts(self) -> bool:
         msg = CTkMessagebox(
             title="Keep existing Counts?",
-            message="Do you want to keep the already existing counts?",
+            message="Do you want to keep the already existing counts and sections?",
             icon="question",
             option_1="Yes",
             option_2="No",
         )
-        if msg == "Yes":
+        keep_existing = msg.get()
+        print(keep_existing)
+        if keep_existing == "Yes":
             return True
         else:
             return False
+
+    def get_new_suffix_for_new_counts(self):
+        print("hello")
+        self.subwindow = ctk.CTkToplevel(self)
+        self.subwindow.title("Suffix for the counts of the file")
+        ctk.CTkLabel(
+            self.subwindow, text="Enter the suffix for the counts of the file."
+        )
+        self.entry = ctk.CTkEntry(self.subwindow)
+        self.entry.pack(pady=5)
+        ctk.CTkButton(
+            self.subwindow, text="OK", command=self.get_suffix_and_add_counts
+        ).pack(pady=10)
+
+    def get_suffix_and_add_counts(self) -> None:
+        user_input = self.entry.get()
+        self.subwindow.destroy()
+        self._presenter.load_counts_with_suffix(suffix=user_input)
 
 
 class GuiEventTranslator:
