@@ -14,8 +14,6 @@ from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsE
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
 
-# from OTGroundTruther.model.section import LineSection
-
 MAX_SCROLL_STEP: int = 50
 
 
@@ -126,7 +124,7 @@ class Presenter(PresenterInterface):
             return
         self._refresh_current_frame()
 
-    def counts_or_sections_already_exist(self):
+    def counts_or_sections_already_exist(self) -> bool:
         return bool(self._model._count_repository.get_all_as_dict()) or bool(
             self._model._section_repository.to_dict()
         )

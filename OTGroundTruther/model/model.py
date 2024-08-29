@@ -1,6 +1,6 @@
 import datetime as dt
 from pathlib import Path
-from typing import Sequence
+from typing import Iterable, Sequence
 
 from OTGroundTruther.gui.constants import tk_events
 from OTGroundTruther.gui.key_assignment import (
@@ -79,7 +79,9 @@ class Model:
             compatible = True
         return compatible, sections
 
-    def add_sections(self, sections, keep_existing_sections: bool):
+    def add_sections(
+        self, sections: Iterable[LineSection], keep_existing_sections: bool
+    ):
         if not keep_existing_sections:
             self._section_repository.clear()
         self._section_repository.add_all(sections)

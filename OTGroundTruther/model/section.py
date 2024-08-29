@@ -139,7 +139,7 @@ class SectionRepository:
             }
         return (compatible, gates_already_existed)
 
-    def add_all(self, sections: Iterable[LineSection]):
+    def add_all(self, sections: Iterable[LineSection]) -> None:
         """Add several sections at once to the repository.
 
         Args:
