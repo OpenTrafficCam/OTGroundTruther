@@ -61,7 +61,7 @@ class ModelInitializer:
             valid_road_user_classes=self._valid_road_user_classes,
         )
         self._count_repository.from_event_list(
-            event_list, keep_existing_events=False, suffix="_"
+            event_list, keep_existing_events=False, suffix=""
         )
 
     def get(self) -> Model:

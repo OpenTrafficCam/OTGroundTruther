@@ -70,7 +70,12 @@ class Presenter(PresenterInterface):
             ],
         )
         if output_askfile:
-            self._model.read_sections_from_file(Path(output_askfile))
+            new_sections, keep_existing_s_c = self.load_sections(output_askfile)
+
+            self._model.add_sections(
+                sections=new_sections, keep_existing_sections=keep_existing_s_c
+            )
+            self.refresh_treeview()
             if self._current_frame is None:
                 return
             self._refresh_current_frame()
@@ -85,7 +90,6 @@ class Presenter(PresenterInterface):
         )
         if output_askfile:
             new_sections, keep_existing_s_c = self.load_sections(output_askfile)
-            print(keep_existing_s_c)
 
             self._model.add_sections(
                 sections=new_sections, keep_existing_sections=keep_existing_s_c
@@ -105,16 +109,14 @@ class Presenter(PresenterInterface):
         compatible, new_sections = self._model.read_sections_from_file(
             Path(output_askfile)
         )
-        if self._model._count_repository.get_all_as_dict():
+        if (
+            self._model._count_repository.get_all_as_dict()
+            or self._model._section_repository.to_dict()
+        ):
             if compatible:
                 keep_existing_s_c = self._gui.ask_if_keep_existing_counts()
-                print("yolo")
-                print(keep_existing_s_c)
             else:
-                print(
-                    "The sections from the file are not compatible with the existing "
-                    + "sections. Therefore the existing sections and counts got deleted"
-                )
+                self._gui.inform_user_sections_not_compatible()
                 keep_existing_s_c = False
         else:
             keep_existing_s_c = False

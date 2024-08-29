@@ -304,10 +304,16 @@ class CountRepository:
         events, classes = self._get_events_and_classes_by_id(event_list)
         if not keep_existing_events:
             self.clear()
+        elif bool(set(events.keys()) & set(self._counts.keys())):
+            self.clear()
+            print(
+                "Duplication of at least one counting ID. All already existing"
+                + " counts have been removed."
+            )
         for id_ in events.keys():
             if len(events[id_]) >= 2:
                 self._counts[id_ + suffix] = Count(
-                    road_user_id=id_,
+                    road_user_id=id_ + suffix,
                     events=events[id_],
                     road_user_class=classes[id_],
                 )
