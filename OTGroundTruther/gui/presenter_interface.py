@@ -15,7 +15,11 @@ class PresenterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_events(self) -> None:
+    def load_otevents_otgtevents(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def add_new_counts(self, keep_existing_s_c: bool, suffix: str) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -74,8 +78,4 @@ class PresenterInterface(ABC):
 
     @abstractmethod
     def show_key_assignment(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def load_counts_with_suffix(self, suffix: str) -> None:
         raise NotImplementedError

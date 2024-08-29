@@ -25,12 +25,19 @@ SUBW_ENTERSUFFIXCOUNTS_TITLE: str = "Suffix for the counts of the file"
 SUBW_ENTERSUFFIXCOUNTS_INSTRUCTION: str = "Enter a suffix for the counts of the file."
 
 
-SUBW_SECTIONS_NOT_COMPARTIBLE_TITLE: str = "Sections are not compatible."
-SUBW_SECTIONS_NOT_COMPARTIBLE_INFO: str = (
+SUBW_SECTIONS_NOT_COMPATIBLE_TITLE: str = "Sections are not compatible."
+SUBW_SECTIONS_NOT_COMPATIBLE_INFO: str = (
     "The sections from the file are not compatible with the existing "
     + "sections. Therefore the existing sections and counts got deleted."
 )
-SUBW_SECTIONS_NOT_COMPARTIBLE_ICON: str = "info"
+SUBW_SECTIONS_NOT_COMPATIBLE_ICON: str = "info"
+
+SUBW_COUNTS_NOT_COMPATIBLE_TITLE: str = "Counts are not compatible."
+SUBW_COUNTS_NOT_COMPATIBLE_INFO: str = (
+    "Duplication of at least one counting ID. All already existing"
+    + " counts have been removed."
+)
+SUBW_COUNTS_NOT_COMPATIBLE_ICON: str = "info"
 
 
 class Gui(ctk.CTk):
@@ -98,9 +105,17 @@ class Gui(ctk.CTk):
     def inform_user_sections_not_compatible(self) -> None:
         self.subwindow = CTkMessagebox(
             master=self,
-            title=SUBW_SECTIONS_NOT_COMPARTIBLE_TITLE,
-            message=SUBW_SECTIONS_NOT_COMPARTIBLE_INFO,
-            icon=SUBW_SECTIONS_NOT_COMPARTIBLE_ICON,
+            title=SUBW_SECTIONS_NOT_COMPATIBLE_TITLE,
+            message=SUBW_SECTIONS_NOT_COMPATIBLE_INFO,
+            icon=SUBW_SECTIONS_NOT_COMPATIBLE_ICON,
+        )
+
+    def inform_user_counts_not_compatible(self) -> None:
+        self.subwindow = CTkMessagebox(
+            master=self,
+            title=SUBW_COUNTS_NOT_COMPATIBLE_TITLE,
+            message=SUBW_COUNTS_NOT_COMPATIBLE_INFO,
+            icon=SUBW_COUNTS_NOT_COMPATIBLE_ICON,
         )
 
 
@@ -137,7 +152,7 @@ class EnteringStringSubwindow(ctk.CTkToplevel):
     def _get_suffix_and_add_counts(self) -> None:
         user_input = self.entry.get()
         self.destroy()
-        self._gui._presenter.load_counts_with_suffix(suffix=user_input)
+        self._gui._presenter.add_new_counts(keep_existing_s_c=True, suffix=user_input)
 
     def on_close(self):
         self.destroy()

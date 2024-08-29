@@ -1,6 +1,5 @@
 from pathlib import Path
 from tkinter.filedialog import askopenfilename, askopenfilenames, asksaveasfilename
-from typing import Sequence
 
 from OTGroundTruther.gui.gui import Gui
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
@@ -14,7 +13,8 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsError
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
-from OTGroundTruther.model.section import LineSection
+
+# from OTGroundTruther.model.section import LineSection
 
 MAX_SCROLL_STEP: int = 50
 
@@ -69,18 +69,15 @@ class Presenter(PresenterInterface):
                 ("otevents", f"*{OTANALYTICS_FILE_SUFFIX}"),
             ],
         )
-        if output_askfile:
-            new_sections, keep_existing_s_c = self.load_sections(output_askfile)
+        if not output_askfile:
+            return
+        self._read_compare_add_sections(output_askfile)
+        self.refresh_treeview()
+        if self._current_frame is None:
+            return
+        self._refresh_current_frame()
 
-            self._model.add_sections(
-                sections=new_sections, keep_existing_sections=keep_existing_s_c
-            )
-            self.refresh_treeview()
-            if self._current_frame is None:
-                return
-            self._refresh_current_frame()
-
-    def load_events(self) -> None:
+    def load_otevents_otgtevents(self) -> None:
         output_askfile = askopenfilename(
             defaultextension=f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
@@ -88,46 +85,51 @@ class Presenter(PresenterInterface):
                 ("otevents", f"*{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
-        if output_askfile:
-            new_sections, keep_existing_s_c = self.load_sections(output_askfile)
+        if not output_askfile:
+            return
+        keep_existing_s_c = self._read_compare_add_sections(output_askfile)
+        if keep_existing_s_c:
+            self._gui.get_new_suffix_for_new_counts()
+        else:
+            self.add_new_counts(keep_existing_s_c, suffix="")
 
-            self._model.add_sections(
-                sections=new_sections, keep_existing_sections=keep_existing_s_c
-            )
-            if not keep_existing_s_c:
-                self._model.read_events_from_file(
-                    keep_existing_events=keep_existing_s_c, suffix=""
-                )
-                self.refresh_treeview()
-                if self._current_frame is None:
-                    return
-                self._refresh_current_frame()
-            else:
-                self._gui.get_new_suffix_for_new_counts()
+    def _read_compare_add_sections(self, output_askfile: str) -> bool:
+        (
+            sections_compatible,
+            new_sections,
+        ) = self._model.read_sections_from_file(Path(output_askfile))
 
-    def load_sections(self, output_askfile: str) -> tuple[Sequence[LineSection], bool]:
-        compatible, new_sections = self._model.read_sections_from_file(
-            Path(output_askfile)
-        )
-        if (
-            self._model._count_repository.get_all_as_dict()
-            or self._model._section_repository.to_dict()
-        ):
-            if compatible:
-                keep_existing_s_c = self._gui.ask_if_keep_existing_counts()
-            else:
-                self._gui.inform_user_sections_not_compatible()
-                keep_existing_s_c = False
+        if sections_compatible and self.counts_or_sections_already_exist():
+            keep_existing_s_c = self._gui.ask_if_keep_existing_counts()
+        elif not sections_compatible and self.counts_or_sections_already_exist():
+            self._gui.inform_user_sections_not_compatible()
+            keep_existing_s_c = False
         else:
             keep_existing_s_c = False
-        return new_sections, keep_existing_s_c
 
-    def load_counts_with_suffix(self, suffix: str) -> None:
-        self._model.read_events_from_file(keep_existing_events=True, suffix=suffix)
+        self._model.add_sections(
+            sections=new_sections, keep_existing_sections=keep_existing_s_c
+        )
+
+        return keep_existing_s_c
+
+    def add_new_counts(self, keep_existing_s_c: bool, suffix: str) -> None:
+        counts_compatible, new_counts = self._model.read_events_from_file(suffix=suffix)
+        if not counts_compatible and keep_existing_s_c:
+            self._gui.inform_user_counts_not_compatible()
+            keep_existing_s_c = False
+        self._model._count_repository.add_new_counts(
+            new_counts, keep_existing_counts=keep_existing_s_c
+        )
         self.refresh_treeview()
         if self._current_frame is None:
             return
         self._refresh_current_frame()
+
+    def counts_or_sections_already_exist(self):
+        return bool(self._model._count_repository.get_all_as_dict()) or bool(
+            self._model._section_repository.to_dict()
+        )
 
     def save_events(self) -> None:
         first_video_file = (

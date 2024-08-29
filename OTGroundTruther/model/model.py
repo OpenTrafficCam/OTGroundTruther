@@ -85,18 +85,19 @@ class Model:
         self._section_repository.add_all(sections)
         print("Sections added")
 
-    def read_events_from_file(self, keep_existing_events: bool, suffix: str) -> None:
+    def read_events_from_file(self, suffix: str) -> tuple[bool, dict[str, Count]]:
         event_list = self._eventlistparser.parse(
             events_file=self.last_file_path,
             sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
-        self._count_repository.from_event_list(
+
+        (compatible, counts) = self._count_repository.event_list_to_count_dict(
             event_list=event_list,
-            keep_existing_events=keep_existing_events,
             suffix=suffix,
         )
         print(f"Events read from {self.last_file_path}")
+        return (compatible, counts)
 
     def write_events_and_sections_to_file(
         self,
