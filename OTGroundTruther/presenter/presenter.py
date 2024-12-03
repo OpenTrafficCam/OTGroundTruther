@@ -296,4 +296,5 @@ class Presenter(PresenterInterface):
         )
 
     def later_use(self) -> None:
-        self._current_frame = 0
+
+        self.update_canvas_image_with_new_overlay()
