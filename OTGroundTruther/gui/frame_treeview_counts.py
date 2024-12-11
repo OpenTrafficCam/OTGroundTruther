@@ -202,6 +202,8 @@ class Treeview(ttk.Treeview):
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
         self.delete(*self.get_children())
+        if not count_repository.get_all_as_dict():
+            return
         selected_classes = self._presenter.get_selected_classes_from_gui()
         for count in list(count_repository.get_all_as_dict().values()):
             if count.get_road_user_class().get_name() in selected_classes:

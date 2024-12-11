@@ -122,6 +122,23 @@ class SectionRepository:
         self._sections: dict[str, LineSection] = {}
         self._otanalytics_file_content: dict = {}
 
+    def check_if_compatible(
+        self, sections: Iterable[LineSection]
+    ) -> tuple[bool, dict[str, dict[str, bool]]]:
+        gates_already_existed = {}
+        compatible = True
+        for section in sections:
+
+            id_already_exist = section.id in list(self._sections.keys())
+            is_equal = id_already_exist and self._sections[section.id] == section
+            if id_already_exist and not is_equal:
+                compatible = False
+            gates_already_existed[section.id] = {
+                "id_already_exist": id_already_exist,
+                "is_equal": is_equal,
+            }
+        return (compatible, gates_already_existed)
+
     def add_all(self, sections: Iterable[LineSection]) -> None:
         """Add several sections at once to the repository.
 
@@ -130,9 +147,10 @@ class SectionRepository:
         """
         for section in sections:
             self._add(section)
+
             # TODO: Check if ellipses around different sections touch each other
 
-    def _add(self, section: LineSection) -> None:
+    def _add(self, section: LineSection):
         """Internal method to add sections without notifying observers.
 
         Args:

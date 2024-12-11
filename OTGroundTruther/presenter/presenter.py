@@ -67,13 +67,15 @@ class Presenter(PresenterInterface):
                 ("otevents", f"*{OTANALYTICS_FILE_SUFFIX}"),
             ],
         )
-        if output_askfile:
-            self._model.read_sections_from_file(Path(output_askfile))
-            if self._current_frame is None:
-                return
-            self._refresh_current_frame()
+        if not output_askfile:
+            return
+        self._read_compare_add_sections(output_askfile)
+        self.refresh_treeview()
+        if self._current_frame is None:
+            return
+        self._refresh_current_frame()
 
-    def load_events(self) -> None:
+    def load_otevents_otgtevents(self) -> None:
         output_askfile = askopenfilename(
             defaultextension=f"*{GROUND_TRUTH_EVENTS_FILE_SUFFIX}",
             filetypes=[
@@ -81,13 +83,51 @@ class Presenter(PresenterInterface):
                 ("otevents", f"*{OTEVENTS_FILE_SUFFIX}"),
             ],
         )
-        if output_askfile:
-            self._model.read_sections_from_file(Path(output_askfile))
-            self._model.read_events_from_file(Path(output_askfile))
-            self.refresh_treeview()
-            if self._current_frame is None:
-                return
-            self._refresh_current_frame()
+        if not output_askfile:
+            return
+        keep_existing_s_c = self._read_compare_add_sections(output_askfile)
+        if keep_existing_s_c:
+            self._gui.get_new_suffix_for_new_counts()
+        else:
+            self.add_new_counts(keep_existing_s_c, suffix="")
+
+    def _read_compare_add_sections(self, output_askfile: str) -> bool:
+        (
+            sections_compatible,
+            new_sections,
+        ) = self._model.read_sections_from_file(Path(output_askfile))
+
+        if sections_compatible and self.counts_or_sections_already_exist():
+            keep_existing_s_c = self._gui.ask_if_keep_existing_counts()
+        elif not sections_compatible and self.counts_or_sections_already_exist():
+            self._gui.inform_user_sections_not_compatible()
+            keep_existing_s_c = False
+        else:
+            keep_existing_s_c = False
+
+        self._model.add_sections(
+            sections=new_sections, keep_existing_sections=keep_existing_s_c
+        )
+
+        return keep_existing_s_c
+
+    def add_new_counts(self, keep_existing_s_c: bool, suffix: str) -> None:
+        counts_compatible, new_counts = self._model.read_events_from_file(suffix=suffix)
+        if not counts_compatible and keep_existing_s_c:
+            self._gui.inform_user_counts_not_compatible()
+            keep_existing_s_c = False
+        self._model._count_repository.add_new_counts(
+            new_counts, keep_existing_counts=keep_existing_s_c
+        )
+        self.refresh_treeview()
+        if self._current_frame is None:
+            return
+        self._refresh_current_frame()
+
+    def counts_or_sections_already_exist(self) -> bool:
+        return bool(self._model._count_repository.get_all_as_dict()) or bool(
+            self._model._section_repository.to_dict()
+        )
 
     def save_events(self) -> None:
         first_video_file = (
@@ -254,3 +294,7 @@ class Presenter(PresenterInterface):
         self._gui.build_key_assignment_window(
             key_assignment_text=self._model.get_key_assignment_text()
         )
+
+    def later_use(self) -> None:
+
+        self.update_canvas_image_with_new_overlay()

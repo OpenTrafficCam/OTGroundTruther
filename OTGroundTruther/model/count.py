@@ -287,7 +287,11 @@ class CountRepository:
                 event_list.append(event_for_save)
         return event_list
 
-    def from_event_list(self, event_list: list[EventForParsingSerializing]) -> None:
+    def event_list_to_count_dict(
+        self,
+        event_list: list[EventForParsingSerializing],
+        suffix: str,
+    ) -> tuple[bool, dict[str, Count]]:
         """
         create count list from event list and the suitable list of the object ids
         set current id = 0 (only important for id naming of new events later) if the
@@ -297,19 +301,32 @@ class CountRepository:
             event_list (list[Event_For_Saving]): List of events.
         """
         events, classes = self._get_events_and_classes_by_id(event_list)
-
-        self.clear()
+        counts = {}
         for id_ in events.keys():
             if len(events[id_]) >= 2:
-                self._counts[id_] = Count(
-                    road_user_id=id_,
+                counts[id_ + suffix] = Count(
+                    road_user_id=id_ + suffix,
                     events=events[id_],
                     road_user_class=classes[id_],
                 )
             else:
                 continue  # TODO: Store in "SingleEventRepository"
+        compatible = not self.ids_already_exist_in_counts(counts=counts)
+        return compatible, counts
+
+    def add_new_counts(
+        self,
+        new_counts: dict[str, Count],
+        keep_existing_counts: bool,
+    ) -> None:
+        if not keep_existing_counts:
+            self.clear()
+        self._counts = self._counts | new_counts
         if len(self._counts.keys()) > 0:
             self.set_current_id(list(self._counts.keys())[-1])
+
+    def ids_already_exist_in_counts(self, counts: dict[str, Count]):
+        return bool(set(counts.keys()) & set(self._counts.keys()))
 
     def _get_events_and_classes_by_id(
         self, event_list: list[EventForParsingSerializing]

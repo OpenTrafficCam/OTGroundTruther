@@ -1,5 +1,6 @@
 import datetime as dt
 from pathlib import Path
+from typing import Iterable, Sequence
 
 from OTGroundTruther.gui.constants import tk_events
 from OTGroundTruther.gui.key_assignment import (
@@ -65,21 +66,40 @@ class Model:
         self._video_repository.add_all(videos)
         print(f"Videos loaded: {files}")
 
-    def read_sections_from_file(self, file: Path) -> None:
-        self._section_repository.clear()
+    def read_sections_from_file(self, file: Path) -> tuple[bool, Sequence[LineSection]]:
+        self.last_file_path = file
         sections, otanalytics_file_content = self._section_parser.parse(file=file)
-        self._section_repository.add_all(sections)
         self._section_repository.set_otanalytics_file_content(otanalytics_file_content)
-        print(f"Sections read from {file}")
+        if self._count_repository.get_all_as_dict():
+            print(f"Check compatibility sections {file}")
+            compatible, gates_already_existed = (
+                self._section_repository.check_if_compatible(sections)
+            )
+        else:
+            compatible = True
+        return compatible, sections
 
-    def read_events_from_file(self, file: Path) -> None:
+    def add_sections(
+        self, sections: Iterable[LineSection], keep_existing_sections: bool
+    ):
+        if not keep_existing_sections:
+            self._section_repository.clear()
+        self._section_repository.add_all(sections)
+        print("Sections added")
+
+    def read_events_from_file(self, suffix: str) -> tuple[bool, dict[str, Count]]:
         event_list = self._eventlistparser.parse(
-            events_file=file,
+            events_file=self.last_file_path,
             sections=self._section_repository.to_dict(),
             valid_road_user_classes=self._valid_road_user_classes,
         )
-        self._count_repository.from_event_list(event_list)
-        print(f"Events read from {file}")
+
+        (compatible, counts) = self._count_repository.event_list_to_count_dict(
+            event_list=event_list,
+            suffix=suffix,
+        )
+        print(f"Events read from {self.last_file_path}")
+        return (compatible, counts)
 
     def write_events_and_sections_to_file(
         self,
