@@ -1,7 +1,7 @@
-customtkinter==5.2.0
-numpy==1.25.2
-opencv-python==4.8.0.76
-pandas==1.5.1
-Pillow==9.3.0
-pyyaml==6.0.1
-ujson==5.8.0
+customtkinter==5.2.2
+numpy==1.26.4
+opencv-python==4.11.0.86
+pandas==2.2.3
+Pillow==11.1.0
+pyyaml==6.0.2
+ujson==5.10.0

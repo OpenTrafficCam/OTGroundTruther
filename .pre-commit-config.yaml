@@ -45,17 +45,17 @@ repos:
         entry: mypy .
         additional_dependencies:
           - black==24.8.0
-          - customtkinter==5.2.0
+          - customtkinter==5.2.2
           - interrogate==1.7.0
           - isort==5.13.2
           - mypy==1.12.1
-          - numpy==1.25.2
-          - opencv-python==4.8.0.76
-          - pandas==1.5.1
-          - pre-commit==4.0.1
-          - pytest-benchmark==4.0.0
-          - pytest-cov==5.0.0
-          - pytest==8.3.2
+          - numpy==1.26.4
+          - opencv-python==4.11.0.86
+          - pandas==2.2.3
+          - pre-commit==4.1.0
+          - pytest-benchmark==5.1.0
+          - pytest-cov==6.0.0
+          - pytest==8.3.4
           - types-Pillow
           - types-PyYAML==6.0.12.12
           - types-flake8
