@@ -24,7 +24,7 @@ class RoadUserClass:
     short_label_eng: str
     key: str | None
     icon_file: Path
-    icon: Image = field(init=False)
+    icon: Image.Image = field(init=False)
     color_rgb: tuple[int, int, int]
 
     def __post_init__(self):
@@ -38,7 +38,7 @@ class RoadUserClass:
     def get_short_label(self) -> str:
         return self.short_label_eng
 
-    def get_icon(self) -> Image:
+    def get_icon(self) -> Image.Image:
         return self.icon
 
     def get_key(self) -> str | None:

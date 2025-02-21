@@ -85,7 +85,7 @@ class SectionsOverlay:
     def get(self) -> Image.Image:
         return self.image
 
-    def _get_image(self) -> Image.Image:
+    def _get_image(self) -> None:
         self.image_array = np.zeros((self.height, self.width, 4), dtype=np.uint8)
         for section in self.sections:
             for ellipse in section.ellipses:
