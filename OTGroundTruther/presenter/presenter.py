@@ -30,6 +30,9 @@ class Presenter(PresenterInterface):
         self._gui.frame_treeview.combobox_counts.fill_and_set(
             class_names=self._model._valid_road_user_classes.get_class_names()
         )
+        self._gui.frame_treeview.combobox_current_class.fill_and_set(
+            class_names=self._model._valid_road_user_classes.get_class_names()
+        )
         if self._model._video_repository.is_empty():
             return
         self._display_first_frame()
@@ -120,6 +123,7 @@ class Presenter(PresenterInterface):
             ),
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
+        self.jump_to_treeview_position(overlayed_frame=overlayed_frame)
 
     def scroll_through_videos(
         self, scroll_delta: int, mouse_wheel_pressed: bool
@@ -140,6 +144,7 @@ class Presenter(PresenterInterface):
             delta_of_time=0,
         )
         self._update_canvas_image(overlayed_frame=overlayed_frame)
+        self.jump_to_treeview_position(overlayed_frame=overlayed_frame)
 
     def jump_by_delta_time_in_sec(self, delta_of_time: float) -> None:
         if self._current_frame is not None:
@@ -153,12 +158,27 @@ class Presenter(PresenterInterface):
                 delta_of_time=delta_of_time,
             )
             self._update_canvas_image(overlayed_frame=overlayed_frame)
+            self.jump_to_treeview_position(overlayed_frame=overlayed_frame)
 
     def _update_canvas_image(self, overlayed_frame: OverlayedFrame) -> None:
         self._gui.frame_canvas.canvas_background.update_image(
             image=overlayed_frame.get()
         )
         self._current_frame = overlayed_frame
+
+    def jump_to_treeview_position(self, overlayed_frame: OverlayedFrame) -> None:
+        frame_number = overlayed_frame.background_frame.frame_number
+        all_counts = self._model._count_repository.get_all_as_list()
+        next_count = None
+        for count in all_counts:
+            first_event = count.get_first_event()
+            first_frame = first_event.frame_number
+            if first_frame >= frame_number:
+                next_count = count
+                break
+        if next_count:
+            next_road_user_id = next_count.get_road_user_id()
+            self._gui.frame_treeview.treeview_counts.see(next_road_user_id)
 
     def refresh_treeview(self) -> None:
         self._gui.frame_treeview.treeview_counts.refresh_treeview(
@@ -249,8 +269,37 @@ class Presenter(PresenterInterface):
         self._gui.frame_treeview.class_label.show_class_img(
             road_user_class=road_user_class
         )
+        self._gui.frame_treeview.combobox_current_class.update_from_selected_count(
+            road_user_class
+        )
 
     def show_key_assignment(self) -> None:
         self._gui.build_key_assignment_window(
             key_assignment_text=self._model.get_key_assignment_text()
         )
+
+    def update_selected_count_class(self, new_class: str) -> None:
+        # Get the selected count id from the treeview.
+        selected_ids = self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+        if selected_ids:
+            for selected_id in selected_ids:
+                # Retrieve the Count object from your repository.
+                road_user_class = self._model._count_repository.get(
+                    selected_id
+                ).get_road_user_class()
+                new_road_user_class = (
+                    self._model._valid_road_user_classes.to_dict_with_name_as_key()[
+                        new_class
+                    ]
+                )
+                if road_user_class:
+                    # Update the count’s road user class.
+                    # (Assuming your Count model has a method or property setter for this.)
+                    self._model._count_repository.set_class_by_id(
+                        selected_id, new_road_user_class
+                    )
+                else:
+                    print(f"Count {selected_id} not found.")
+
+    def get_selected_count_ids(self) -> list[str]:
+        return self._gui.frame_treeview.treeview_counts.get_selected_count_ids()

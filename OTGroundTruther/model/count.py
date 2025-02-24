@@ -340,6 +340,12 @@ class CountRepository:
         count_event_list.append(event_for_saving)
         return count_event_list
 
+    def set_class_by_id(self, event_id: str, road_user_class: RoadUserClass) -> None:
+        try:
+            self._counts[event_id].road_user_class = road_user_class
+        except Exception as e:
+            raise e
+
 
 @dataclass
 class CountsOverlay:

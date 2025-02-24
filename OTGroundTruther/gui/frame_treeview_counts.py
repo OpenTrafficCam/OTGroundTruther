@@ -1,7 +1,7 @@
 import copy
 import tkinter as tk
 import tkinter.ttk as ttk
-from typing import Any, Callable
+from typing import Any
 
 import customtkinter as ctk
 from PIL import Image
@@ -27,8 +27,11 @@ COMBOBOX_FRAME_COLUMN: int = 0
 TREEVIEW_FRAME_ROW: int = COMBOBOX_FRAME_ROW + 1
 TREEVIEW_FRAME_COLUMN: int = COMBOBOX_FRAME_COLUMN
 
-CLASS_LABEL_FRAME_ROW: int = TREEVIEW_FRAME_ROW + 1
-CLASS_LABEL_FRAME_COLUMN: int = COMBOBOX_FRAME_COLUMN
+CLASS_COMBOBOX_FRAME_ROW: int = TREEVIEW_FRAME_ROW + 1
+CLASS_COMBOBOX_FRAME_COLUMN: int = TREEVIEW_FRAME_COLUMN + 1
+
+CLASS_LABEL_FRAME_ROW: int = CLASS_COMBOBOX_FRAME_ROW + 1
+CLASS_LABEL_FRAME_COLUMN: int = CLASS_COMBOBOX_FRAME_COLUMN
 
 TREEVIEW_SELECT: str = "<<TreeviewSelect>>"
 
@@ -112,6 +115,11 @@ class FrameTreeview(ctk.CTkFrame):
             presenter=self._presenter,
             text="",
         )
+        self.combobox_current_class = ComboboxClass(
+            master=self,
+            presenter=self._presenter,
+            state="readonly",
+        )
 
     def _place_widgets(self) -> None:
         self.treeview_counts.grid(
@@ -124,6 +132,13 @@ class FrameTreeview(ctk.CTkFrame):
         self.combobox_counts.grid(
             row=COMBOBOX_FRAME_ROW,
             column=COMBOBOX_FRAME_COLUMN,
+            padx=PADX,
+            pady=PADY,
+            sticky=STICKY,
+        )
+        self.combobox_current_class.grid(
+            row=CLASS_COMBOBOX_FRAME_ROW,
+            column=CLASS_COMBOBOX_FRAME_COLUMN,  # Adjust placement as needed
             padx=PADX,
             pady=PADY,
             sticky=STICKY,
@@ -167,6 +182,51 @@ class Combobox(ctk.CTkComboBox):
         return self.selected_classes
 
 
+class ComboboxClass(ctk.CTkComboBox):
+    def __init__(self, presenter: PresenterInterface, **kwargs: Any):
+        super().__init__(**kwargs)
+        self._presenter = presenter
+        self.combobox_var = ctk.StringVar()
+
+    def fill_and_set(self, class_names: list[str]) -> None:
+        self.class_names = class_names
+        self.configure(
+            variable=self.combobox_var,
+            values=class_names,
+            command=self.combobox_callback,
+        )
+        # Initialize with the first class (or you could use a placeholder)
+        self.set("")
+
+    def combobox_callback(self, selected_option: str) -> None:
+        """
+        This callback is triggered when the user selects a new class value.
+        It retrieves the currently selected count from the treeview,
+        updates its class value in the model, and refreshes the views.
+        """
+        # Retrieve the currently selected count IDs from the treeview.
+        selected_count_ids = self._presenter.get_selected_count_ids()
+        if selected_count_ids:
+            count_id = selected_count_ids[0]
+            # Let the presenter handle updating the selected count's class.
+            # (You’ll need to implement this method in your PresenterInterface.)
+            self._presenter.update_selected_count_class(selected_option)
+            # Refresh the treeview so the new class is shown.
+            self._presenter.refresh_treeview()
+            # Optionally update the class image (if your UI uses it).
+            self._presenter.show_class_image_by_count_id(count_id)
+
+    def update_from_selected_count(self, road_user_class: "RoadUserClass") -> None:
+        """
+        This method is used to update the combobox's current value based on the
+        RoadUserClass of the selected row in the treeview.
+        """
+        new_value = road_user_class.get_name()
+        # Update the internal variable and displayed value.
+        self.combobox_var.set(new_value)
+        self.set(new_value)
+
+
 class Treeview(ttk.Treeview):
     def __init__(self, presenter: PresenterInterface, **kwargs: Any):
         super().__init__(**kwargs)
@@ -201,13 +261,27 @@ class Treeview(ttk.Treeview):
             self.next_column_sort_direction[column] = False
 
     def refresh_treeview(self, count_repository: CountRepository) -> None:
+        # Save current selection (list of item IDs) and current scroll position.
+        current_selection = self.selection()
+        current_yview = self.yview()  # returns a tuple like (first, last)
+
+        # Clear existing items.
         self.delete(*self.get_children())
         selected_classes = self._presenter.get_selected_classes_from_gui()
         for count in list(count_repository.get_all_as_dict().values()):
-            if count.get_road_user_class().get_name() in selected_classes:
-                self.add_count(
-                    count=count,
-                )
+            road_user_class = count.get_road_user_class()
+            # If road_user_class is None, you might choose to skip it or assign a default.
+            if road_user_class is None:
+                continue
+            if road_user_class.get_name() in selected_classes:
+                self.add_count(count=count)
+
+        # Restore the selection (if those item IDs are still present).
+        if current_selection:
+            self.selection_set(current_selection)
+        # Restore the scroll position.
+        if current_yview:
+            self.yview_moveto(current_yview[0])
 
         self.example_count = copy.deepcopy(
             list(count_repository.get_all_as_dict().values())[0]

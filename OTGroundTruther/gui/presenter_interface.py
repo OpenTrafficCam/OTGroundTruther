@@ -75,3 +75,15 @@ class PresenterInterface(ABC):
     @abstractmethod
     def show_key_assignment(self) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    def update_selected_count_class(self, new_class: str) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_selected_count_ids(self) -> list[str]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def jump_to_treeview_position(self, frame: object) -> None:
+        raise NotImplementedError
