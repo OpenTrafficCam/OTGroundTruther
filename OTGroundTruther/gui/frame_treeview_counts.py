@@ -6,7 +6,7 @@ from typing import Any
 import customtkinter as ctk
 from PIL import Image
 
-from OTGroundTruther.gui.constants import PADX, PADY, STICKY
+from OTGroundTruther.gui.constants import PADX, PADY, STICKY, tk_events
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
 from OTGroundTruther.model.count import (
     COUNT_CLASS_NAME,
@@ -240,6 +240,7 @@ class Treeview(ttk.Treeview):
         self.add_next_column_sort_direction()
         self.example_count: Count | None = None
         self.last_sorted_by = COUNT_ENTER_TIME_NAME
+        self.bind(tk_events.ALPHANUMERIC_KEY, self._on_alphanumeric_key)
 
     def _add_columns(self) -> None:
         for key in COUNT_PROPERTIES_ORDER:
@@ -375,6 +376,10 @@ class Treeview(ttk.Treeview):
 
     def scroll_to_the_end(self) -> None:
         self.yview_moveto(1)
+
+    def _on_alphanumeric_key(self, event: tk.Event) -> None:
+        key_pressed = event.keysym
+        self._presenter.update_selected_road_user_class(key_pressed)
 
 
 class TreeviewTranslator:

@@ -87,3 +87,6 @@ class PresenterInterface(ABC):
     @abstractmethod
     def jump_to_treeview_position(self, frame: object) -> None:
         raise NotImplementedError
+
+    def update_selected_road_user_class(self, key: str) -> None:
+        raise NotImplementedError

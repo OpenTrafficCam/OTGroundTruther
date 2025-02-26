@@ -13,6 +13,7 @@ from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.count import MissingRoadUserClassError, TooFewEventsError
 from OTGroundTruther.model.model import Model
 from OTGroundTruther.model.overlayed_frame import OverlayedFrame
+from OTGroundTruther.model.road_user_class import RoadUserClass
 
 MAX_SCROLL_STEP: int = 50
 
@@ -278,7 +279,7 @@ class Presenter(PresenterInterface):
             key_assignment_text=self._model.get_key_assignment_text()
         )
 
-    def update_selected_count_class(self, new_class: str) -> None:
+    def update_selected_count_class(self, new_class: str | RoadUserClass) -> None:
         # Get the selected count id from the treeview.
         selected_ids = self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
         if selected_ids:
@@ -287,11 +288,14 @@ class Presenter(PresenterInterface):
                 road_user_class = self._model._count_repository.get(
                     selected_id
                 ).get_road_user_class()
-                new_road_user_class = (
-                    self._model._valid_road_user_classes.to_dict_with_name_as_key()[
-                        new_class
-                    ]
-                )
+                if isinstance(new_class, str):
+                    new_road_user_class = (
+                        self._model._valid_road_user_classes.to_dict_with_name_as_key()[
+                            new_class
+                        ]
+                    )
+                else:
+                    new_road_user_class = new_class
                 if road_user_class:
                     # Update the count’s road user class.
                     # (Assuming your Count model has a method or property setter for this.)
@@ -303,3 +307,9 @@ class Presenter(PresenterInterface):
 
     def get_selected_count_ids(self) -> list[str]:
         return self._gui.frame_treeview.treeview_counts.get_selected_count_ids()
+
+    def update_selected_road_user_class(self, key: str) -> None:
+        road_user_class = self._model._valid_road_user_classes.get_by_key(key)
+        if road_user_class is not None:
+            self.update_selected_count_class(road_user_class)
+            self.refresh_treeview()
