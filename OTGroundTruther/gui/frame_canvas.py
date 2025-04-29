@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Any
 
-import customtkinter as ctk
-from PIL import Image, ImageTk
+import customtkinter as ctk  # type: ignore
+from PIL import Image, ImageTk  # type: ignore
 
 from OTGroundTruther.gui.constants import (
     FACTOR_LARGE_SCROLLING,

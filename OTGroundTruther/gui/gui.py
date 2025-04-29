@@ -1,6 +1,6 @@
 from typing import Any
 
-import customtkinter as ctk
+import customtkinter as ctk  # type: ignore
 
 from OTGroundTruther.gui.constants import PADX, PADY, tk_events
 from OTGroundTruther.gui.frame_canvas import FrameCanvas

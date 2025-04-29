@@ -2,9 +2,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-import cv2
+import cv2  # type: ignore
 import numpy as np
-from PIL import Image
+from PIL import Image  # type: ignore
 
 from OTGroundTruther.model.coordinate import Coordinate
 from OTGroundTruther.model.ellipse import Ellipse

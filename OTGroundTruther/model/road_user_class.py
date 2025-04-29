@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import yaml
-from PIL import Image
+import yaml  # type: ignore
+from PIL import Image  # type: ignore
 
 KEY_YAML_KEY = "key"
 SHORT_LABEL_ENG_YAML_KEY = "short_label_eng"

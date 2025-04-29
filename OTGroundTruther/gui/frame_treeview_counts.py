@@ -3,8 +3,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from typing import Any, Callable
 
-import customtkinter as ctk
-from PIL import Image
+import customtkinter as ctk  # type: ignore
+from PIL import Image  # type: ignore
 
 from OTGroundTruther.gui.constants import PADX, PADY, STICKY
 from OTGroundTruther.gui.presenter_interface import PresenterInterface
